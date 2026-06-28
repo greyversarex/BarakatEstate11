@@ -1384,11 +1384,11 @@
   /* ── SEARCH BAR ── */
   .search-section {
     background: var(--cream);
-    padding: 0 0 60px;
+    padding: 0;
     position: relative; z-index: 2;
   }
   .search-wrap {
-    background: white; border-radius: 20px;
+    background: white; border-radius: 0;
     box-shadow: 0 8px 40px var(--shadow);
     padding: 24px; border: 1px solid var(--border);
   }
@@ -4666,7 +4666,7 @@
 
     .search-wrap {
       padding:14px;
-      border-radius:18px;
+      border-radius:0;
     }
 
     .search-tabs,
