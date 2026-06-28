@@ -1,0 +1,1 @@
+- [Barakat admin↔API update contract](barakat-admin-api-contract.md) — admin UI sends PATCH for edits; every admin resource route needs both PUT and PATCH or edits 404.

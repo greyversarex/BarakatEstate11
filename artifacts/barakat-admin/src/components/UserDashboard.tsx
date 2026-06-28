@@ -93,6 +93,8 @@ const emptyForms: FormState = {
     mainImage: "",
     gallery: "",
     isFeatured: false,
+    isNew: false,
+    isUrgent: false,
     status: "draft",
     documentType: "",
   },
@@ -539,6 +541,16 @@ export default function UserDashboard() {
                                 В Избранном
                               </span>
                             )}
+                            {item.isNew && (
+                              <span className="px-2.5 py-1 text-xs font-semibold rounded-md shadow-sm bg-blue-100 text-blue-700">
+                                Новое
+                              </span>
+                            )}
+                            {item.isUrgent && (
+                              <span className="px-2.5 py-1 text-xs font-semibold rounded-md shadow-sm bg-red-100 text-red-700">
+                                Срочно
+                              </span>
+                            )}
                           </div>
                         </div>
                       )}
@@ -805,6 +817,8 @@ function buildPayload(tab: Tab, data: FormData) {
     mainImage: String(data.get("mainImage") || ""),
     gallery: String(data.get("gallery") || ""),
     isFeatured: data.get("isFeatured") === "on",
+    isNew: data.get("isNew") === "on",
+    isUrgent: data.get("isUrgent") === "on",
     status: toStatus(data.get("status")),
   };
 }
@@ -1229,6 +1243,26 @@ function renderForm(tab: Tab, form: FormState, loading: boolean, currentUser: Au
               className="w-5 h-5 rounded border-slate-300 text-yellow-500 focus:ring-yellow-500 cursor-pointer"
             />
             <span className="text-sm font-bold text-slate-700 group-hover:text-yellow-600 transition">В Избранное (Featured)</span>
+          </label>
+
+          <label className="flex items-center gap-3 cursor-pointer group mt-6">
+            <input 
+              type="checkbox" 
+              name="isNew" 
+              defaultChecked={item.isNew} 
+              className="w-5 h-5 rounded border-slate-300 text-blue-500 focus:ring-blue-500 cursor-pointer"
+            />
+            <span className="text-sm font-bold text-slate-700 group-hover:text-blue-600 transition">Новое</span>
+          </label>
+
+          <label className="flex items-center gap-3 cursor-pointer group mt-6">
+            <input 
+              type="checkbox" 
+              name="isUrgent" 
+              defaultChecked={item.isUrgent} 
+              className="w-5 h-5 rounded border-slate-300 text-red-500 focus:ring-red-500 cursor-pointer"
+            />
+            <span className="text-sm font-bold text-slate-700 group-hover:text-red-600 transition">Срочно</span>
           </label>
         </div>
 

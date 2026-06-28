@@ -72,6 +72,8 @@ export const listingsTable = pgTable("listings", {
   sellerWhatsapp: text("seller_whatsapp").notNull().default(""),
   sellerAvatar: text("seller_avatar").notNull().default(""),
   isFeatured: boolean("is_featured").notNull().default(false),
+  isNew: boolean("is_new").notNull().default(false),
+  isUrgent: boolean("is_urgent").notNull().default(false),
   status: publishStatusEnum("status").notNull().default("draft"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

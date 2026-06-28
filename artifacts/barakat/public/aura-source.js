@@ -164,7 +164,8 @@ function mapAdminListing(entry) {
     telegram: seller?.telegram || '',
     instagram: seller?.instagram || '',
     year: item.yearBuilt || '',
-    new: Boolean(item.isFeatured),
+    new: Boolean(item.isNew || item.isFeatured),
+    urgent: Boolean(item.isUrgent),
     propertyType: mapPropertyType(item.propertyType),
     district: mapDistrict(item.district),
     features: Array.isArray(item.features) ? item.features.join(' ') : item.features || '',
@@ -382,6 +383,7 @@ function propCard(p, onclick) {
       <div class="prop-tags">
         <span class="tag tag-${p.tag}">${p.tagLabel}</span>
         ${p.new?'<span class="tag tag-new">Новое</span>':''}
+        ${p.urgent?'<span class="tag tag-urgent">Срочно</span>':''}
       </div>
       <button class="prop-fav${isFav ? ' active' : ''}" onclick="event.stopPropagation();toggleFav(this)" aria-label="Добавить в избранное" data-prop-id="${p.id}" data-fav="${isFav ? 'true' : 'false'}">${lucideIcon('heart', 'lucide-fav')}</button>
       ${counter}
@@ -994,6 +996,9 @@ function navigateWithFilters() {
   const rooms = roomLabel ? roomLabel.dataset.val : '';
   if (rooms && rooms !== 'Любой') params.set('rooms', rooms);
 
+  if (ext?.querySelector('.filter-chip[data-flag="new"]')?.classList.contains('active')) params.set('new', '1');
+  if (ext?.querySelector('.filter-chip[data-flag="urgent"]')?.classList.contains('active')) params.set('urgent', '1');
+
   const activeTab = page.querySelector('.s-tab.active');
   if (activeTab) {
     if (activeTab.textContent.includes('Купить')) params.set('deal', 'Продажа');
@@ -1112,6 +1117,8 @@ function getListingsFilters() {
     renovation: urlParams.get('renovation') || '',
     constructionStages: selectedCheckboxValues('Стадия строительства').length ? selectedCheckboxValues('Стадия строительства') : (urlParams.get('stage') ? [urlParams.get('stage')] : []),
     documentTypes: selectedCheckboxValues('Документ'),
+    onlyNew: urlParams.get('new') === '1',
+    onlyUrgent: urlParams.get('urgent') === '1',
   };
 }
 
@@ -1217,6 +1224,8 @@ function propertyMatchesFilters(property, filters) {
   if (filters.renovation && property.renovation !== filters.renovation) return false;
   if (filters.constructionStages.length && !filters.constructionStages.includes(property.constructionStage)) return false;
   if (filters.documentTypes.length && !filters.documentTypes.includes(property.documentType)) return false;
+  if (filters.onlyNew && !property.new) return false;
+  if (filters.onlyUrgent && !property.urgent) return false;
 
   return true;
 }

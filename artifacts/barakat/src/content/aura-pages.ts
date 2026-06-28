@@ -259,6 +259,14 @@ export const auraPages = {
           <label style="font-size: 13px; font-weight: 600; color: var(--ink);">Ориентир</label>
           <input class="s-input" placeholder="Например: Парк Рудаки" style="width: 100%; height: 48px; padding-left: 16px;"/>
         </div>
+        <!-- Дополнительные метки -->
+        <div style="display: flex; flex-direction: column; gap: 8px; grid-column: span 2;">
+          <label style="font-size: 13px; font-weight: 600; color: var(--ink);">Дополнительно</label>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <div class="filter-chip" data-flag="new" onclick="this.classList.toggle('active')">Новые</div>
+            <div class="filter-chip" data-flag="urgent" onclick="this.classList.toggle('active')">Срочные</div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -268,7 +276,7 @@ export const auraPages = {
     <div class="container">
       <div class="section-header">
         <div class="section-eyebrow">Свежие предложения</div>
-        <h2 class="section-title">Популярные <strong>объявления</strong></h2>
+        <h2 class="section-title">Последние <strong>объявления</strong></h2>
         <p class="section-sub">Лучшие варианты квартир в Душанбе по соотношению цены и качества</p>
       </div>
 
@@ -1179,6 +1187,90 @@ export const auraPages = {
           <div class="spinner" style="margin: 0 auto 20px auto; width: 40px; height: 40px; border: 3px solid rgba(212,175,55,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite;"></div>
           <p style="color: var(--muted);">Загрузка сотрудников...</p>
         </div>
+      </div>
+    </div>
+  </section>
+</div>`,
+  blog: `<div class="page active" id="page-blog">
+  <div class="header-padding"></div>
+  <section class="listings-hero" style="background-image: linear-gradient(135deg, rgba(30, 45, 74, 0.82) 0%, rgba(212, 175, 55, 0.5) 100%), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center; color: white; padding-top: 130px !important; padding-bottom: 70px; text-align: center; position: relative;">
+    <div class="container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2;">
+      <div style="width: 64px; height: 64px; background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+      </div>
+      <h1 style="color: white; font-size: 48px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 12px; text-shadow: 0 4px 16px rgba(0,0,0,0.4); line-height: 1.1;">Блог</h1>
+      <p style="color: rgba(255,255,255,0.95); font-size: 18px; font-weight: 500; max-width: 640px; margin: 0 auto; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">Полезные статьи и новости рынка недвижимости Душанбе от экспертов Barakat Estate.</p>
+    </div>
+  </section>
+
+  <section style="padding: 72px 0; background: var(--cream);">
+    <div class="container">
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px;">
+
+        <article class="blog-card" onclick="const b=this.querySelector('.blog-body'); const open=b.style.display==='block'; b.style.display=open?'none':'block'; this.querySelector('.blog-more').textContent=open?'Читать статью':'Свернуть';">
+          <div class="blog-img" style="background-image: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 100%), url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=900&q=80');">
+            <span class="blog-cat">Покупка</span>
+          </div>
+          <div class="blog-content">
+            <h3 class="blog-title">Как купить квартиру в Душанбе</h3>
+            <p class="blog-excerpt">Пошаговое руководство для покупателей: от выбора района до подписания договора.</p>
+            <div class="blog-body">
+              <p>Покупка квартиры — одно из самых важных решений в жизни. Начните с определения бюджета и района. В Душанбе наиболее востребованы районы Исмоили Сомони, Сино, Фирдавси и Шохмансур — у каждого свои преимущества по инфраструктуре и цене.</p>
+              <p>Определите тип жилья: новостройка или вторичный рынок. Новостройки часто продаются на стадии строительства по более низкой цене, но требуют ожидания. Вторичное жильё можно осмотреть и заселиться сразу.</p>
+              <p>Перед покупкой обязательно проверьте документы на квартиру и продавца, осмотрите состояние коммуникаций и уточните условия оплаты. Наши специалисты сопроводят вас на каждом этапе сделки.</p>
+            </div>
+            <span class="blog-more">Читать статью</span>
+          </div>
+        </article>
+
+        <article class="blog-card" onclick="const b=this.querySelector('.blog-body'); const open=b.style.display==='block'; b.style.display=open?'none':'block'; this.querySelector('.blog-more').textContent=open?'Читать статью':'Свернуть';">
+          <div class="blog-img" style="background-image: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 100%), url('https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?auto=format&fit=crop&w=900&q=80');">
+            <span class="blog-cat">Продажа</span>
+          </div>
+          <div class="blog-content">
+            <h3 class="blog-title">Как продать квартиру дороже</h3>
+            <p class="blog-excerpt">Практические советы, которые помогут получить максимальную цену за вашу недвижимость.</p>
+            <div class="blog-body">
+              <p>Первое впечатление решает всё. Перед продажей сделайте лёгкий косметический ремонт, устраните мелкие дефекты и наведите порядок. Чистая, светлая квартира воспринимается покупателями значительно дороже.</p>
+              <p>Качественные фотографии повышают интерес к объявлению в разы. Снимайте при дневном свете, показывайте все комнаты и преимущества — вид из окна, ремонт, планировку.</p>
+              <p>Правильно определите цену: завышенная стоимость отпугивает покупателей, заниженная — лишает прибыли. Наши оценщики помогут установить справедливую рыночную цену и подготовить объявление, которое продаёт.</p>
+            </div>
+            <span class="blog-more">Читать статью</span>
+          </div>
+        </article>
+
+        <article class="blog-card" onclick="const b=this.querySelector('.blog-body'); const open=b.style.display==='block'; b.style.display=open?'none':'block'; this.querySelector('.blog-more').textContent=open?'Читать статью':'Свернуть';">
+          <div class="blog-img" style="background-image: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 100%), url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=80');">
+            <span class="blog-cat">Документы</span>
+          </div>
+          <div class="blog-content">
+            <h3 class="blog-title">Как проверить документы на квартиру</h3>
+            <p class="blog-excerpt">Что нужно знать, чтобы обезопасить себя от мошенничества при сделке.</p>
+            <div class="blog-body">
+              <p>Главный документ — свидетельство о праве собственности. Убедитесь, что продавец является законным владельцем, а данные в документах совпадают с паспортом.</p>
+              <p>Проверьте отсутствие обременений: квартира не должна быть в залоге, под арестом или в споре. Уточните, кто прописан в квартире и нет ли несовершеннолетних или других собственников.</p>
+              <p>Запросите технический паспорт и сверьте планировку — незаконные перепланировки могут создать проблемы в будущем. При любых сомнениях обращайтесь к юристам Barakat Estate для полной юридической проверки сделки.</p>
+            </div>
+            <span class="blog-more">Читать статью</span>
+          </div>
+        </article>
+
+        <article class="blog-card" onclick="const b=this.querySelector('.blog-body'); const open=b.style.display==='block'; b.style.display=open?'none':'block'; this.querySelector('.blog-more').textContent=open?'Читать статью':'Свернуть';">
+          <div class="blog-img" style="background-image: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 100%), url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=900&q=80');">
+            <span class="blog-cat">Новости</span>
+          </div>
+          <div class="blog-content">
+            <h3 class="blog-title">Новости рынка недвижимости Душанбе</h3>
+            <p class="blog-excerpt">Обзор тенденций, цен и перспектив рынка жилья в столице Таджикистана.</p>
+            <div class="blog-body">
+              <p>Рынок недвижимости Душанбе продолжает активно развиваться. Спрос на современные новостройки растёт, особенно в центральных районах с развитой инфраструктурой.</p>
+              <p>Цены на квартиры остаются стабильными с умеренным ростом в премиальных жилых комплексах. Покупатели всё чаще выбирают жильё с готовым ремонтом и охраняемой территорией.</p>
+              <p>Эксперты отмечают повышенный интерес к ипотечным программам и рассрочке от застройщиков. Следите за нашим блогом, чтобы быть в курсе самых актуальных предложений и изменений на рынке.</p>
+            </div>
+            <span class="blog-more">Читать статью</span>
+          </div>
+        </article>
+
       </div>
     </div>
   </section>

@@ -8,6 +8,7 @@ const links = [
   { href: "/map", label: "Карта", match: "map" },
   { href: "/services", label: "Услуги", match: "services" },
   { href: "/team", label: "Сотрудники", match: "team" },
+  { href: "/blog", label: "Блог", match: "blog" },
   { href: "/about", label: "О нас", match: "about" },
 ];
 

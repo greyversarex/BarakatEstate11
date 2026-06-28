@@ -24,6 +24,7 @@ function Router() {
         <Route path="/map" component={() => <AuraPage page="map" />} />
         <Route path="/services" component={() => <AuraPage page="services" />} />
         <Route path="/team" component={() => <AuraPage page="team" />} />
+        <Route path="/blog" component={() => <AuraPage page="blog" />} />
         <Route path="/about" component={() => <AuraPage page="about" />} />
         <Route path="/favorites" component={() => <AuraPage page="favorites" />} />
         <Route path="/property" component={() => <AuraPage page="property" />} />

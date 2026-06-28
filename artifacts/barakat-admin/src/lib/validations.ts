@@ -54,5 +54,7 @@ export const listingSchema = z.object({
   mainImage: z.string().optional().or(z.literal("")),
   gallery: z.string().optional().or(z.literal("")),
   isFeatured: z.boolean().optional().default(false),
+  isNew: z.boolean().optional().default(false),
+  isUrgent: z.boolean().optional().default(false),
   status: z.enum(["draft", "published"]).optional().default("draft"),
 });

@@ -52,6 +52,8 @@ export type Listing = {
   sellerWhatsapp: string;
   sellerAvatar: string;
   isFeatured: boolean;
+  isNew: boolean;
+  isUrgent: boolean;
   status: PublishStatus;
   createdAt: string;
   updatedAt: string;

@@ -44,7 +44,7 @@ router.post("/listings", async (req: Request, res: Response) => {
   }
 });
 
-router.put("/listings/:id", async (req: Request, res: Response) => {
+async function updateListing(req: Request, res: Response) {
   const user = await getAuthUser(req);
   if (!user) { res.status(401).json({ error: "Unauthorized" }); return; }
   try {
@@ -54,7 +54,10 @@ router.put("/listings/:id", async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
-});
+}
+
+router.put("/listings/:id", updateListing);
+router.patch("/listings/:id", updateListing);
 
 router.delete("/listings/:id", async (req: Request, res: Response) => {
   const user = await getAuthUser(req);
