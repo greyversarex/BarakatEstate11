@@ -17,8 +17,4 @@
 //   export type InsertPost = z.infer<typeof insertPostSchema>;
 //   export type Post = typeof postsTable.$inferSelect;
 
-<<<<<<< HEAD
-export * from "./admin";
-=======
 export {}
->>>>>>> 191d4c0 (Task start baseline checkpoint for code review)
