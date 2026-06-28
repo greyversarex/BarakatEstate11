@@ -127,7 +127,7 @@ export default function ServiceDetailPage({ service }: { service: ServiceDetail 
             <h1>{service.title}</h1>
             <p>{service.description}</p>
             <div className="service-detail-actions" style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-              <a className="btn-primary" href="tel:+992055077777">
+              <a className="btn-primary" href="tel:+99220107771">
                 Позвонить
               </a>
               <Link className="btn-secondary" href="/listings">
