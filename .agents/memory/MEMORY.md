@@ -1,1 +1,1 @@
-- [Barakat admin↔API update contract](barakat-admin-api-contract.md) — admin UI sends PATCH for edits; every admin resource route needs both PUT and PATCH or edits 404.
+- [Timeweb deploy](timeweb-deploy.md) — self-hosted Docker deploy traps: deploy/ not in repo (hard reset wipes it), pin pnpm@10.26.1, admin prod build runs tsc -b (kills dead files).
