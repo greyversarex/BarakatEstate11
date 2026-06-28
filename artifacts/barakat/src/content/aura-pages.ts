@@ -26,16 +26,16 @@ export const auraPages = {
         </div>
         <div class="hero-stats">
           <div class="stat-item">
-            <div class="stat-num"><span class="total-num"></span><span>+</span></div>
-            <div class="stat-label">Объявлений</div>
+            <div class="stat-num">100<span>+</span></div>
+            <div class="stat-label">Довольных клиентов</div>
           </div>
           <div class="stat-item">
-            <div class="stat-num"><span class="total-sellers"></span><span>+</span></div>
-            <div class="stat-label">Продавцов</div>
+            <div class="stat-num">500<span>+</span></div>
+            <div class="stat-label">Успешных сделок</div>
           </div>
           <div class="stat-item">
-            <div class="stat-num"><span class="total-districts"></span><span>+</span></div>
-            <div class="stat-label">Районов</div>
+            <div class="stat-num"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+            <div class="stat-label">Работаем официально</div>
           </div>
         </div>
       </div>

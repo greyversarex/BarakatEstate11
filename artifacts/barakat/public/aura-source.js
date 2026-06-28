@@ -813,23 +813,8 @@ function renderCatalogState() {
   const allProps = getAllProperties();
   const total = allProps.length;
   
-  const uniqueSellers = new Set(allProps.map(p => p.agent || p.agentName || 'Unknown')).size;
-  const uniqueDistricts = new Set(allProps.map(p => p.district || p.addr || 'Unknown')).size;
-
-  document.querySelectorAll('.stat-num').forEach((el, index) => {
-    if (index === 0) el.innerHTML = `<span class="total-num">${total}</span><span>+</span>`;
-  });
   document.querySelectorAll('.listings-count').forEach((el) => {
     el.innerHTML = `Найдено: <strong>${total} объектов</strong>`;
-  });
-  document.querySelectorAll('.total-num').forEach((el) => {
-    el.textContent = total;
-  });
-  document.querySelectorAll('.total-sellers').forEach((el) => {
-    el.textContent = uniqueSellers;
-  });
-  document.querySelectorAll('.total-districts').forEach((el) => {
-    el.textContent = uniqueDistricts;
   });
   document.querySelectorAll('#map-results-count').forEach((el) => {
     el.textContent = `Показано: ${total} объектов`;
