@@ -275,7 +275,6 @@ export const auraPages = {
   <section class="listings-section reveal">
     <div class="container">
       <div class="section-header">
-        <div class="section-eyebrow">Свежие предложения</div>
         <h2 class="section-title">Последние <strong>объявления</strong></h2>
         <p class="section-sub">Лучшие варианты квартир в Душанбе по соотношению цены и качества</p>
       </div>
