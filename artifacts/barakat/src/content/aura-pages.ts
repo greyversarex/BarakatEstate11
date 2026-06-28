@@ -1206,67 +1206,47 @@ export const auraPages = {
     <div class="container">
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px;">
 
-        <article class="blog-card" onclick="const b=this.querySelector('.blog-body'); const open=b.style.display==='block'; b.style.display=open?'none':'block'; this.querySelector('.blog-more').textContent=open?'Читать статью':'Свернуть';">
+        <article class="blog-card" onclick="window.location.href='/blog/kak-kupit-kvartiru'">
           <div class="blog-img" style="background-image: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 100%), url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=900&q=80');">
             <span class="blog-cat">Покупка</span>
           </div>
           <div class="blog-content">
             <h3 class="blog-title">Как купить квартиру в Душанбе</h3>
             <p class="blog-excerpt">Пошаговое руководство для покупателей: от выбора района до подписания договора.</p>
-            <div class="blog-body">
-              <p>Покупка квартиры — одно из самых важных решений в жизни. Начните с определения бюджета и района. В Душанбе наиболее востребованы районы Исмоили Сомони, Сино, Фирдавси и Шохмансур — у каждого свои преимущества по инфраструктуре и цене.</p>
-              <p>Определите тип жилья: новостройка или вторичный рынок. Новостройки часто продаются на стадии строительства по более низкой цене, но требуют ожидания. Вторичное жильё можно осмотреть и заселиться сразу.</p>
-              <p>Перед покупкой обязательно проверьте документы на квартиру и продавца, осмотрите состояние коммуникаций и уточните условия оплаты. Наши специалисты сопроводят вас на каждом этапе сделки.</p>
-            </div>
-            <span class="blog-more">Читать статью</span>
+            <span class="blog-more">Подробнее</span>
           </div>
         </article>
 
-        <article class="blog-card" onclick="const b=this.querySelector('.blog-body'); const open=b.style.display==='block'; b.style.display=open?'none':'block'; this.querySelector('.blog-more').textContent=open?'Читать статью':'Свернуть';">
+        <article class="blog-card" onclick="window.location.href='/blog/kak-prodat-kvartiru'">
           <div class="blog-img" style="background-image: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 100%), url('https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?auto=format&fit=crop&w=900&q=80');">
             <span class="blog-cat">Продажа</span>
           </div>
           <div class="blog-content">
             <h3 class="blog-title">Как продать квартиру дороже</h3>
             <p class="blog-excerpt">Практические советы, которые помогут получить максимальную цену за вашу недвижимость.</p>
-            <div class="blog-body">
-              <p>Первое впечатление решает всё. Перед продажей сделайте лёгкий косметический ремонт, устраните мелкие дефекты и наведите порядок. Чистая, светлая квартира воспринимается покупателями значительно дороже.</p>
-              <p>Качественные фотографии повышают интерес к объявлению в разы. Снимайте при дневном свете, показывайте все комнаты и преимущества — вид из окна, ремонт, планировку.</p>
-              <p>Правильно определите цену: завышенная стоимость отпугивает покупателей, заниженная — лишает прибыли. Наши оценщики помогут установить справедливую рыночную цену и подготовить объявление, которое продаёт.</p>
-            </div>
-            <span class="blog-more">Читать статью</span>
+            <span class="blog-more">Подробнее</span>
           </div>
         </article>
 
-        <article class="blog-card" onclick="const b=this.querySelector('.blog-body'); const open=b.style.display==='block'; b.style.display=open?'none':'block'; this.querySelector('.blog-more').textContent=open?'Читать статью':'Свернуть';">
+        <article class="blog-card" onclick="window.location.href='/blog/kak-proverit-dokumenty'">
           <div class="blog-img" style="background-image: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 100%), url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=80');">
             <span class="blog-cat">Документы</span>
           </div>
           <div class="blog-content">
             <h3 class="blog-title">Как проверить документы на квартиру</h3>
             <p class="blog-excerpt">Что нужно знать, чтобы обезопасить себя от мошенничества при сделке.</p>
-            <div class="blog-body">
-              <p>Главный документ — свидетельство о праве собственности. Убедитесь, что продавец является законным владельцем, а данные в документах совпадают с паспортом.</p>
-              <p>Проверьте отсутствие обременений: квартира не должна быть в залоге, под арестом или в споре. Уточните, кто прописан в квартире и нет ли несовершеннолетних или других собственников.</p>
-              <p>Запросите технический паспорт и сверьте планировку — незаконные перепланировки могут создать проблемы в будущем. При любых сомнениях обращайтесь к юристам Barakat Estate для полной юридической проверки сделки.</p>
-            </div>
-            <span class="blog-more">Читать статью</span>
+            <span class="blog-more">Подробнее</span>
           </div>
         </article>
 
-        <article class="blog-card" onclick="const b=this.querySelector('.blog-body'); const open=b.style.display==='block'; b.style.display=open?'none':'block'; this.querySelector('.blog-more').textContent=open?'Читать статью':'Свернуть';">
+        <article class="blog-card" onclick="window.location.href='/blog/novosti-rynka'">
           <div class="blog-img" style="background-image: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 100%), url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=900&q=80');">
             <span class="blog-cat">Новости</span>
           </div>
           <div class="blog-content">
             <h3 class="blog-title">Новости рынка недвижимости Душанбе</h3>
             <p class="blog-excerpt">Обзор тенденций, цен и перспектив рынка жилья в столице Таджикистана.</p>
-            <div class="blog-body">
-              <p>Рынок недвижимости Душанбе продолжает активно развиваться. Спрос на современные новостройки растёт, особенно в центральных районах с развитой инфраструктурой.</p>
-              <p>Цены на квартиры остаются стабильными с умеренным ростом в премиальных жилых комплексах. Покупатели всё чаще выбирают жильё с готовым ремонтом и охраняемой территорией.</p>
-              <p>Эксперты отмечают повышенный интерес к ипотечным программам и рассрочке от застройщиков. Следите за нашим блогом, чтобы быть в курсе самых актуальных предложений и изменений на рынке.</p>
-            </div>
-            <span class="blog-more">Читать статью</span>
+            <span class="blog-more">Подробнее</span>
           </div>
         </article>
 
