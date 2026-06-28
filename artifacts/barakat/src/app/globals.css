@@ -3958,7 +3958,6 @@
     padding-left:0;
     padding-right:0;
   }
-  .search-section,
   .listings-section,
   .services-section,
   .services-catalog-section,
@@ -4190,7 +4189,8 @@
     .about-hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
     .about-float-card { left: 10px !important; bottom: 0 !important; max-width: calc(100% - 20px) !important; position: relative !important; margin-top: -30px; }
     .container { padding-left: 24px !important; padding-right: 24px !important; box-sizing: border-box; width: 100%; }
-    .hero-content,.search-section,.listings-section,.services-section,.map-preview-section { padding-left: 24px !important; padding-right: 24px !important; overflow-x: hidden; width: 100%; box-sizing: border-box; }
+    .hero-content,.listings-section,.services-section,.map-preview-section { padding-left: 24px !important; padding-right: 24px !important; overflow-x: hidden; width: 100%; box-sizing: border-box; }
+    .search-section { overflow-x: hidden; width: 100%; box-sizing: border-box; }
     .hero-content { grid-template-columns:1fr; gap:40px; padding-top:40px; padding-bottom:40px; }
     .search-tabs { flex-wrap: wrap; justify-content: center; }
     .hero-stats { display: flex !important; flex-direction: row !important; justify-content: space-between !important; padding: 0 !important; gap: 8px !important; width: 100%; flex-wrap: nowrap !important; }
@@ -4649,7 +4649,6 @@
       overflow-wrap:anywhere;
     }
 
-    .search-section,
     .listings-section,
     .services-section,
     .services-catalog-section,
