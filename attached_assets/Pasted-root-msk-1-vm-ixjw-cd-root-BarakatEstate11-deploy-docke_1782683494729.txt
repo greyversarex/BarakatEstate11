@@ -1,0 +1,169 @@
+root@msk-1-vm-ixjw:~# cd /root/BarakatEstate11/deploy
+docker compose up -d --build
+[+] Building 96.1s (14/19)
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 941B                                             0.0s
+ => [api internal] load build definition from Dockerfile                   0.1s
+ => => transferring dockerfile: 930B                                       0.0s
+ => [caddy] resolve image config for docker-image://docker.io/docker/dock  0.6s
+ => CACHED [api] docker-image://docker.io/docker/dockerfile:1@sha256:8799  0.1s
+ => => resolve docker.io/docker/dockerfile:1@sha256:87999aa3d42bdc6bea605  0.1s
+ => [api internal] load metadata for docker.io/library/node:24-slim        0.3s
+ => [caddy internal] load metadata for docker.io/library/caddy:2-alpine    0.3s
+ => [caddy internal] load .dockerignore                                    0.0s
+ => => transferring context: 2B                                            0.0s
+ => [api builder 1/6] FROM docker.io/library/node:24-slim@sha256:b31e7a42  0.1s
+ => => resolve docker.io/library/node:24-slim@sha256:b31e7a42fdf8b8aa5f5e  0.0s
+ => [caddy internal] load build context                                    0.1s
+ => => transferring context: 126.50kB                                      0.1s
+ => [caddy web 1/3] FROM docker.io/library/caddy:2-alpine@sha256:5f5c8640  0.1s
+ => => resolve docker.io/library/caddy:2-alpine@sha256:5f5c8640aae01df965  0.1s
+ => CACHED [caddy builder 2/6] RUN corepack enable                         0.0s
+ => CACHED [caddy builder 3/6] WORKDIR /app                                0.0s
+ => CACHED [caddy builder 4/6] COPY . .                                    0.0s
+ => ERROR [api builder 5/6] RUN pnpm install --frozen-lockfile            84.3s
+------
+ > [api builder 5/6] RUN pnpm install --frozen-lockfile:
+2.295 ! Corepack is about to download https://registry.npmjs.org/pnpm/-/pnpm-11.9.0.tgz
+4.614 Scope: all 11 workspace projects
+5.118 ? Verifying lockfile against supply-chain policies (1071 entries)...
+5.158 Lockfile is up to date, resolution step is skipped
+5.416 Progress: resolved 1, reused 0, downloaded 0, added 0
+5.529 Packages: +1095
+5.529 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+6.423 Progress: resolved 1095, reused 0, downloaded 0, added 0
+8.352 Progress: resolved 1095, reused 0, downloaded 1, added 0
+9.503 Progress: resolved 1095, reused 0, downloaded 10, added 0
+10.51 Progress: resolved 1095, reused 0, downloaded 34, added 0
+11.60 Progress: resolved 1095, reused 0, downloaded 47, added 0
+12.62 Progress: resolved 1095, reused 0, downloaded 56, added 0
+13.62 Progress: resolved 1095, reused 0, downloaded 92, added 4
+14.62 Progress: resolved 1095, reused 0, downloaded 118, added 4
+15.72 Progress: resolved 1095, reused 0, downloaded 142, added 8
+16.79 Progress: resolved 1095, reused 0, downloaded 169, added 8
+17.79 Progress: resolved 1095, reused 0, downloaded 186, added 10
+18.80 Progress: resolved 1095, reused 0, downloaded 215, added 12
+19.83 Progress: resolved 1095, reused 0, downloaded 251, added 16
+20.84 Progress: resolved 1095, reused 0, downloaded 269, added 16
+21.87 Progress: resolved 1095, reused 0, downloaded 303, added 18
+22.63 ✓ Lockfile passes supply-chain policies (1071 entries in 17.4s)
+22.88 Progress: resolved 1095, reused 0, downloaded 305, added 18
+23.87 Progress: resolved 1095, reused 0, downloaded 308, added 18
+24.87 Progress: resolved 1095, reused 0, downloaded 312, added 20
+25.88 Progress: resolved 1095, reused 0, downloaded 331, added 20
+27.52 Progress: resolved 1095, reused 0, downloaded 343, added 20
+28.45 Progress: resolved 1095, reused 0, downloaded 364, added 22
+30.35 Progress: resolved 1095, reused 0, downloaded 380, added 24
+31.68 Progress: resolved 1095, reused 0, downloaded 444, added 28
+33.85 Progress: resolved 1095, reused 0, downloaded 447, added 28
+35.14 Progress: resolved 1095, reused 0, downloaded 478, added 28
+36.25 Progress: resolved 1095, reused 0, downloaded 509, added 32
+37.26 Progress: resolved 1095, reused 0, downloaded 537, added 32
+38.67 Progress: resolved 1095, reused 0, downloaded 593, added 36
+39.74 Progress: resolved 1095, reused 0, downloaded 596, added 36
+41.10 Progress: resolved 1095, reused 0, downloaded 598, added 36
+42.39 Progress: resolved 1095, reused 0, downloaded 603, added 38
+43.52 Progress: resolved 1095, reused 0, downloaded 605, added 40
+44.52 Progress: resolved 1095, reused 0, downloaded 667, added 44
+45.78 Progress: resolved 1095, reused 0, downloaded 668, added 44
+46.78 Progress: resolved 1095, reused 0, downloaded 724, added 46
+47.78 Progress: resolved 1095, reused 0, downloaded 772, added 48
+48.78 Progress: resolved 1095, reused 0, downloaded 790, added 52
+50.15 Progress: resolved 1095, reused 0, downloaded 858, added 56
+51.15 Progress: resolved 1095, reused 0, downloaded 927, added 60
+52.15 Progress: resolved 1095, reused 0, downloaded 955, added 61
+53.17 Progress: resolved 1095, reused 0, downloaded 1011, added 64
+54.15 Progress: resolved 1095, reused 0, downloaded 1068, added 69
+55.16 Progress: resolved 1095, reused 0, downloaded 1069, added 143
+56.16 Progress: resolved 1095, reused 0, downloaded 1069, added 209
+57.16 Progress: resolved 1095, reused 0, downloaded 1069, added 260
+58.17 Progress: resolved 1095, reused 0, downloaded 1069, added 328
+59.17 Progress: resolved 1095, reused 0, downloaded 1069, added 335
+60.42 Progress: resolved 1095, reused 0, downloaded 1069, added 336
+61.42 Progress: resolved 1095, reused 0, downloaded 1069, added 391
+62.42 Progress: resolved 1095, reused 0, downloaded 1069, added 489
+63.42 Progress: resolved 1095, reused 0, downloaded 1069, added 616
+64.43 Progress: resolved 1095, reused 0, downloaded 1069, added 693
+65.42 Progress: resolved 1095, reused 0, downloaded 1069, added 785
+66.43 Progress: resolved 1095, reused 0, downloaded 1069, added 834
+67.43 Progress: resolved 1095, reused 0, downloaded 1069, added 914
+68.43 Progress: resolved 1095, reused 0, downloaded 1069, added 976
+69.43 Progress: resolved 1095, reused 0, downloaded 1069, added 1077
+69.85 Progress: resolved 1095, reused 0, downloaded 1069, added 1095, done
+75.71
+75.71 devDependencies:
+75.71 + prettier 3.8.4
+75.71 + typescript 5.9.3
+75.71
+75.82 . preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+76.23 . preinstall: Done
+77.85 [ERR_PNPM_IGNORED_BUILDS] Ignored build scripts: esbuild@0.27.3
+77.85
+77.85 Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.
+------
+[+] up 0/2
+ ⠙ Image deploy-caddy Building                                             96.6s
+ ⠙ Image deploy-api   Building                                             96.6s
+Dockerfile:8
+
+--------------------
+
+   6 |     WORKDIR /app
+
+   7 |     COPY . .
+
+   8 | >>> RUN pnpm install --frozen-lockfile
+
+   9 |     RUN pnpm --filter @workspace/api-server run build \
+
+  10 |      && PORT=3000 BASE_PATH=/ pnpm --filter @workspace/barakat run build \
+
+--------------------
+
+target caddy: failed to solve: process "/bin/sh -c pnpm install --frozen-lockfile" did not complete successfully: exit code: 1
+
+root@msk-1-vm-ixjw:~/BarakatEstate11/deploy# cd /root/BarakatEstate11/deploy
+docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"' <<'SQL'
+CREATE TABLE IF NOT EXISTS viewings (
+  id text PRIMARY KEY,
+  listing_id text NOT NULL DEFAULT '',
+  listing_title text NOT NULL DEFAULT '',
+  employee_id text NOT NULL DEFAULT '',
+  seller_id text NOT NULL DEFAULT '',
+  name text NOT NULL,
+  phone text NOT NULL,
+  date text NOT NULL DEFAULT '',
+  time text NOT NULL DEFAULT '',
+  message text NOT NULL DEFAULT '',
+  status application_status NOT NULL DEFAULT 'new',
+  created_at timestamp NOT NULL DEFAULT now(),
+  updated_at timestamp NOT NULL DEFAULT now()
+);
+SQL
+CREATE TABLE
+root@msk-1-vm-ixjw:~/BarakatEstate11/deploy# docker compose ps
+docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "\d viewings"'
+NAME             IMAGE                COMMAND                  SERVICE   CREATED          STATUS                 PORTS
+deploy-api-1     deploy-api           "docker-entrypoint.s…"   api       15 minutes ago   Up 15 minutes          8080/tcp
+deploy-caddy-1   deploy-caddy         "caddy run --config …"   caddy     15 minutes ago   Up 15 minutes          0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp, 443/udp, 2019/tcp
+deploy-db-1      postgres:16-alpine   "docker-entrypoint.s…"   db        6 hours ago      Up 6 hours (healthy)   5432/tcp
+                                    Table "public.viewings"
+    Column     |            Type             | Collation | Nullable |          Default
+---------------+-----------------------------+-----------+----------+---------------------------
+ id            | text                        |           | not null |
+ listing_id    | text                        |           | not null | ''::text
+ listing_title | text                        |           | not null | ''::text
+ employee_id   | text                        |           | not null | ''::text
+ seller_id     | text                        |           | not null | ''::text
+ name          | text                        |           | not null |
+ phone         | text                        |           | not null |
+ date          | text                        |           | not null | ''::text
+ time          | text                        |           | not null | ''::text
+ message       | text                        |           | not null | ''::text
+ status        | application_status          |           | not null | 'new'::application_status
+ created_at    | timestamp without time zone |           | not null | now()
+ updated_at    | timestamp without time zone |           | not null | now()
+Indexes:
+    "viewings_pkey" PRIMARY KEY, btree (id)
+
+root@msk-1-vm-ixjw:~/BarakatEstate11/deploy#
