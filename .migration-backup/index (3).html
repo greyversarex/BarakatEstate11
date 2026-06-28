@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aura — Недвижимость в Душанбе</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --gold: #F5C842;
+    --gold-light: #FDE87A;
+    --gold-pale: #FDF6D8;
+    --gold-dark: #C9A020;
+    --cream: #FFFDF5;
+    --white: #FFFFFF;
+    --ink: #1A1610;
+    --ink-light: #3D3526;
+    --muted: #8A7F6A;
+    --border: #E8E0C8;
+    --shadow: rgba(26,22,16,0.08);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+  /* ── PAGE SYSTEM ── */
+  .page { display: none; min-height: 100vh; animation: fadeIn .4s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(255,253,245,.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 68px;
+    transition: box-shadow .3s;
+  }
+  nav.scrolled { box-shadow: 0 4px 32px var(--shadow); }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px; font-weight: 600; letter-spacing: .5px;
+    color: var(--ink); text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+  }
+  .nav-logo span { color: var(--gold-dark); }
+  .nav-logo .dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; margin-bottom: 2px; }
+  .nav-links { display: flex; align-items: center; gap: 6px; }
+  .nav-links a {
+    font-size: 14px; font-weight: 500; color: var(--muted);
+    text-decoration: none; padding: 8px 16px; border-radius: 100px;
+    transition: all .2s; cursor: pointer; letter-spacing: .2px;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--ink); background: var(--gold-pale); }
+  .nav-cta {
+    background: var(--gold) !important; color: var(--ink) !important;
+    font-weight: 600 !important; padding: 10px 22px !important;
+    box-shadow: 0 2px 12px rgba(245,200,66,.35) !important;
+    transition: transform .2s, box-shadow .2s !important;
+  }
+  .nav-cta:hover { transform: translateY(-1px) !important; box-shadow: 0 4px 20px rgba(245,200,66,.5) !important; }
+
+  /* ── HERO ── */
+  .hero {
+    padding-top: 68px;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #FFFDF5 0%, #FDF6D8 40%, #FEF8E0 100%);
+    z-index: 0;
+  }
+  .hero-pattern {
+    position: absolute; inset: 0; z-index: 1;
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(245,200,66,.12) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(245,200,66,.08) 0%, transparent 40%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 1; opacity: .3;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 80%);
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: center;
+    max-width: 1280px; margin: 0 auto;
+    padding: 80px 40px 60px;
+    flex: 1;
+  }
+  .hero-left { animation: slideUp .7s .1s both; }
+  @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--gold-pale); border: 1px solid var(--gold);
+    border-radius: 100px; padding: 6px 16px;
+    font-size: 12px; font-weight: 600; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--gold-dark);
+    margin-bottom: 28px;
+  }
+  .hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--gold); border-radius: 50%; }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(44px, 5vw, 72px);
+    font-weight: 300; line-height: 1.1;
+    color: var(--ink); margin-bottom: 24px;
+  }
+  .hero-title em { font-style: italic; color: var(--gold-dark); }
+  .hero-title strong { font-weight: 600; display: block; }
+  .hero-sub {
+    font-size: 17px; color: var(--muted); line-height: 1.7;
+    max-width: 480px; margin-bottom: 40px;
+  }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--gold); color: var(--ink);
+    font-size: 15px; font-weight: 600; padding: 14px 28px;
+    border-radius: 100px; text-decoration: none; border: none; cursor: pointer;
+    transition: all .25s; box-shadow: 0 4px 20px rgba(245,200,66,.4);
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,200,66,.5); }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: var(--ink);
+    font-size: 15px; font-weight: 500; padding: 14px 28px;
+    border-radius: 100px; border: 1.5px solid var(--border); cursor: pointer;
+    transition: all .25s; text-decoration: none;
+  }
+  .btn-secondary:hover { border-color: var(--gold); background: var(--gold-pale); }
+  .hero-stats {
+    display: flex; gap: 40px; margin-top: 52px;
+    padding-top: 32px; border-top: 1px solid var(--border);
+  }
+  .stat-item { display: flex; flex-direction: column; gap: 4px; }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px; font-weight: 600; color: var(--ink); line-height: 1;
+  }
+  .stat-num span { color: var(--gold-dark); }
+  .stat-label { font-size: 12px; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; }
+
+  /* HERO RIGHT — property cards preview */
+  .hero-right { animation: slideUp .7s .25s both; position: relative; }
+  .hero-cards { position: relative; height: 520px; }
+  .hero-card {
+    position: absolute; border-radius: var(--radius);
+    overflow: hidden; box-shadow: 0 20px 60px var(--shadow);
+    background: white;
+    transition: transform .3s;
+  }
+  .hero-card:hover { transform: translateY(-4px); }
+  .hc-main { width: 340px; height: 420px; left: 0; top: 20px; z-index: 2; }
+  .hc-side { width: 220px; height: 280px; right: 0; top: 80px; z-index: 3; box-shadow: 0 24px 60px rgba(26,22,16,.14); }
+  .hc-tag {
+    position: absolute; top: 12px; left: 12px;
+    background: var(--gold); color: var(--ink);
+    font-size: 11px; font-weight: 700; padding: 4px 10px;
+    border-radius: 100px; letter-spacing: .5px;
+  }
+  .hc-badge {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+    color: var(--ink); font-size: 12px; font-weight: 600;
+    padding: 4px 10px; border-radius: 100px;
+  }
+  .hc-img {
+    width: 100%; height: 65%; object-fit: cover;
+    background: linear-gradient(135deg, #e8e0c8, #d4c99e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+  }
+  .hc-body { padding: 16px; }
+  .hc-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 600; color: var(--ink);
+  }
+  .hc-addr { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .hc-meta { display: flex; gap: 12px; margin-top: 10px; }
+  .hc-meta span { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+  .floating-badge {
+    position: absolute; bottom: 60px; left: -20px; z-index: 4;
+    background: white; border-radius: 14px;
+    padding: 12px 16px; box-shadow: 0 10px 40px var(--shadow);
+    display: flex; align-items: center; gap: 10px;
+    animation: floatBadge 3s ease-in-out infinite;
+  }
+  @keyframes floatBadge { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+  .fb-icon { width: 36px; height: 36px; background: var(--gold-pale); border-radius: 10px; display:flex;align-items:center;justify-content:center; font-size:18px; }
+  .fb-text { display:flex;flex-direction:column; }
+  .fb-text strong { font-size:13px;font-weight:600; }
+  .fb-text small { font-size:11px;color:var(--muted); }
+
+  /* ── SEARCH BAR ── */
+  .search-section {
+    background: var(--cream);
+    padding: 0 40px 60px;
+    position: relative; z-index: 2;
+  }
+  .search-wrap {
+    max-width: 1280px; margin: 0 auto;
+    background: white; border-radius: 20px;
+    box-shadow: 0 8px 40px var(--shadow);
+    padding: 24px; border: 1px solid var(--border);
+  }
+  .search-tabs { display:flex; gap:4px; margin-bottom:20px; }
+  .s-tab {
+    padding: 8px 20px; border-radius: 100px;
+    font-size: 14px; font-weight: 500; border: none;
+    background: transparent; cursor: pointer; color: var(--muted);
+    transition: all .2s;
+  }
+  .s-tab.active { background: var(--gold); color: var(--ink); font-weight: 600; }
+  .search-row { display:flex; gap:12px; align-items: center; }
+  .s-input-wrap { flex:1; position:relative; }
+  .s-input-wrap svg { position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.4; }
+  .s-input {
+    width:100%; padding: 14px 14px 14px 44px;
+    border: 1.5px solid var(--border); border-radius: 12px;
+    font-size: 15px; font-family:'DM Sans',sans-serif; color:var(--ink);
+    background: var(--cream); outline: none; transition: border-color .2s;
+  }
+  .s-input:focus { border-color: var(--gold); }
+  .s-select {
+    padding: 14px 18px; border: 1.5px solid var(--border); border-radius: 12px;
+    font-size: 14px; font-family:'DM Sans',sans-serif; color:var(--muted);
+    background: var(--cream); outline: none; cursor: pointer; transition: border-color .2s;
+    appearance: none; padding-right: 36px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A7F6A' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+  }
+  .s-select:focus { border-color: var(--gold); }
+  .s-btn {
+    background: var(--gold); border: none; border-radius: 12px;
+    padding: 14px 28px; font-size: 15px; font-weight: 600;
+    cursor: pointer; display:flex;align-items:center;gap:8px;
+    transition: all .2s; box-shadow: 0 4px 16px rgba(245,200,66,.35);
+    white-space: nowrap;
+  }
+  .s-btn:hover { background:var(--gold-light); transform:translateY(-1px); }
+
+  /* ── SECTION HEADERS ── */
+  .section-header { text-align:center; margin-bottom:48px; }
+  .section-eyebrow {
+    display:inline-block; font-size:11px; font-weight:600;
+    letter-spacing:1.5px; text-transform:uppercase; color:var(--gold-dark);
+    margin-bottom:14px;
+  }
+  .section-title {
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(32px,4vw,50px); font-weight:300; line-height:1.15;
+    color:var(--ink);
+  }
+  .section-title strong { font-weight:600; }
+  .section-sub { font-size:16px; color:var(--muted); margin-top:12px; max-width:600px; margin-left:auto; margin-right:auto; line-height:1.7; }
+
+  /* ── LISTINGS GRID ── */
+  .listings-section { padding: 80px 40px; background: var(--white); }
+  .listings-section.alt { background: var(--cream); }
+  .container { max-width:1280px; margin:0 auto; }
+  .filters-row {
+    display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
+    margin-bottom:40px;
+  }
+  .filter-chip {
+    padding: 8px 18px; border:1.5px solid var(--border);
+    border-radius:100px; font-size:13px; font-weight:500; color:var(--muted);
+    background:transparent; cursor:pointer; transition:all .2s;
+  }
+  .filter-chip:hover, .filter-chip.active {
+    background:var(--gold); border-color:var(--gold); color:var(--ink); font-weight:600;
+  }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+
+  /* ── PROPERTY CARD ── */
+  .prop-card {
+    background:white; border-radius:var(--radius);
+    overflow:hidden; transition:all .35s; cursor:pointer;
+    border: 1px solid var(--border);
+    animation: cardIn .5s both;
+  }
+  .prop-card:hover { transform:translateY(-6px); box-shadow:0 20px 50px var(--shadow); }
+  @keyframes cardIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .prop-img {
+    position:relative; height:220px; overflow:hidden;
+    background:linear-gradient(135deg, var(--gold-pale), var(--border));
+    display:flex;align-items:center;justify-content:center;
+  }
+  .prop-img .emoji { font-size:56px; opacity:.5; }
+  .prop-img img { width:100%;height:100%;object-fit:cover; transition:transform .5s; }
+  .prop-card:hover .prop-img img { transform:scale(1.05); }
+  .prop-tags { position:absolute;top:12px;left:12px;display:flex;gap:6px; }
+  .tag {
+    font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;
+    letter-spacing:.3px;
+  }
+  .tag-sale { background:var(--gold);color:var(--ink); }
+  .tag-rent { background:var(--ink);color:white; }
+  .tag-new { background:#22C55E;color:white; }
+  .prop-fav {
+    position:absolute;top:12px;right:12px;
+    width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.9);
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;cursor:pointer;transition:all .2s;border:none;
+    backdrop-filter:blur(4px);
+  }
+  .prop-fav:hover { background:white;transform:scale(1.1); }
+  .prop-body { padding:18px; }
+  .prop-price {
+    font-family:'Cormorant Garamond',serif;
+    font-size:24px;font-weight:600;color:var(--ink);
+  }
+  .prop-price small { font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;color:var(--muted); }
+  .prop-addr { font-size:13px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:4px; }
+  .prop-meta { display:flex;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border); }
+  .prop-meta span { font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px; }
+  .prop-meta strong { color:var(--ink);font-weight:600; }
+  .prop-agent { display:flex;align-items:center;gap:10px;margin-top:14px; }
+  .agent-ava {
+    width:30px;height:30px;border-radius:50%;
+    background:var(--gold-pale);border:2px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;color:var(--gold-dark);
+    overflow:hidden;
+  }
+  .agent-ava img { width:100%;height:100%;object-fit:cover; }
+  .prop-agent small { font-size:12px;color:var(--muted); }
+  .prop-agent strong { font-size:13px;font-weight:600;cursor:pointer;transition:color .2s; }
+  .prop-agent strong:hover { color:var(--gold-dark); }
+
+  /* ── SERVICES ── */
+  .services-section { padding:80px 40px; background:var(--ink); color:white; position:relative;overflow:hidden; }
+  .services-section::before {
+    content:''; position:absolute;top:-100px;right:-100px;
+    width:400px;height:400px;border-radius:50%;
+    background:radial-gradient(circle, rgba(245,200,66,.15), transparent 70%);
+  }
+  .services-section .section-title { color:white; }
+  .services-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:20px; }
+  .service-card {
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+    border-radius:var(--radius); padding:28px 24px;
+    transition:all .3s; cursor:pointer;
+  }
+  .service-card:hover { background:rgba(245,200,66,.12);border-color:rgba(245,200,66,.3);transform:translateY(-4px); }
+  .service-icon {
+    width:52px;height:52px;border-radius:14px;
+    background:rgba(245,200,66,.15);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;margin-bottom:20px;
+    transition:background .3s;
+  }
+  .service-card:hover .service-icon { background:rgba(245,200,66,.3); }
+  .service-card h3 { font-size:17px;font-weight:600;margin-bottom:10px;color:white; }
+  .service-card p { font-size:13px;color:rgba(255,255,255,.55);line-height:1.65; }
+  .service-price { margin-top:16px;font-size:13px;font-weight:600;color:var(--gold); }
+
+  /* ── MAP PREVIEW ── */
+  .map-preview-section { padding:80px 40px;background:var(--cream); }
+  .map-container {
+    position:relative; border-radius:24px; overflow:hidden;
+    height:420px; background:#1a1a2e; cursor:pointer;
+    box-shadow:0 20px 60px var(--shadow);
+    border:1px solid var(--border);
+  }
+  .map-placeholder {
+    width:100%;height:100%;
+    background:linear-gradient(160deg,#1e2d4a 0%,#16213e 40%,#0f172a 100%);
+    display:flex;align-items:center;justify-content:center;
+    position:relative; overflow:hidden;
+  }
+  .map-dots { position:absolute;inset:0; }
+  .map-dot {
+    position:absolute; border-radius:50%;
+    background:var(--gold); cursor:pointer;
+    box-shadow:0 0 0 3px rgba(245,200,66,.3);
+    transition:all .3s;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .map-dot:hover { transform:scale(1.5);z-index:10; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 3px rgba(245,200,66,.3)} 50%{box-shadow:0 0 0 8px rgba(245,200,66,.1)} }
+  .map-dot.lg { width:14px;height:14px; }
+  .map-dot.md { width:10px;height:10px; }
+  .map-dot.sm { width:7px;height:7px;background:rgba(245,200,66,.7); }
+  /* Dushanbe street grid lines */
+  .map-line {
+    position:absolute; background:rgba(255,255,255,.06);
+  }
+  .map-line.h { height:1px;left:0;right:0; }
+  .map-line.v { width:1px;top:0;bottom:0; }
+  .map-overlay-ui {
+    position:absolute;top:20px;left:20px;
+    background:rgba(255,253,245,.95);backdrop-filter:blur(12px);
+    border-radius:14px;padding:16px 20px;
+    border:1px solid var(--border);min-width:200px;
+  }
+  .map-overlay-ui h4 { font-size:14px;font-weight:600;margin-bottom:4px; }
+  .map-overlay-ui p { font-size:12px;color:var(--muted); }
+  .map-cta-overlay {
+    position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--gold);border-radius:100px;padding:12px 28px;
+    font-size:14px;font-weight:700;cursor:pointer;
+    box-shadow:0 4px 20px rgba(245,200,66,.5);
+    transition:all .25s; white-space:nowrap;
+  }
+  .map-cta-overlay:hover { background:var(--gold-light);transform:translateX(-50%) translateY(-2px); }
+
+  /* ── AGENT PAGE ── */
+  .agent-page { padding-top:68px; }
+  .agent-hero {
+    background:linear-gradient(135deg,var(--ink) 0%,#2d2515 100%);
+    color:white;padding:60px 40px;position:relative;overflow:hidden;
+  }
+  .agent-hero::before {
+    content:'';position:absolute;top:-50px;right:-50px;
+    width:300px;height:300px;border-radius:50%;
+    background:radial-gradient(circle,rgba(245,200,66,.2),transparent 70%);
+  }
+  .agent-hero-inner { max-width:1280px;margin:0 auto;display:flex;gap:40px;align-items:center; }
+  .agent-avatar {
+    width:120px;height:120px;border-radius:50%;
+    background:var(--gold-pale);border:4px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    font-size:40px;font-weight:700;color:var(--gold-dark);
+    flex-shrink:0;overflow:hidden;
+  }
+  .agent-avatar img { width:100%;height:100%;object-fit:cover; }
+  .agent-info h1 {
+    font-family:'Cormorant Garamond',serif;
+    font-size:36px;font-weight:600;margin-bottom:8px;
+  }
+  .agent-info p { color:rgba(255,255,255,.65);font-size:15px;margin-bottom:16px; }
+  .agent-badges { display:flex;gap:10px;flex-wrap:wrap; }
+  .agent-badge {
+    background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.3);
+    color:var(--gold);border-radius:100px;padding:5px 14px;
+    font-size:12px;font-weight:600;
+  }
+
+  /* ── PROPERTY DETAIL ── */
+  .prop-detail { padding-top:68px; }
+  .detail-gallery {
+    max-width:1280px;margin:30px auto 0;padding:0 40px;
+    display:grid;grid-template-columns:2fr 1fr;grid-template-rows:300px 200px;
+    gap:10px;border-radius:var(--radius);overflow:hidden;
+  }
+  .gallery-main {
+    grid-row:1/3;border-radius:16px 0 0 16px;overflow:hidden;
+    background:linear-gradient(135deg,#e8e0c8,#d4c99e);
+    display:flex;align-items:center;justify-content:center;font-size:80px;
+    position:relative;
+  }
+  .gallery-thumb {
+    overflow:hidden;background:linear-gradient(135deg,#f0e8d0,#e0d4b0);
+    display:flex;align-items:center;justify-content:center;font-size:40px;
+    position:relative;
+  }
+  .gallery-thumb:first-of-type { border-radius:0 16px 0 0; }
+  .gallery-thumb:last-of-type { border-radius:0 0 16px 0; }
+  .gallery-count {
+    position:absolute;bottom:12px;right:12px;
+    background:rgba(26,22,16,.7);color:white;backdrop-filter:blur(8px);
+    border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;
+  }
+  .detail-body { max-width:1280px;margin:0 auto;padding:40px 40px 80px;display:grid;grid-template-columns:1fr 380px;gap:50px; }
+  .detail-left {}
+  .detail-price-row { display:flex;align-items:baseline;gap:16px;margin-bottom:8px; }
+  .detail-price {
+    font-family:'Cormorant Garamond',serif;
+    font-size:42px;font-weight:600;color:var(--ink);
+  }
+  .detail-price-per { font-size:14px;color:var(--muted); }
+  .detail-title { font-size:20px;font-weight:500;color:var(--ink);margin-bottom:6px; }
+  .detail-addr { font-size:14px;color:var(--muted);display:flex;align-items:center;gap:5px;margin-bottom:28px; }
+  .detail-chips { display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px; }
+  .detail-chip {
+    background:var(--gold-pale);border:1px solid var(--gold);
+    border-radius:100px;padding:7px 16px;font-size:13px;font-weight:500;color:var(--ink);
+    display:flex;align-items:center;gap:6px;
+  }
+  .detail-section-title { font-size:18px;font-weight:600;margin-bottom:16px;color:var(--ink); }
+  .detail-desc { font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:32px; }
+  .amenities-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px; }
+  .amenity {
+    display:flex;align-items:center;gap:10px;
+    background:var(--cream);border-radius:10px;padding:12px 14px;
+    font-size:13px;color:var(--ink);
+  }
+  .amenity svg { opacity:.5; }
+  /* CONTACT CARD */
+  .contact-card {
+    background:white;border:1px solid var(--border);border-radius:var(--radius);
+    padding:28px;position:sticky;top:88px;
+  }
+  .contact-card .price-display {
+    font-family:'Cormorant Garamond',serif;
+    font-size:32px;font-weight:600;margin-bottom:4px;
+  }
+  .contact-card .price-note { font-size:13px;color:var(--muted);margin-bottom:24px; }
+  .contact-agent { display:flex;align-items:center;gap:14px;padding:16px;background:var(--cream);border-radius:12px;margin-bottom:20px;cursor:pointer;transition:all .2s; }
+  .contact-agent:hover { background:var(--gold-pale); }
+  .ca-ava {
+    width:52px;height:52px;border-radius:50%;
+    background:var(--gold-pale);border:2px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:18px;color:var(--gold-dark);overflow:hidden;
+  }
+  .ca-ava img { width:100%;height:100%;object-fit:cover; }
+  .ca-info strong { display:block;font-size:15px;font-weight:600; }
+  .ca-info small { font-size:12px;color:var(--muted); }
+  .contact-btns { display:flex;flex-direction:column;gap:10px; }
+  .contact-btn {
+    width:100%;padding:14px;border-radius:12px;font-size:15px;font-weight:600;
+    border:none;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .cb-primary { background:var(--gold);color:var(--ink);box-shadow:0 4px 16px rgba(245,200,66,.35); }
+  .cb-primary:hover { background:var(--gold-light);transform:translateY(-1px); }
+  .cb-secondary { background:var(--cream);color:var(--ink);border:1.5px solid var(--border); }
+  .cb-secondary:hover { border-color:var(--gold);background:var(--gold-pale); }
+  .safety-note { margin-top:16px;font-size:11px;color:var(--muted);text-align:center;line-height:1.6; }
+
+  /* ── MAP PAGE ── */
+  .map-page { padding-top:68px;display:flex;flex-direction:column;height:100vh; }
+  .map-topbar { padding:16px 40px;background:white;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center; }
+  .map-full {
+    flex:1; position:relative;
+    background:linear-gradient(160deg,#1e2d4a 0%,#16213e 40%,#0f172a 100%);
+    overflow:hidden;
+  }
+  .map-sidebar {
+    position:absolute;top:20px;right:20px;bottom:20px;
+    width:340px;background:white;border-radius:16px;
+    box-shadow:0 10px 40px var(--shadow);overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+  .map-sidebar-header { padding:20px;border-bottom:1px solid var(--border); }
+  .map-sidebar-header h3 { font-size:16px;font-weight:600;margin-bottom:4px; }
+  .map-sidebar-header p { font-size:12px;color:var(--muted); }
+  .map-results { flex:1;overflow-y:auto;padding:12px; }
+  .map-card {
+    display:flex;gap:12px;padding:12px;border-radius:12px;
+    cursor:pointer;transition:background .2s;margin-bottom:8px;
+  }
+  .map-card:hover { background:var(--cream); }
+  .map-card-img {
+    width:70px;height:70px;border-radius:10px;flex-shrink:0;
+    background:linear-gradient(135deg,var(--gold-pale),var(--border));
+    display:flex;align-items:center;justify-content:center;font-size:24px;
+    overflow:hidden;
+  }
+  .map-card-img img { width:100%;height:100%;object-fit:cover; }
+  .map-card-info { flex:1;min-width:0; }
+  .map-card-price { font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600; }
+  .map-card-addr { font-size:12px;color:var(--muted);margin:3px 0; }
+  .map-card-meta { display:flex;gap:8px; }
+  .map-card-meta span { font-size:11px;color:var(--muted); }
+
+  /* ── LOGIN PAGE ── */
+  .login-page {
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,var(--ink) 0%,#2d2515 100%);
+    padding:40px;position:relative;overflow:hidden;
+  }
+  .login-page::before {
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(circle at 30% 50%,rgba(245,200,66,.12),transparent 60%),
+               radial-gradient(circle at 70% 80%,rgba(245,200,66,.08),transparent 50%);
+  }
+  .login-card {
+    background:white;border-radius:24px;padding:48px;
+    width:100%;max-width:440px;position:relative;z-index:1;
+    box-shadow:0 40px 100px rgba(0,0,0,.4);
+  }
+  .login-logo {
+    font-family:'Cormorant Garamond',serif;
+    font-size:32px;font-weight:600;color:var(--ink);
+    margin-bottom:8px;display:flex;align-items:center;gap:8px;
+  }
+  .login-logo .dot { width:8px;height:8px;background:var(--gold);border-radius:50%; }
+  .login-subtitle { font-size:14px;color:var(--muted);margin-bottom:36px; }
+  .form-group { margin-bottom:20px; }
+  .form-group label { display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:var(--ink); }
+  .form-input {
+    width:100%;padding:13px 16px;border:1.5px solid var(--border);
+    border-radius:12px;font-size:15px;font-family:'DM Sans',sans-serif;
+    outline:none;transition:border-color .2s;background:var(--cream);
+  }
+  .form-input:focus { border-color:var(--gold); }
+  .form-submit {
+    width:100%;padding:15px;background:var(--gold);border:none;border-radius:12px;
+    font-size:16px;font-weight:700;cursor:pointer;transition:all .25s;
+    box-shadow:0 4px 20px rgba(245,200,66,.4);margin-top:8px;
+  }
+  .form-submit:hover { background:var(--gold-light);transform:translateY(-1px); }
+  .login-footer { text-align:center;margin-top:24px;font-size:13px;color:var(--muted); }
+
+  /* ── FOOTER ── */
+  footer {
+    background:var(--ink);color:white;
+    padding:60px 40px 30px;
+  }
+  .footer-inner { max-width:1280px;margin:0 auto; }
+  .footer-top { display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:50px; }
+  .footer-brand { }
+  .footer-logo {
+    font-family:'Cormorant Garamond',serif;
+    font-size:28px;font-weight:600;color:white;margin-bottom:14px;display:flex;align-items:center;gap:8px;
+  }
+  .footer-logo .dot { width:8px;height:8px;background:var(--gold);border-radius:50%; }
+  .footer-brand p { font-size:14px;color:rgba(255,255,255,.5);line-height:1.7;max-width:280px; }
+  .footer-social { display:flex;gap:10px;margin-top:20px; }
+  .soc-btn {
+    width:38px;height:38px;border-radius:10px;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;cursor:pointer;transition:all .2s;text-decoration:none;
+  }
+  .soc-btn:hover { background:var(--gold);border-color:var(--gold); }
+  .footer-col h4 { font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:18px; }
+  .footer-col a { display:block;font-size:14px;color:rgba(255,255,255,.65);margin-bottom:10px;text-decoration:none;transition:color .2s;cursor:pointer; }
+  .footer-col a:hover { color:var(--gold); }
+  .footer-bottom { border-top:1px solid rgba(255,255,255,.08);padding-top:24px;display:flex;align-items:center;justify-content:space-between; }
+  .footer-bottom p { font-size:13px;color:rgba(255,255,255,.3); }
+  .footer-bottom span { font-size:13px;color:rgba(255,255,255,.3); }
+
+  /* ── LISTINGS PAGE ── */
+  .listings-page { padding-top:68px; }
+  .listings-hero { background:var(--gold-pale);padding:50px 40px 40px;border-bottom:1px solid var(--border); }
+  .listings-hero h1 { font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4vw,48px);font-weight:300;margin-bottom:8px; }
+  .listings-hero h1 strong { font-weight:600; }
+  .listings-hero p { font-size:15px;color:var(--muted); }
+  .listings-layout { display:grid;grid-template-columns:280px 1fr;gap:0;min-height:60vh; }
+  .listings-filter-sidebar { border-right:1px solid var(--border);padding:28px;background:white;position:sticky;top:68px;height:calc(100vh - 68px);overflow-y:auto; }
+  .filter-group { margin-bottom:28px; }
+  .filter-group h4 { font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:14px; }
+  .filter-check { display:flex;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer; }
+  .filter-check input { width:16px;height:16px;accent-color:var(--gold);cursor:pointer; }
+  .filter-check label { font-size:14px;color:var(--ink);cursor:pointer; }
+  .range-input { width:100%;accent-color:var(--gold);cursor:pointer; }
+  .range-vals { display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px; }
+  .listings-main { padding:28px;background:var(--cream); }
+  .listings-topbar { display:flex;align-items:center;justify-content:space-between;margin-bottom:24px; }
+  .listings-count { font-size:14px;color:var(--muted); }
+  .listings-count strong { color:var(--ink); }
+  .sort-select { padding:8px 16px;border:1.5px solid var(--border);border-radius:100px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;background:white;cursor:pointer; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:1024px) {
+    .hero-content { grid-template-columns:1fr;gap:40px; }
+    .hero-right { display:none; }
+    .grid-3 { grid-template-columns:repeat(2,1fr); }
+    .services-grid { grid-template-columns:repeat(2,1fr); }
+    .footer-top { grid-template-columns:1fr 1fr; }
+    .detail-body { grid-template-columns:1fr; }
+    .detail-gallery { grid-template-columns:1fr 1fr;height:auto; }
+    .gallery-main { grid-row:auto;min-height:250px; }
+    .listings-layout { grid-template-columns:1fr; }
+    .listings-filter-sidebar { position:static;height:auto; }
+  }
+  @media(max-width:768px) {
+    nav { padding:0 20px; }
+    .nav-links { display:none; }
+    .hero-content,.search-section,.listings-section,.services-section,.map-preview-section { padding-left:20px;padding-right:20px; }
+    .grid-3,.grid-4 { grid-template-columns:1fr; }
+    .services-grid { grid-template-columns:1fr; }
+    .footer-top { grid-template-columns:1fr; }
+  }
+
+  /* MOBILE NAV */
+  .mobile-menu-btn {
+    display:none;background:none;border:none;cursor:pointer;padding:8px;
+  }
+  @media(max-width:768px) { .mobile-menu-btn { display:flex; } }
+
+  /* ── ANIMATIONS ── */
+  .reveal { opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s; }
+  .reveal.visible { opacity:1;transform:translateY(0); }
+
+  /* Loader */
+  .page-loader {
+    position:fixed;inset:0;background:var(--cream);z-index:9999;
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .5s,visibility .5s;
+  }
+  .page-loader.hidden { opacity:0;visibility:hidden; }
+  .loader-logo {
+    font-family:'Cormorant Garamond',serif;
+    font-size:42px;font-weight:600;color:var(--ink);
+    animation:pulse2 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse2 { 0%,100%{opacity:.4;transform:scale(.98)} 50%{opacity:1;transform:scale(1)} }
+  .loader-logo span { color:var(--gold-dark); }
+
+  /* Tooltip on map dots */
+  .dot-tooltip {
+    position:absolute;background:white;border-radius:10px;padding:10px 14px;
+    box-shadow:0 8px 30px rgba(0,0,0,.2);pointer-events:none;
+    white-space:nowrap;font-size:12px;font-weight:600;color:var(--ink);
+    transform:translateX(-50%) translateY(-110%);
+    border:1px solid var(--border);
+  }
+  .dot-tooltip::after {
+    content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);
+    width:10px;height:10px;background:white;border-right:1px solid var(--border);
+    border-bottom:1px solid var(--border);transform:translateX(-50%) rotate(45deg);
+  }
+
+  /* Selected dot */
+  .map-dot.selected { background:var(--gold-light);box-shadow:0 0 0 4px var(--gold),0 0 0 8px rgba(245,200,66,.3)!important; }
+
+  /* ── NOTIFICATION ── */
+  .notif {
+    position:fixed;bottom:24px;right:24px;z-index:2000;
+    background:var(--ink);color:white;
+    padding:14px 20px;border-radius:14px;font-size:14px;font-weight:500;
+    box-shadow:0 8px 30px rgba(0,0,0,.3);
+    transform:translateY(20px);opacity:0;transition:all .3s;
+    display:flex;align-items:center;gap:10px;
+  }
+  .notif.show { transform:translateY(0);opacity:1; }
+  .notif .dot { width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0; }
+
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="page-loader" id="loader">
+  <div class="loader-logo">au<span>ra</span></div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif">
+  <div class="dot"></div>
+  <span id="notif-text"></span>
+</div>
+
+<!-- ─────────────────────── NAV ─────────────────────── -->
+<nav id="nav">
+  <div class="nav-logo" onclick="navigate('home')">
+    <div class="dot"></div>
+    aura<span>.</span>tj
+  </div>
+  <div class="nav-links">
+    <a onclick="navigate('home')" class="active" id="nl-home">Главная</a>
+    <a onclick="navigate('listings')" id="nl-listings">Объявления</a>
+    <a onclick="navigate('services')" id="nl-services">Услуги</a>
+    <a onclick="navigate('map')" id="nl-map">Карта</a>
+    <a onclick="navigate('login')" class="nav-cta">Войти</a>
+  </div>
+  <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+    <svg width="22" height="18" fill="none"><rect y="0" width="22" height="2" rx="1" fill="#1A1610"/><rect y="8" width="16" height="2" rx="1" fill="#1A1610"/><rect y="16" width="22" height="2" rx="1" fill="#1A1610"/></svg>
+  </button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: HOME
+═══════════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-pattern"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-eyebrow">Недвижимость Душанбе</div>
+        <h1 class="hero-title">
+          Найди своё <em>идеальное</em>
+          <strong>жильё в столице</strong>
+        </h1>
+        <p class="hero-sub">Аренда и продажа квартир в Душанбе. Только проверенные объявления, удобный поиск и карта объектов.</p>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="navigate('listings')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="m21 21-4.35-4.35"/></svg>
+            Найти квартиру
+          </button>
+          <button class="btn-secondary" onclick="navigate('map')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+            Смотреть на карте
+          </button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-num">142<span>+</span></div>
+            <div class="stat-label">Объявлений</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">38<span>+</span></div>
+            <div class="stat-label">Агентов</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">12<span>+</span></div>
+            <div class="stat-label">Районов</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-cards">
+          <!-- Main card -->
+          <div class="hero-card hc-main" onclick="navigate('property')">
+            <div class="hc-img">🏙️</div>
+            <div class="hc-tag">Продажа</div>
+            <div class="hc-badge">⭐ 4.9</div>
+            <div class="hc-body">
+              <div class="hc-price">$85 000</div>
+              <div class="hc-addr">📍 Исмоили Сомони, 14</div>
+              <div class="hc-meta">
+                <span>🛏 3 комн</span>
+                <span>📐 87 м²</span>
+                <span>🏗 2023</span>
+              </div>
+            </div>
+          </div>
+          <!-- Side card -->
+          <div class="hero-card hc-side" onclick="navigate('property')">
+            <div class="hc-img" style="height:55%">🌿</div>
+            <div class="hc-tag">Аренда</div>
+            <div class="hc-body">
+              <div class="hc-price" style="font-size:18px">$600 <small>/мес</small></div>
+              <div class="hc-addr">📍 Центр</div>
+            </div>
+          </div>
+          <!-- Floating badge -->
+          <div class="floating-badge">
+            <div class="fb-icon">🔑</div>
+            <div class="fb-text">
+              <strong>Новых сегодня: 8</strong>
+              <small>Обновлено 2 часа назад</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEARCH -->
+  <section class="search-section">
+    <div class="search-wrap">
+      <div class="search-tabs">
+        <button class="s-tab active" onclick="setSearchTab(this,'all')">Всё</button>
+        <button class="s-tab" onclick="setSearchTab(this,'buy')">Купить</button>
+        <button class="s-tab" onclick="setSearchTab(this,'rent')">Снять</button>
+        <button class="s-tab" onclick="setSearchTab(this,'commercial')">Коммерческая</button>
+      </div>
+      <div class="search-row">
+        <div class="s-input-wrap" style="flex:2">
+          <svg width="18" height="18" fill="none" stroke="#8A7F6A" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="m14 14-3-3"/></svg>
+          <input class="s-input" placeholder="Район, улица или ЖК..."/>
+        </div>
+        <select class="s-select">
+          <option>Тип объекта</option>
+          <option>Квартира</option>
+          <option>Дом</option>
+          <option>Студия</option>
+        </select>
+        <select class="s-select">
+          <option>Комнат</option>
+          <option>1 комн</option>
+          <option>2 комн</option>
+          <option>3 комн</option>
+          <option>4+ комн</option>
+        </select>
+        <select class="s-select">
+          <option>Бюджет</option>
+          <option>до $300/мес</option>
+          <option>$300–500/мес</option>
+          <option>$500–1000/мес</option>
+          <option>до $50 000</option>
+          <option>$50k–100k</option>
+          <option>$100k+</option>
+        </select>
+        <button class="s-btn" onclick="navigate('listings')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="7" cy="7" r="5"/><path d="m13 13-3-3"/></svg>
+          Найти
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED LISTINGS -->
+  <section class="listings-section reveal">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-eyebrow">Свежие предложения</div>
+        <h2 class="section-title">Популярные <strong>объявления</strong></h2>
+        <p class="section-sub">Лучшие варианты квартир в Душанбе по соотношению цены и качества</p>
+      </div>
+      <div class="filters-row">
+        <button class="filter-chip active" onclick="filterChip(this)">Все</button>
+        <button class="filter-chip" onclick="filterChip(this)">Продажа</button>
+        <button class="filter-chip" onclick="filterChip(this)">Аренда</button>
+        <button class="filter-chip" onclick="filterChip(this)">Новостройки</button>
+        <button class="filter-chip" onclick="filterChip(this)">Центр</button>
+        <button class="filter-chip" onclick="filterChip(this)">И. Сомони</button>
+        <button class="filter-chip" onclick="filterChip(this)">Сино</button>
+      </div>
+      <div class="grid-3" id="featured-grid">
+        <!-- Cards injected by JS -->
+      </div>
+      <div style="text-align:center;margin-top:40px">
+        <button class="btn-secondary" onclick="navigate('listings')" style="margin:0 auto">
+          Смотреть все объявления
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l7-7M12 12V5H5"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services-section reveal">
+    <div class="container">
+      <div class="section-header" style="margin-bottom:40px">
+        <div class="section-eyebrow" style="color:rgba(245,200,66,.8)">Для вас</div>
+        <h2 class="section-title" style="color:white">Наши <strong>услуги</strong></h2>
+        <p class="section-sub" style="color:rgba(255,255,255,.55)">Полный спектр услуг в сфере недвижимости</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">🏠</div>
+          <h3>Аренда квартир</h3>
+          <p>Подбор арендного жилья под ваш бюджет и требования в любом районе Душанбе</p>
+          <div class="service-price">от $300 / мес</div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">💰</div>
+          <h3>Покупка и продажа</h3>
+          <p>Помощь в покупке и продаже квартир, домов и коммерческих объектов</p>
+          <div class="service-price">Комиссия 2–3%</div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">📋</div>
+          <h3>Юридическое сопровождение</h3>
+          <p>Проверка документов, оформление сделки и юридическая защита ваших интересов</p>
+          <div class="service-price">от 500 сомони</div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🔍</div>
+          <h3>Оценка недвижимости</h3>
+          <p>Профессиональная рыночная оценка объектов для сделок, кредитов и страхования</p>
+          <div class="service-price">от 300 сомони</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP PREVIEW -->
+  <section class="map-preview-section reveal">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-eyebrow">Карта</div>
+        <h2 class="section-title">Найди квартиру <strong>на карте</strong></h2>
+        <p class="section-sub">Просматривай объекты в интерактивной карте Душанбе</p>
+      </div>
+      <div class="map-container" onclick="navigate('map')">
+        <div class="map-placeholder">
+          <!-- Street grid lines -->
+          <div class="map-line h" style="top:20%"></div>
+          <div class="map-line h" style="top:38%"></div>
+          <div class="map-line h" style="top:55%"></div>
+          <div class="map-line h" style="top:72%"></div>
+          <div class="map-line h" style="top:88%"></div>
+          <div class="map-line v" style="left:15%"></div>
+          <div class="map-line v" style="left:30%"></div>
+          <div class="map-line v" style="left:48%"></div>
+          <div class="map-line v" style="left:65%"></div>
+          <div class="map-line v" style="left:82%"></div>
+          <!-- Thicker main roads -->
+          <div class="map-line h" style="top:45%;background:rgba(255,255,255,.12);height:3px"></div>
+          <div class="map-line v" style="left:42%;background:rgba(255,255,255,.12);width:3px"></div>
+
+          <!-- Property dots -->
+          <div class="map-dots" id="preview-dots"></div>
+        </div>
+        <div class="map-overlay-ui">
+          <h4>Душанбе</h4>
+          <p>142 объекта на карте</p>
+        </div>
+        <div class="map-cta-overlay">🗺 Открыть карту</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-logo"><div class="dot"></div>aura.tj</div>
+          <p>Платформа по поиску недвижимости в Душанбе. Помогаем найти дом вашей мечты.</p>
+          <div class="footer-social">
+            <a class="soc-btn" href="#">📱</a>
+            <a class="soc-btn" href="#">💬</a>
+            <a class="soc-btn" href="#">📸</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Каталог</h4>
+          <a onclick="navigate('listings')">Квартиры</a>
+          <a onclick="navigate('listings')">Дома</a>
+          <a onclick="navigate('listings')">Студии</a>
+          <a onclick="navigate('listings')">Коммерческая</a>
+        </div>
+        <div class="footer-col">
+          <h4>Услуги</h4>
+          <a onclick="navigate('services')">Аренда</a>
+          <a onclick="navigate('services')">Покупка</a>
+          <a onclick="navigate('services')">Оценка</a>
+          <a onclick="navigate('services')">Юридическое</a>
+        </div>
+        <div class="footer-col">
+          <h4>Контакты</h4>
+          <a href="#">Душанбе, ул. Рудаки 45</a>
+          <a href="tel:+992000000000">+992 000 00 00</a>
+          <a href="#">info@aura.tj</a>
+          <a onclick="navigate('login')">Войти в кабинет</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Aura. Все права защищены.</p>
+        <span>Душанбе, Таджикистан</span>
+      </div>
+    </div>
+  </footer>
+</div><!-- /page-home -->
+
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: LISTINGS
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-listings">
+  <div class="listings-page">
+    <div class="listings-hero">
+      <div class="container">
+        <h1>Все <strong>объявления</strong></h1>
+        <p>Найдено 142 объекта в Душанбе</p>
+      </div>
+    </div>
+
+    <!-- SEARCH BAR IN LISTINGS -->
+    <div style="background:white;padding:16px 40px;border-bottom:1px solid var(--border)">
+      <div style="max-width:1280px;margin:0 auto;display:flex;gap:10px;align-items:center">
+        <div class="s-input-wrap" style="flex:1">
+          <svg width="18" height="18" fill="none" stroke="#8A7F6A" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="m14 14-3-3"/></svg>
+          <input class="s-input" placeholder="Поиск по адресу..."/>
+        </div>
+        <select class="s-select"><option>Все типы</option><option>Квартира</option><option>Дом</option></select>
+        <select class="s-select"><option>Комнат</option><option>1</option><option>2</option><option>3</option><option>4+</option></select>
+        <button class="s-btn">Найти</button>
+      </div>
+    </div>
+
+    <div class="listings-layout">
+      <!-- SIDEBAR -->
+      <div class="listings-filter-sidebar">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:24px">Фильтры</h3>
+
+        <div class="filter-group">
+          <h4>Тип сделки</h4>
+          <label class="filter-check"><input type="checkbox" checked /><label>Продажа</label></label>
+          <label class="filter-check"><input type="checkbox" checked /><label>Аренда</label></label>
+        </div>
+
+        <div class="filter-group">
+          <h4>Тип жилья</h4>
+          <label class="filter-check"><input type="checkbox" /><label>Квартира</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Дом / Вилла</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Студия</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Пентхаус</label></label>
+        </div>
+
+        <div class="filter-group">
+          <h4>Комнат</h4>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="filter-chip" style="padding:6px 12px;font-size:12px">1</button>
+            <button class="filter-chip active" style="padding:6px 12px;font-size:12px">2</button>
+            <button class="filter-chip" style="padding:6px 12px;font-size:12px">3</button>
+            <button class="filter-chip" style="padding:6px 12px;font-size:12px">4+</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h4>Цена (USD)</h4>
+          <input type="range" class="range-input" min="0" max="300000" value="200000" />
+          <div class="range-vals"><span>$0</span><span>до $200 000</span></div>
+        </div>
+
+        <div class="filter-group">
+          <h4>Площадь (м²)</h4>
+          <input type="range" class="range-input" min="20" max="300" value="120" />
+          <div class="range-vals"><span>20</span><span>до 120 м²</span></div>
+        </div>
+
+        <div class="filter-group">
+          <h4>Район</h4>
+          <label class="filter-check"><input type="checkbox" /><label>Центр</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Исмоили Сомони</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Сино</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Фирдавси</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Шохмансур</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Сарахиёт</label></label>
+        </div>
+
+        <div class="filter-group">
+          <h4>Особенности</h4>
+          <label class="filter-check"><input type="checkbox" /><label>Парковка</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Лифт</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Балкон</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Мебель</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Охрана</label></label>
+        </div>
+
+        <button class="btn-primary" style="width:100%;justify-content:center">Применить</button>
+      </div>
+
+      <!-- MAIN LISTINGS -->
+      <div class="listings-main">
+        <div class="listings-topbar">
+          <div class="listings-count">Найдено: <strong>142 объекта</strong></div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <select class="sort-select">
+              <option>По умолчанию</option>
+              <option>Сначала дешевле</option>
+              <option>Сначала дороже</option>
+              <option>Новые первые</option>
+            </select>
+            <button onclick="navigate('map')" style="background:var(--gold);border:none;border-radius:100px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+              🗺 Карта
+            </button>
+          </div>
+        </div>
+        <div class="grid-3" id="listings-grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">
+          <!-- injected -->
+        </div>
+        <div style="text-align:center;margin-top:36px">
+          <button class="btn-secondary" onclick="showNotif('Загружаем ещё объявления...')">Загрузить ещё</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: SERVICES
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-services">
+  <div style="padding-top:68px">
+    <div style="background:linear-gradient(135deg,var(--gold-pale),var(--cream));padding:70px 40px;border-bottom:1px solid var(--border)">
+      <div class="container" style="text-align:center">
+        <div class="section-eyebrow">Для клиентов</div>
+        <h1 class="section-title">Наши <strong>услуги</strong></h1>
+        <p class="section-sub">Полный спектр услуг в сфере недвижимости в Душанбе</p>
+      </div>
+    </div>
+
+    <div style="background:var(--ink);padding:80px 40px">
+      <div class="container">
+        <div class="services-grid">
+          <div class="service-card">
+            <div class="service-icon">🏠</div>
+            <h3>Аренда жилья</h3>
+            <p>Подбор арендного жилья в любом районе столицы. Помогаем найти квартиру, которая подходит именно вам</p>
+            <div class="service-price">от $300 / месяц</div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">💰</div>
+            <h3>Покупка и продажа</h3>
+            <p>Полное сопровождение сделок купли-продажи. Безопасность, прозрачность, выгодная цена</p>
+            <div class="service-price">Комиссия 2–3%</div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">📋</div>
+            <h3>Юридическое сопровождение</h3>
+            <p>Проверка документов, подготовка договоров, защита ваших прав в спорных ситуациях</p>
+            <div class="service-price">от 500 сомони</div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">🔍</div>
+            <h3>Оценка недвижимости</h3>
+            <p>Профессиональная рыночная оценка объектов для продажи, получения кредита или страхования</p>
+            <div class="service-price">от 300 сомони</div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">🏗</div>
+            <h3>Новостройки</h3>
+            <p>Прямые продажи от застройщиков. Актуальные планировки, этапы строительства, условия рассрочки</p>
+            <div class="service-price">Рассрочка до 5 лет</div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">🤝</div>
+            <h3>Управление недвижимостью</h3>
+            <p>Доверительное управление вашим объектом: поиск арендаторов, контроль оплаты, техобслуживание</p>
+            <div class="service-price">10% от аренды</div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">📸</div>
+            <h3>Профессиональная съёмка</h3>
+            <p>Фото и видео вашего объекта от профессионального фотографа для привлечения покупателей</p>
+            <div class="service-price">от 200 сомони</div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">🌐</div>
+            <h3>Реклама объекта</h3>
+            <p>Продвижение вашего объявления в Aura, соцсетях и партнёрских платформах</p>
+            <div class="service-price">Бесплатно / Premium</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA SECTION -->
+    <div style="padding:80px 40px;background:var(--cream);text-align:center">
+      <div class="container">
+        <h2 class="section-title">Нужна консультация?</h2>
+        <p class="section-sub" style="margin-bottom:36px">Наши специалисты ответят на любые вопросы о рынке недвижимости Душанбе</p>
+        <button class="btn-primary" style="margin:0 auto" onclick="showNotif('Мы свяжемся с вами в ближайшее время!')">
+          📞 Получить консультацию
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer repeat -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-bottom" style="border:none;padding:0">
+          <div class="footer-logo" style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:white;display:flex;align-items:center;gap:8px"><div class="dot"></div>aura.tj</div>
+          <p>© 2025 Aura. Все права защищены.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: MAP
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-map">
+  <div class="map-page">
+    <!-- TOP BAR -->
+    <div class="map-topbar">
+      <div class="s-input-wrap" style="max-width:320px">
+        <svg width="18" height="18" fill="none" stroke="#8A7F6A" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="m14 14-3-3"/></svg>
+        <input class="s-input" style="background:var(--cream)" placeholder="Поиск по карте..."/>
+      </div>
+      <div class="filters-row" style="margin:0">
+        <button class="filter-chip active">Все</button>
+        <button class="filter-chip">Продажа</button>
+        <button class="filter-chip">Аренда</button>
+        <button class="filter-chip">1 комн</button>
+        <button class="filter-chip">2 комн</button>
+        <button class="filter-chip">3+ комн</button>
+      </div>
+    </div>
+
+    <!-- MAP + SIDEBAR -->
+    <div class="map-full">
+      <!-- Map background -->
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,#1e2d4a 0%,#16213e 40%,#0f172a 100%)">
+        <!-- Street lines -->
+        <div class="map-line h" style="top:18%;opacity:.15"></div>
+        <div class="map-line h" style="top:32%;opacity:.1"></div>
+        <div class="map-line h" style="top:50%;opacity:.2;height:2px"></div>
+        <div class="map-line h" style="top:65%;opacity:.1"></div>
+        <div class="map-line h" style="top:80%;opacity:.12"></div>
+        <div class="map-line v" style="left:20%;opacity:.15"></div>
+        <div class="map-line v" style="left:38%;opacity:.2;width:2px"></div>
+        <div class="map-line v" style="left:55%;opacity:.1"></div>
+        <div class="map-line v" style="left:70%;opacity:.12"></div>
+        <!-- District labels -->
+        <div style="position:absolute;top:20%;left:10%;color:rgba(255,255,255,.2);font-size:11px;letter-spacing:2px;text-transform:uppercase">Шохмансур</div>
+        <div style="position:absolute;top:40%;left:28%;color:rgba(255,255,255,.25);font-size:12px;letter-spacing:2px;text-transform:uppercase">Центр</div>
+        <div style="position:absolute;top:55%;left:55%;color:rgba(255,255,255,.2);font-size:11px;letter-spacing:2px;text-transform:uppercase">И. Сомони</div>
+        <div style="position:absolute;top:22%;left:60%;color:rgba(255,255,255,.2);font-size:11px;letter-spacing:2px;text-transform:uppercase">Сино</div>
+        <!-- Map dots filled by JS -->
+        <div class="map-dots" id="full-map-dots"></div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="map-sidebar">
+        <div class="map-sidebar-header">
+          <h3>Объекты на карте</h3>
+          <p id="map-results-count">Показано: 142 объекта</p>
+        </div>
+        <div class="map-results" id="map-results-list">
+          <!-- injected -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: PROPERTY DETAIL
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-property">
+  <div class="prop-detail">
+    <!-- Breadcrumb -->
+    <div style="max-width:1280px;margin:0 auto;padding:16px 40px 0;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)">
+      <span onclick="navigate('home')" style="cursor:pointer;transition:color .2s" onmouseover="this.style.color='var(--gold-dark)'" onmouseout="this.style.color='var(--muted)'">Главная</span>
+      <span>/</span>
+      <span onclick="navigate('listings')" style="cursor:pointer;transition:color .2s" onmouseover="this.style.color='var(--gold-dark)'" onmouseout="this.style.color='var(--muted)'">Объявления</span>
+      <span>/</span>
+      <span style="color:var(--ink)">3-комн. квартира в Центре</span>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="detail-gallery">
+      <div class="gallery-main">🏙️</div>
+      <div class="gallery-thumb">🌆</div>
+      <div class="gallery-thumb">
+        🏠
+        <div class="gallery-count">+12 фото</div>
+      </div>
+    </div>
+
+    <!-- DETAIL BODY -->
+    <div class="detail-body">
+      <div class="detail-left">
+        <div class="detail-price-row">
+          <div class="detail-price">$85 000</div>
+          <div class="detail-price-per">≈ 977 $/м²</div>
+        </div>
+        <div class="detail-title">3-комнатная квартира в центре Душанбе</div>
+        <div class="detail-addr">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+          ул. Садриддина Айни, 14, кв. 37, Центр, Душанбе
+        </div>
+
+        <div class="detail-chips">
+          <div class="detail-chip">🛏 3 комнаты</div>
+          <div class="detail-chip">🛁 2 с/у</div>
+          <div class="detail-chip">📐 87 м²</div>
+          <div class="detail-chip">🏗 2023</div>
+          <div class="detail-chip">🏢 9/14 эт</div>
+          <div class="detail-chip">🅿 Паркинг</div>
+        </div>
+
+        <div class="detail-section-title">Описание</div>
+        <p class="detail-desc">
+          Просторная и светлая 3-комнатная квартира в новом ЖК в центре Душанбе. Высота потолков — 3 м, панорамные окна с видом на горы. Отличный ремонт под ключ, встроенная кухня. Тихий двор, видеонаблюдение. В шаговой доступности — рынок Баракат, школы, детские сады.
+          <br/><br/>
+          Квартира полностью готова к заселению. Продаётся без обременений, все документы в порядке. Возможен торг.
+        </p>
+
+        <div class="detail-section-title">Удобства</div>
+        <div class="amenities-grid">
+          <div class="amenity">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Кондиционер
+          </div>
+          <div class="amenity">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Интернет
+          </div>
+          <div class="amenity">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Лифт
+          </div>
+          <div class="amenity">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Паркинг
+          </div>
+          <div class="amenity">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Охрана 24/7
+          </div>
+          <div class="amenity">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Балкон
+          </div>
+          <div class="amenity">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Мебель
+          </div>
+          <div class="amenity">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Видеодомофон
+          </div>
+          <div class="amenity">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Тёплый пол
+          </div>
+        </div>
+
+        <!-- Mini-map on detail page -->
+        <div class="detail-section-title">На карте</div>
+        <div style="height:200px;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#1e2d4a,#0f172a);position:relative;cursor:pointer" onclick="navigate('map')">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+            <div class="map-dot lg" style="position:relative;animation:pulse 2s ease-in-out infinite"></div>
+          </div>
+          <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.95);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;white-space:nowrap">
+            📍 ул. Айни, 14 — Смотреть на карте
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: CONTACT CARD -->
+      <div>
+        <div class="contact-card">
+          <div class="price-display">$85 000</div>
+          <div class="price-note">Продажа · 87 м² · 3-комн</div>
+
+          <!-- Agent -->
+          <div class="contact-agent" onclick="navigate('agent')">
+            <div class="ca-ava">АА</div>
+            <div class="ca-info">
+              <strong>Алиджон Ахмедов</strong>
+              <small>⭐ 4.9 · 47 сделок</small>
+            </div>
+            <svg style="margin-left:auto;opacity:.3" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+
+          <div class="contact-btns">
+            <button class="contact-btn cb-primary" onclick="showNotif('Запрос отправлен агенту!')">📞 Позвонить</button>
+            <button class="contact-btn cb-secondary" onclick="showNotif('Откроем мессенджер...')">💬 Написать</button>
+            <button class="contact-btn cb-secondary" onclick="showNotif('Заявка на просмотр отправлена!')">📅 Записаться на просмотр</button>
+          </div>
+
+          <div class="safety-note">🔒 Безопасная сделка · Проверенный агент</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: AGENT
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-agent">
+  <div class="agent-page">
+    <div class="agent-hero">
+      <div class="agent-hero-inner">
+        <div class="agent-avatar">АА</div>
+        <div class="agent-info">
+          <h1>Алиджон Ахмедов</h1>
+          <p>Риэлтор · Aura Estate · Работает с 2019 года</p>
+          <div class="agent-badges">
+            <span class="agent-badge">⭐ 4.9</span>
+            <span class="agent-badge">47 сделок</span>
+            <span class="agent-badge">✅ Проверен</span>
+            <span class="agent-badge">Центр · И. Сомони</span>
+          </div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:10px;flex-shrink:0">
+          <button class="contact-btn cb-primary" onclick="showNotif('Звоним агенту...')" style="border-radius:100px;padding:12px 24px;background:var(--gold);color:var(--ink);border:none;font-weight:700;cursor:pointer">📞 Позвонить</button>
+          <button onclick="showNotif('Открываем мессенджер...')" style="border-radius:100px;padding:12px 24px;background:rgba(255,255,255,.1);color:white;border:1px solid rgba(255,255,255,.2);font-weight:600;cursor:pointer;font-size:15px">💬 Написать</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent stats -->
+    <div style="background:white;border-bottom:1px solid var(--border);padding:24px 40px">
+      <div class="container" style="display:flex;gap:60px">
+        <div class="stat-item">
+          <div class="stat-num">47</div>
+          <div class="stat-label">Успешных сделок</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">12<span>+</span></div>
+          <div class="stat-label">Активных объявлений</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">4.9<span>★</span></div>
+          <div class="stat-label">Средняя оценка</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">6<span>лет</span></div>
+          <div class="stat-label">Опыт работы</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent listings -->
+    <div class="listings-section">
+      <div class="container">
+        <div class="section-header" style="text-align:left;margin-bottom:28px">
+          <div class="section-eyebrow">Объявления</div>
+          <h2 class="section-title">Объявления <strong>Алиджона</strong></h2>
+        </div>
+        <div class="grid-3" id="agent-grid">
+          <!-- injected -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: LOGIN
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-login">
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-logo"><div class="dot"></div>aura.tj</div>
+      <p class="login-subtitle">Кабинет агента — войдите чтобы управлять объявлениями</p>
+
+      <div class="form-group">
+        <label>Логин</label>
+        <input class="form-input" type="text" placeholder="agent@aura.tj"/>
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input class="form-input" type="password" placeholder="••••••••"/>
+      </div>
+      <button class="form-submit" onclick="showNotif('Добро пожаловать в кабинет агента!')">Войти</button>
+
+      <div class="login-footer">
+        Забыли пароль? <span style="color:var(--gold-dark);cursor:pointer;font-weight:600" onclick="showNotif('Обратитесь к администратору')">Связаться с администратором</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════ -->
+<script>
+// ── DATA ──
+const properties = [
+  { id:1, price:'$85 000', priceNote:'Продажа', addr:'ул. Айни, 14, Центр', rooms:3, area:87, floor:'9/14', type:'sale', emoji:'🏙️', tag:'sale', tagLabel:'Продажа', agent:'АА', agentName:'Алиджон А.', deals:47, rating:4.9, year:2023, new:true },
+  { id:2, price:'$600 /мес', priceNote:'Аренда', addr:'пр. Рудаки, 88, Центр', rooms:2, area:65, floor:'5/9', type:'rent', emoji:'🌿', tag:'rent', tagLabel:'Аренда', agent:'НН', agentName:'Нилуфар Н.', deals:28, rating:4.8, year:2019, new:false },
+  { id:3, price:'$120 000', priceNote:'Продажа', addr:'ул. Бохтар, 22, И. Сомони', rooms:4, area:130, floor:'3/12', type:'sale', emoji:'🌇', tag:'sale', tagLabel:'Продажа', agent:'СМ', agentName:'Собир М.', deals:63, rating:5.0, year:2024, new:true },
+  { id:4, price:'$450 /мес', priceNote:'Аренда', addr:'ул. Фирдавси, 5, Сино', rooms:1, area:38, floor:'2/7', type:'rent', emoji:'🏡', tag:'rent', tagLabel:'Аренда', agent:'РА', agentName:'Рустам А.', deals:19, rating:4.7, year:2018, new:false },
+  { id:5, price:'$65 000', priceNote:'Продажа', addr:'ул. Шевченко, 33, Фирдавси', rooms:2, area:72, floor:'4/8', type:'sale', emoji:'🌃', tag:'sale', tagLabel:'Продажа', agent:'МК', agentName:'Малика К.', deals:35, rating:4.9, year:2021, new:false },
+  { id:6, price:'$800 /мес', priceNote:'Аренда', addr:'Проспект Исмоили Сомони, 44', rooms:3, area:95, floor:'7/16', type:'rent', emoji:'🌆', tag:'rent', tagLabel:'Аренда', agent:'ДО', agentName:'Давлат О.', deals:41, rating:4.8, year:2022, new:true },
+  { id:7, price:'$95 000', priceNote:'Продажа', addr:'ул. Дусти, 12, Шохмансур', rooms:3, area:105, floor:'6/10', type:'sale', emoji:'🏘️', tag:'new', tagLabel:'Новостройка', agent:'ФА', agentName:'Фируза А.', deals:22, rating:4.6, year:2025, new:true },
+  { id:8, price:'$350 /мес', priceNote:'Аренда', addr:'ул. Сомониён, 7, Сарахиёт', rooms:1, area:42, floor:'1/5', type:'rent', emoji:'🌴', tag:'rent', tagLabel:'Аренда', agent:'АА', agentName:'Алиджон А.', deals:47, rating:4.9, year:2020, new:false },
+  { id:9, price:'$210 000', priceNote:'Продажа', addr:'ул. Рудаки, 120, Центр', rooms:5, area:185, floor:'12/16', type:'sale', emoji:'🏰', tag:'sale', tagLabel:'Продажа', agent:'СМ', agentName:'Собир М.', deals:63, rating:5.0, year:2024, new:true },
+];
+
+const mapDots = [
+  {x:'35%',y:'42%',size:'lg',price:'$85 000',label:'Центр'},
+  {x:'38%',y:'48%',size:'md',price:'$600/мес',label:'Рудаки'},
+  {x:'62%',y:'58%',size:'lg',price:'$120 000',label:'И. Сомони'},
+  {x:'28%',y:'35%',size:'sm',price:'$65 000',label:'Шохмансур'},
+  {x:'44%',y:'52%',size:'md',price:'$450/мес',label:'Сино'},
+  {x:'55%',y:'44%',size:'lg',price:'$95 000',label:'Дусти'},
+  {x:'32%',y:'60%',size:'sm',price:'$350/мес',label:'Сарахиёт'},
+  {x:'70%',y:'38%',size:'md',price:'$800/мес',label:'И. Сомони'},
+  {x:'42%',y:'38%',size:'sm',price:'$210 000',label:'Центр'},
+  {x:'25%',y:'55%',size:'md',price:'$450/мес',label:'Фирдавси'},
+  {x:'65%',y:'68%',size:'sm',price:'$75 000',label:'Сино'},
+  {x:'48%',y:'65%',size:'lg',price:'$90 000',label:'Центр'},
+  {x:'58%',y:'28%',size:'sm',price:'$500/мес',label:'Сино'},
+  {x:'22%',y:'42%',size:'md',price:'$55 000',label:'Шохмансур'},
+  {x:'75%',y:'55%',size:'sm',price:'$130 000',label:'И. Сомони'},
+];
+
+// ── RENDER CARDS ──
+function propCard(p, onclick) {
+  return `<div class="prop-card" onclick="${onclick||'navigate(\'property\')'}" style="animation-delay:${Math.random()*.3}s">
+    <div class="prop-img">
+      <span class="emoji">${p.emoji}</span>
+      <div class="prop-tags">
+        <span class="tag tag-${p.tag}">${p.tagLabel}</span>
+        ${p.new?'<span class="tag tag-new">Новое</span>':''}
+      </div>
+      <button class="prop-fav" onclick="event.stopPropagation();toggleFav(this)">🤍</button>
+    </div>
+    <div class="prop-body">
+      <div class="prop-price">${p.price} <small>${p.priceNote}</small></div>
+      <div class="prop-addr">📍 ${p.addr}</div>
+      <div class="prop-meta">
+        <span>🛏 <strong>${p.rooms}</strong> комн</span>
+        <span>📐 <strong>${p.area}</strong> м²</span>
+        <span>🏢 <strong>${p.floor}</strong> эт</span>
+      </div>
+      <div class="prop-agent">
+        <div class="agent-ava">${p.agent}</div>
+        <div>
+          <strong onclick="event.stopPropagation();navigate('agent')">${p.agentName}</strong>
+          <small> · ⭐ ${p.rating}</small>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderCards(containerId, count) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const items = properties.slice(0, count || properties.length);
+  container.innerHTML = items.map(p => propCard(p)).join('');
+}
+
+function renderMapResults() {
+  const el = document.getElementById('map-results-list');
+  if (!el) return;
+  el.innerHTML = properties.map(p => `
+    <div class="map-card" onclick="navigate('property')">
+      <div class="map-card-img">${p.emoji}</div>
+      <div class="map-card-info">
+        <div class="map-card-price">${p.price}</div>
+        <div class="map-card-addr">📍 ${p.addr}</div>
+        <div class="map-card-meta">
+          <span>🛏 ${p.rooms} комн</span>
+          <span>📐 ${p.area} м²</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderMapDots(containerId, dots) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = dots.map((d,i) => `
+    <div class="map-dot ${d.size}" style="left:${d.x};top:${d.y};animation-delay:${i*.12}s"
+      onclick="event.stopPropagation();selectDot(this,'${d.price}','${d.label}')"
+      data-price="${d.price}" data-label="${d.label}">
+    </div>
+  `).join('');
+}
+
+// ── NAV ──
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-'+page);
+  if (target) {
+    target.classList.add('active');
+    window.scrollTo(0,0);
+  }
+  // update nav links
+  document.querySelectorAll('.nav-links a[id^="nl-"]').forEach(a => a.classList.remove('active'));
+  const nl = document.getElementById('nl-'+page);
+  if (nl) nl.classList.add('active');
+
+  // lazy render
+  if (page === 'home') {
+    renderCards('featured-grid', 6);
+    renderMapDots('preview-dots', mapDots.slice(0,10));
+  }
+  if (page === 'listings') renderCards('listings-grid');
+  if (page === 'map') { renderMapDots('full-map-dots', mapDots); renderMapResults(); }
+  if (page === 'agent') renderCards('agent-grid', 6);
+}
+
+function setSearchTab(el, type) {
+  document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function filterChip(el) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleFav(btn) {
+  btn.textContent = btn.textContent === '🤍' ? '❤️' : '🤍';
+}
+
+function selectDot(el, price, label) {
+  document.querySelectorAll('.map-dot').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+  showNotif(`${label}: ${price}`);
+}
+
+// ── NOTIFICATION ──
+function showNotif(msg) {
+  const n = document.getElementById('notif');
+  document.getElementById('notif-text').textContent = msg;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 3000);
+}
+
+// ── SCROLL EFFECTS ──
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('nav');
+  if (window.scrollY > 20) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+
+  // reveal
+  document.querySelectorAll('.reveal').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight - 80) el.classList.add('visible');
+  });
+});
+
+// ── LOADER ──
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const loader = document.getElementById('loader');
+    loader.classList.add('hidden');
+    navigate('home');
+  }, 900);
+});
+
+// First render
+renderCards('featured-grid', 6);
+renderMapDots('preview-dots', mapDots.slice(0,10));
+</script>
+</body>
+</html>

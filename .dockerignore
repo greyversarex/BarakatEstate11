@@ -1,0 +1,12 @@
+**/node_modules
+**/dist
+**/.git
+**/.turbo
+**/.cache
+**/coverage
+**/.expo
+**/*.log
+.local
+.agents
+attached_assets
+deploy/initdb/_rawdump.sql

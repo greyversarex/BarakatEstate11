@@ -1,0 +1,14 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "Iddux0uT020qWVie0EL8P"
+uri = "file://artifacts/barakat-mobile/assets/images/icon.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "lT7ZIuxvc-BD3yHE3rkZj"
+uri = "file://artifacts/barakat-mobile/assets/images/splash.png"
+type = "image"
+title = "generated_image"

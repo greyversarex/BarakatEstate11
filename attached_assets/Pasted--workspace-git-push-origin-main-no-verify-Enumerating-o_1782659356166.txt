@@ -1,0 +1,47 @@
+~/workspace$ git push origin main --no-verify
+Enumerating objects: 529, done.
+Counting objects: 100% (529/529), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (480/480), done.
+Writing objects: 100% (529/529), 17.04 MiB | 14.27 MiB/s, done.
+Total 529 (delta 180), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (180/180), done.
+remote: fatal: did not receive expected object fc6fedc2bbed4510d47b24e032dcb359873db6db
+error: remote unpack failed: index-pack failed
+To https://github.com/greyversarex/BarakatEstate11
+ ! [remote rejected] main -> main (failed)
+error: failed to push some refs to 'https://github.com/greyversarex/BarakatEstate11'
+~/workspace$ git push --no-thin origin main
+Enumerating objects: 529, done.
+Counting objects: 100% (529/529), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (480/480), done.
+Writing objects: 100% (529/529), 17.04 MiB | 13.25 MiB/s, done.
+Total 529 (delta 180), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (180/180), done.
+remote: fatal: did not receive expected object fc6fedc2bbed4510d47b24e032dcb359873db6db
+error: remote unpack failed: index-pack failed
+To https://github.com/greyversarex/BarakatEstate11
+ ! [remote rejected] main -> main (failed)
+error: failed to push some refs to 'https://github.com/greyversarex/BarakatEstate11'
+~/workspace$ git repack -a -d -f
+Enumerating objects: 550, done.
+Counting objects: 100% (550/550), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (501/501), done.
+Writing objects: 100% (550/550), done.
+Total 550 (delta 198), reused 0 (delta 0), pack-reused 0 (from 0)
+~/workspace$ git push origin main
+Enumerating objects: 529, done.
+Counting objects: 100% (529/529), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (310/310), done.
+Writing objects: 100% (529/529), 17.04 MiB | 12.53 MiB/s, done.
+Total 529 (delta 179), reused 509 (delta 170), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (179/179), done.
+remote: fatal: did not receive expected object fc6fedc2bbed4510d47b24e032dcb359873db6db
+error: remote unpack failed: index-pack failed
+To https://github.com/greyversarex/BarakatEstate11
+ ! [remote rejected] main -> main (failed)
+error: failed to push some refs to 'https://github.com/greyversarex/BarakatEstate11'
+~/workspace$ 

@@ -1,0 +1,4 @@
+- [Next.js blocked on Replit](nextjs-blocked.md) — all Next.js versions return 403 from package firewall; use React+Vite instead.
+- [Admin panel architecture](admin-panel-arch.md) — admin at /barakat-admin (Vite), Express admin routes at /api/admin/*, Drizzle schema in lib/db/src/schema/admin.ts.
+- [VPS Docker deploy](vps-docker-deploy.md) — self-host stack on Timeweb VPS via deploy/ (Postgres+API+Caddy auto-HTTPS); build context is repo root so .dockerignore must live at root.
+- [Monorepo typecheck](monorepo-typecheck.md) — use root `pnpm run typecheck` (builds libs first); isolated api-server typecheck falsely reports missing @workspace/db exports.

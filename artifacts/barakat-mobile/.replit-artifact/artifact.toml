@@ -1,0 +1,27 @@
+kind = "mobile"
+previewPath = "/barakat-mobile/"
+title = "Barakat Estate Mobile"
+version = "1.0.0"
+id = "artifacts/barakat-mobile"
+router = "expo-domain"
+
+[[integratedSkills]]
+name = "expo"
+version = "1.0.0"
+
+[[services]]
+ensurePreviewReachable = "/status"
+name = "expo"
+paths = [ "/barakat-mobile/" ]
+localPort = 24427
+
+[services.development]
+run = "pnpm --filter @workspace/barakat-mobile run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/barakat-mobile", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/barakat-mobile", "run", "serve" ]
+
+[services.env]
+PORT = "24427"
+BASE_PATH = "/barakat-mobile/"
