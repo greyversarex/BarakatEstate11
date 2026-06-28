@@ -156,6 +156,7 @@ function mapAdminListing(entry) {
     tag: item.dealType === 'rent' ? 'rent' : 'sale',
     tagLabel: item.dealType === 'rent' ? 'Аренда' : 'Продажа',
     sellerId: item.sellerId || seller?.id || '',
+    employeeId: item.employeeId || employee?.id || '',
     agent: initials(fallbackName),
     agentAvatar: sellerAvatar,
     agentName: fallbackName,
@@ -1401,7 +1402,87 @@ function renderPropertyDetail() {
       : '';
   }
 
+  window.__bookingProperty = property;
+
   renderPropertyDetailMap(property);
+}
+
+async function submitBooking(event) {
+  event.preventDefault();
+  const form = event.target;
+  const btn = form.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  btn.textContent = 'Отправка...';
+
+  const property = window.__bookingProperty || {};
+  const formData = new FormData(form);
+  const payload = {
+    listingId: String(property.id || ''),
+    listingTitle: property.title || property.addr || '',
+    employeeId: property.employeeId || '',
+    sellerId: property.sellerId || '',
+    name: formData.get('name'),
+    phone: formData.get('phone'),
+    date: formData.get('date'),
+    time: formData.get('time'),
+    message: formData.get('message') || '',
+  };
+
+  try {
+    const baseUrl = window.BARAKAT_API_URL ?? '';
+    const response = await fetch(`${baseUrl}/api/viewing-request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) throw new Error('Ошибка отправки');
+    showNotif('Заявка на просмотр отправлена! Агент свяжется с вами.');
+    form.reset();
+    document.getElementById('modal-booking').style.display = 'none';
+  } catch (error) {
+    showNotif('Не удалось отправить заявку. Попробуйте позже.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Отправить заявку';
+  }
+}
+
+window.openBookingModal = function() {
+  const property = window.__bookingProperty || {};
+  const today = new Date().toISOString().split('T')[0];
+  const timeSlots = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
+  let modal = document.getElementById('modal-booking');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-booking';
+    modal.style.cssText = "display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:20px;";
+    modal.innerHTML = `
+      <div style="background:white;padding:32px;border-radius:24px;width:100%;max-width:420px;position:relative;max-height:90vh;overflow-y:auto;">
+        <button onclick="document.getElementById('modal-booking').style.display='none'" style="position:absolute;top:16px;right:16px;border:none;background:transparent;font-size:24px;cursor:pointer;color:#64748b;">&times;</button>
+        <h3 style="font-size:22px;font-weight:700;margin-bottom:8px;color:#0f172a;text-align:center;">Забронировать просмотр</h3>
+        <p id="booking-subtitle" style="font-size:14px;color:#64748b;margin-bottom:24px;text-align:center;"></p>
+        <form id="form-booking" style="display:flex;flex-direction:column;gap:16px;" onsubmit="submitBooking(event)">
+          <input type="text" name="name" required placeholder="Ваше имя" style="padding:14px 16px;border-radius:10px;border:1px solid #cbd5e1;font-size:15px;color:#0f172a;outline:none;font-family:inherit;"/>
+          <input type="tel" name="phone" required placeholder="+992 ___ __ __ __" style="padding:14px 16px;border-radius:10px;border:1px solid #cbd5e1;font-size:15px;color:#0f172a;outline:none;font-family:inherit;"/>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <input type="date" name="date" required min="${today}" style="padding:14px 16px;border-radius:10px;border:1px solid #cbd5e1;font-size:15px;color:#0f172a;outline:none;font-family:inherit;"/>
+            <select name="time" required style="padding:14px 16px;border-radius:10px;border:1px solid #cbd5e1;font-size:15px;color:#0f172a;outline:none;font-family:inherit;background:white;">
+              <option value="" disabled selected>Время</option>
+              ${timeSlots.map(t => `<option value="${t}">${t}</option>`).join('')}
+            </select>
+          </div>
+          <textarea name="message" placeholder="Комментарий (необязательно)" rows="3" style="padding:14px 16px;border-radius:10px;border:1px solid #cbd5e1;font-size:15px;resize:none;color:#0f172a;outline:none;font-family:inherit;"></textarea>
+          <button type="submit" style="padding:14px;background:var(--gold);color:var(--ink);font-weight:600;border:none;border-radius:10px;cursor:pointer;font-size:15px;margin-top:8px;font-family:inherit;">Отправить заявку</button>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+  const subtitle = modal.querySelector('#booking-subtitle');
+  if (subtitle) subtitle.textContent = property.title || property.addr
+    ? `Выберите удобные дату и время для просмотра: ${property.title || property.addr}`
+    : 'Выберите удобные дату и время для просмотра.';
+  modal.style.display = 'flex';
 }
 
 function getFavoriteIds() {

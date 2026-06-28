@@ -148,6 +148,22 @@ export type Review = {
   updatedAt: string;
 };
 
-export type CollectionName = "listings" | "employees" | "services" | "applications" | "users" | "reviews";
+export type Viewing = {
+  id: string;
+  listingId: string;
+  listingTitle: string;
+  employeeId: string;
+  sellerId: string;
+  name: string;
+  phone: string;
+  date: string;
+  time: string;
+  message: string;
+  status: "new" | "read" | "completed";
+  createdAt: string;
+  updatedAt: string;
+};
 
-export type CollectionItem = Listing | Employee | ServiceItem | Application | User | Review;
+export type CollectionName = "listings" | "employees" | "services" | "applications" | "users" | "reviews" | "viewings";
+
+export type CollectionItem = Listing | Employee | ServiceItem | Application | User | Review | Viewing;

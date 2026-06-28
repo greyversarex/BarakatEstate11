@@ -950,6 +950,7 @@ export const auraPages = {
                 Telegram
               </a>
             </div>
+            <button type="button" onclick="openBookingModal()" style="width:100%;padding:14px;background:var(--gold);color:var(--ink);font-weight:700;border:none;border-radius:12px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;margin-top:4px;">[[ICON_CALENDAR]] Забронировать просмотр</button>
           </div>
 
           <div class="safety-note">[[ICON_SHIELD]] Безопасная сделка · Проверенный продавец</div>

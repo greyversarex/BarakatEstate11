@@ -10,3 +10,5 @@ The barakat-admin frontend (UserDashboard submitForm) sends `PATCH /api/admin/<r
 **How to apply:** when adding/auditing an admin resource route in artifacts/api-server/src/routes/admin/, ensure PATCH is wired (point it at the same handler as PUT).
 
 **Known pre-existing gap:** listing PUT/PATCH/DELETE only check `getAuthUser` (authenticated), not ownership/admin role — any logged-in seller can mutate others' listings (IDOR). Not fixed as part of the flags work; candidate follow-up.
+
+**Secure reference pattern:** viewings.ts mutate/delete enforce ownership (admin OR row.sellerId/employeeId === user.id, else 403) and restrict seller updates to `status` only. Public intake (viewing-request) derives sellerId/employeeId/listingTitle from the listing server-side — never trust client-supplied assignee fields. Apply this shape when hardening listings or adding new seller-facing resources.

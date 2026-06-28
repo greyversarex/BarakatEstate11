@@ -90,6 +90,22 @@ export const applicationsTable = pgTable("applications", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const viewingsTable = pgTable("viewings", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  listingId: text("listing_id").notNull().default(""),
+  listingTitle: text("listing_title").notNull().default(""),
+  employeeId: text("employee_id").notNull().default(""),
+  sellerId: text("seller_id").notNull().default(""),
+  name: text("name").notNull(),
+  phone: text("phone").notNull(),
+  date: text("date").notNull().default(""),
+  time: text("time").notNull().default(""),
+  message: text("message").notNull().default(""),
+  status: applicationStatusEnum("status").notNull().default("new"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const reviewsTable = pgTable("reviews", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
@@ -110,10 +126,13 @@ export const insertListingSchema = createInsertSchema(listingsTable).omit({ id: 
 export const insertApplicationSchema = createInsertSchema(applicationsTable).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertReviewSchema = createInsertSchema(reviewsTable).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertAdminUserSchema = createInsertSchema(adminUsersTable).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertViewingSchema = createInsertSchema(viewingsTable).omit({ id: true, createdAt: true, updatedAt: true });
 
 export type Listing = typeof listingsTable.$inferSelect;
 export type Application = typeof applicationsTable.$inferSelect;
 export type Review = typeof reviewsTable.$inferSelect;
 export type AdminUser = typeof adminUsersTable.$inferSelect;
+export type Viewing = typeof viewingsTable.$inferSelect;
 export type InsertListing = z.infer<typeof insertListingSchema>;
 export type InsertApplication = z.infer<typeof insertApplicationSchema>;
+export type InsertViewing = z.infer<typeof insertViewingSchema>;

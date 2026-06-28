@@ -39,11 +39,12 @@ import {
   PlusCircle,
   Inbox,
   Star,
+  CalendarClock,
 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { AuthUser, Listing, Profile, PublishStatus, Application, Banner, User } from "@/lib/types";
 
-type Tab = "listings" | "profile" | "applications" | "users" | "settings" | "reviews";
+type Tab = "listings" | "profile" | "applications" | "users" | "settings" | "reviews" | "viewings";
 
 type FormState = {
   listings: Partial<Listing>;
@@ -53,6 +54,7 @@ type FormState = {
   users: Partial<AuthUser>;
   settings: Partial<Profile>;
   reviews: any;
+  viewings: any;
 };
 
 function getTabs(role: string): Array<{ id: Tab; label: string; icon: React.ReactNode }> {
@@ -64,13 +66,18 @@ function getTabs(role: string): Array<{ id: Tab; label: string; icon: React.Reac
     return [
       ...baseTabs,
       { id: "applications" as Tab, label: "Заявки", icon: <Inbox size={18} /> },
+      { id: "viewings" as Tab, label: "Просмотры", icon: <CalendarClock size={18} /> },
       { id: "reviews" as Tab, label: "Отзывы", icon: <Star size={18} /> },
       { id: "users" as Tab, label: "Пользователи", icon: <Users size={18} /> },
       { id: "settings" as Tab, label: "Настройки сайта", icon: <Settings size={18} /> },
     ];
   }
 
-  return [...baseTabs, { id: "profile" as Tab, label: "Мой профиль", icon: <Contact size={18} /> }];
+  return [
+    ...baseTabs,
+    { id: "viewings" as Tab, label: "Просмотры", icon: <CalendarClock size={18} /> },
+    { id: "profile" as Tab, label: "Мой профиль", icon: <Contact size={18} /> },
+  ];
 }
 
 const emptyForms: FormState = {
@@ -112,6 +119,7 @@ const emptyForms: FormState = {
   },
   applications: { name: "", phone: "", service: "", message: "", status: "new" },
   reviews: { name: "", text: "", sellerId: "", status: "pending" },
+  viewings: {},
 
   users: { username: "", name: "", email: "", phone: "", whatsapp: "", telegram: "", instagram: "", facebook: "", avatar: "", bio: "", rating: 5, dealsCount: 0, experienceYears: 0, specializations: "", role: "seller" },
   settings: {
@@ -267,7 +275,7 @@ export default function UserDashboard() {
     try {
       const res = await authFetch(`${ADMIN_API}/${tab}?admin=1`);
       const payload = await res.json();
-      setItems(payload.data || []);
+      setItems(Array.isArray(payload) ? payload : (payload.data || []));
       setForm((prev) => ({ ...prev, profile: userToProfile(currentUser!) }));
     } finally {
       setLoading(false);
@@ -452,7 +460,7 @@ export default function UserDashboard() {
           </header>
 
           {/* MAIN FORMS */}
-          {activeTab !== "reviews" && !(["listings", "applications"].includes(activeTab) && !editingId && currentUser?.role === "admin") && (
+          {activeTab !== "reviews" && activeTab !== "viewings" && !(["listings", "applications"].includes(activeTab) && !editingId && currentUser?.role === "admin") && (
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-8">
               {activeTab !== "settings" && activeTab !== "profile" && (
                 <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
@@ -499,7 +507,7 @@ export default function UserDashboard() {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <h2 className="text-xl font-semibold text-slate-800">
-                  {activeTab === "listings" ? "Список объявлений" : activeTab === "applications" ? "Список заявок" : activeTab === "reviews" ? "Список отзывов" : "Пользователи"}
+                  {activeTab === "listings" ? "Список объявлений" : activeTab === "applications" ? "Список заявок" : activeTab === "viewings" ? "Заявки на просмотр" : activeTab === "reviews" ? "Список отзывов" : "Пользователи"}
                 </h2>
                 <div className="relative max-w-sm w-full">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -584,6 +592,21 @@ export default function UserDashboard() {
                             </>
                           )}
 
+                          {activeTab === "viewings" && (
+                            <>
+                              <h3 className="font-bold text-lg text-slate-900 truncate mb-1">{item.name}</h3>
+                              <div className="text-slate-500 text-sm font-medium mb-4 flex flex-col gap-1">
+                                <span>Телефон: {item.phone}</span>
+                                <span className="text-slate-700 font-semibold">🗓 {item.date} в {item.time}</span>
+                                {item.listingTitle && <span>Объект: {item.listingTitle}</span>}
+                                {item.message && <span className="text-slate-700 italic border-l-2 border-slate-200 pl-2 my-1">Комментарий: {item.message}</span>}
+                                <span className={`w-fit px-2 py-0.5 rounded text-xs font-bold mt-1 ${item.status === 'new' ? 'bg-red-100 text-red-700' : item.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                                  {item.status === 'new' ? 'Новая' : item.status === 'completed' ? 'Завершена' : 'Просмотрена'}
+                                </span>
+                              </div>
+                            </>
+                          )}
+
                           {activeTab === "reviews" && (
                             <>
                               <h3 className="font-bold text-lg text-slate-900 truncate mb-1">{item.name}</h3>
@@ -607,10 +630,30 @@ export default function UserDashboard() {
                         </div>
                         
                         <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100">
-                          {activeTab !== "applications" && activeTab !== "reviews" && (
+                          {activeTab !== "applications" && activeTab !== "reviews" && activeTab !== "viewings" && (
                             <button onClick={() => startEdit(item)} type="button" className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-yellow-600 transition bg-slate-50 hover:bg-yellow-50 px-3 py-1.5 rounded-lg">
                               <Pencil size={14} /> Редактировать
                             </button>
+                          )}
+                          {activeTab === "viewings" && (
+                            <div className="flex gap-2">
+                              {item.status === "new" && (
+                                <button onClick={async () => {
+                                  await authFetch(`${ADMIN_API}/viewings/${item.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "read" }) });
+                                  await loadData("viewings");
+                                }} type="button" className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg">
+                                  <CheckCircle2 size={14} /> Просмотрено
+                                </button>
+                              )}
+                              {item.status !== "completed" && (
+                                <button onClick={async () => {
+                                  await authFetch(`${ADMIN_API}/viewings/${item.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "completed" }) });
+                                  await loadData("viewings");
+                                }} type="button" className="flex items-center gap-2 text-sm font-medium text-green-600 hover:text-green-700 transition bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg">
+                                  <CheckCircle2 size={14} /> Завершить
+                                </button>
+                              )}
+                            </div>
                           )}
                           {activeTab === "listings" && (
                             <button onClick={() => togglePublish(item)} type="button" className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-green-600 transition bg-slate-50 hover:bg-green-50 px-3 py-1.5 rounded-lg">
