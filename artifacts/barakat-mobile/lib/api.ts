@@ -1,155 +1,114 @@
 import type { Property } from "./types";
 
-const ADMIN_API = process.env.EXPO_PUBLIC_API_URL
-  || (process.env.EXPO_PUBLIC_DOMAIN ? `https://${process.env.EXPO_PUBLIC_DOMAIN}` : "https://barakatestateadmin.vercel.app");
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL
+  || (process.env.EXPO_PUBLIC_DOMAIN ? `https://${process.env.EXPO_PUBLIC_DOMAIN}` : "");
 
-function mediaUrl(media: unknown): string {
-  if (!media) return "";
-  if (typeof media === "string") {
-    if (/^(https?:|data:|blob:)/.test(media)) return media;
-    return `${ADMIN_API}${media}`;
-  }
-  const raw = Array.isArray(media) ? (media as unknown[])[0] : media;
-  // @ts-ignore
-  const item = raw?.attributes || raw;
-  // @ts-ignore
-  const url = item?.url;
-  if (!url) return "";
-  if (/^(https?:|data:|blob:)/.test(url)) return url;
-  return `${ADMIN_API}${url}`;
+function formatPrice(price: number, currency: string, dealType: string): string {
+  const amount = Math.round(price).toLocaleString("ru-RU").replace(/\u00a0/g, " ");
+  const suffix = dealType === "rent" ? " /мес" : "";
+  const unit = currency === "USD" ? "$" : "с";
+  return `${amount} ${unit}${suffix}`;
 }
 
-function relationData(relation: unknown): unknown {
-  // @ts-ignore
-  return relation?.data?.attributes || relation?.data || relation?.attributes || relation || null;
-}
-
-function mapDistrict(value: string): string {
-  const labels: Record<string, string> = {
-    center: "Центр",
-    ismoili_somoni: "И. Сомони",
-    sino: "Сино",
-    firdavsi: "Фирдавси",
-    shohmansur: "Шохмансур",
-    other: "Душанбе",
+function parseGallery(gallery: string, mainImage: string, baseUrl: string): string[] {
+  const toAbsolute = (url: string) => {
+    if (!url) return "";
+    if (/^(https?:|data:|blob:)/.test(url)) return url;
+    return `${baseUrl}${url}`;
   };
-  return labels[value] || value || "Душанбе";
-}
-
-function mapPropertyType(value: string): string {
-  const labels: Record<string, string> = {
-    apartment: "Квартира",
-    studio: "Студия",
-    house: "Дом",
-    commercial: "Коммерческая",
-    new_building: "Новостройка",
-  };
-  return labels[value] || value || "Квартира";
-}
-
-function formatAdminPrice(item: Record<string, unknown>): string {
-  let rawPrice = Number(item.price || 0);
-  if ((item.currency as string || "USD") === "USD") {
-    rawPrice = Math.round(rawPrice * 10.6);
+  const images: string[] = [];
+  const main = toAbsolute(mainImage);
+  if (main) images.push(main);
+  if (gallery) {
+    const parts = gallery.split(/[\n,]/).map((s) => s.trim()).filter(Boolean);
+    for (const p of parts) {
+      const abs = toAbsolute(p);
+      if (abs && !images.includes(abs)) images.push(abs);
+    }
   }
-  const amount = rawPrice.toLocaleString("ru-RU").replace(/\u00a0/g, " ");
-  const suffix = item.monthlyPrice ? " /мес" : "";
-  return `${amount} с${suffix}`;
+  return images;
 }
 
 function initials(name: string): string {
   return name
     .split(" ")
     .slice(0, 2)
-    .map((w) => w[0])
+    .map((w) => w[0] || "")
     .join("")
     .toUpperCase();
 }
 
-function mapAdminListing(entry: Record<string, unknown>): Property {
-  // @ts-ignore
-  const item: Record<string, unknown> = entry?.attributes || entry;
-  const employee = relationData(item.employee) as Record<string, unknown> | null;
-  const seller = relationData(item.seller) as Record<string, unknown> | null;
-
-  let galleryArray: unknown[] = [];
-  // @ts-ignore
-  if (Array.isArray(item.gallery?.data)) galleryArray = item.gallery.data as unknown[];
-  else if (Array.isArray(item.gallery)) galleryArray = item.gallery as unknown[];
-  else if (typeof item.gallery === "string")
-    galleryArray = (item.gallery as string).split(/\r?\n/).map((s: string) => s.trim()).filter(Boolean);
-
-  const galleryImages = galleryArray.map(mediaUrl).filter(Boolean);
-  // @ts-ignore
-  const mainImage = mediaUrl(item.mainImage?.data || item.mainImage) || galleryImages[0] || "";
-  const images = [...new Set([mainImage, ...galleryImages].filter(Boolean))];
-
-  const sellerAvatar =
-    // @ts-ignore
-    mediaUrl(seller?.avatar?.data || seller?.avatar) ||
-    mediaUrl(item.sellerAvatar) ||
-    // @ts-ignore
-    mediaUrl(employee?.avatar?.data || employee?.avatar);
-  const fallbackName =
-    (seller?.name as string) || (item.sellerName as string) || (employee?.fullName as string) || "Продавец";
-  const sellerPhone = (seller?.phone as string) || (item.sellerPhone as string) || (employee?.phone as string) || "";
+function mapListing(entry: Record<string, unknown>): Property {
+  const price = Number(entry.price || 0);
+  const currency = String(entry.currency || "TJS");
+  const dealType = String(entry.dealType || "sale");
+  const images = parseGallery(
+    String(entry.gallery || ""),
+    String(entry.mainImage || ""),
+    BASE_URL
+  );
+  const agentName = String(entry.sellerName || "Продавец");
+  const sellerAvatar = String(entry.sellerAvatar || "");
+  const avatarAbs = sellerAvatar && !/^(https?:|data:|blob:)/.test(sellerAvatar)
+    ? `${BASE_URL}${sellerAvatar}` : sellerAvatar;
 
   return {
-    id: (item.slug as string) || (entry.documentId as string) || (entry.id as string),
-    title: (item.title as string) || "",
-    price: formatAdminPrice(item),
-    priceNote: item.dealType === "rent" ? "Аренда" : "Продажа",
-    addr: (item.address as string) || "",
-    rooms: (item.rooms as number) || 0,
-    area: (item.area as number) || 0,
-    floor:
-      item.floor && item.totalFloors
-        ? `${item.floor}/${item.totalFloors}`
-        : String(item.floor || "-"),
-    type: (item.dealType as string) || "sale",
-    image: mainImage || "",
+    id: String(entry.slug || entry.id || ""),
+    title: String(entry.title || ""),
+    price: formatPrice(price, currency, dealType),
+    priceNote: dealType === "rent" ? "Аренда" : "Продажа",
+    addr: String(entry.address || ""),
+    rooms: Number(entry.rooms || 0),
+    area: Number(entry.area || 0),
+    floor: entry.floor && entry.totalFloors
+      ? `${entry.floor}/${entry.totalFloors}`
+      : String(entry.floor || "-"),
+    type: dealType,
+    image: images[0] || "",
     images,
-    tag: item.dealType === "rent" ? "rent" : "sale",
-    tagLabel: item.dealType === "rent" ? "Аренда" : "Продажа",
-    sellerId: (item.sellerId as string) || (seller?.id as string) || "",
-    agent: initials(fallbackName),
-    agentAvatar: sellerAvatar,
-    agentName: fallbackName,
-    deals: (seller?.dealsCount as number) || (employee?.dealsCount as number) || 0,
-    rating: (seller?.rating as number) || (employee?.rating as number) || 5,
-    telegram: (seller?.telegram as string) || "",
-    instagram: (seller?.instagram as string) || "",
-    year: (item.yearBuilt as string) || "",
-    new: Boolean(item.isFeatured),
-    propertyType: mapPropertyType(item.propertyType as string),
-    district: mapDistrict(item.district as string),
-    features: Array.isArray(item.features)
-      ? (item.features as string[]).join(" ")
-      : (item.features as string) || "",
-    description: (item.description as string) || "",
-    constructionStage: (item.constructionStage as string) || "",
-    renovation: (item.renovation as string) || "",
-    documentType: (item.documentType as string) || "",
-    landmark: (item.landmark as string) || "",
-    phone: sellerPhone,
-    lat: null,
-    lng: null,
+    tag: dealType,
+    tagLabel: dealType === "rent" ? "Аренда" : "Продажа",
+    sellerId: String(entry.sellerId || ""),
+    agent: initials(agentName),
+    agentAvatar: avatarAbs,
+    agentName,
+    deals: 0,
+    rating: 5,
+    telegram: "",
+    instagram: "",
+    year: entry.yearBuilt ? String(entry.yearBuilt) : "",
+    new: Boolean(entry.isFeatured),
+    propertyType: String(entry.propertyType || "Квартира"),
+    district: String(entry.district || "Душанбе"),
+    features: String(entry.features || ""),
+    description: String(entry.description || ""),
+    constructionStage: String(entry.constructionStage || ""),
+    renovation: String(entry.renovation || ""),
+    documentType: String(entry.documentType || ""),
+    landmark: String(entry.landmark || ""),
+    phone: String(entry.sellerPhone || ""),
+    lat: entry.latitude ? Number(entry.latitude) : null,
+    lng: entry.longitude ? Number(entry.longitude) : null,
     source: "admin",
   };
 }
 
 export async function fetchListings(): Promise<Property[]> {
-  const params = "sort=createdAt:desc&pagination[pageSize]=100";
-  const res = await fetch(`${ADMIN_API}/api/listings?${params}`, {
-    cache: "no-store",
-  });
+  if (!BASE_URL) return [];
+  const res = await fetch(`${BASE_URL}/api/listings`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch listings");
   const payload = await res.json();
-  return (payload.data || []).map(mapAdminListing);
+  const rows: Record<string, unknown>[] = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload?.data)
+    ? payload.data
+    : [];
+  return rows.map(mapListing);
 }
 
 export async function fetchReviews(): Promise<unknown[]> {
-  const res = await fetch(`${ADMIN_API}/api/reviews`, { cache: "no-store" });
+  if (!BASE_URL) return [];
+  const res = await fetch(`${BASE_URL}/api/reviews`, { cache: "no-store" });
   if (!res.ok) return [];
   return res.json();
 }

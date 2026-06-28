@@ -20,7 +20,9 @@ import { useColors } from "@/hooks/useColors";
 import { fetchListings } from "@/lib/api";
 import type { Property } from "@/lib/types";
 
-const ADMIN_API = "https://barakatestateadmin.vercel.app";
+const BASE_URL = process.env.EXPO_PUBLIC_DOMAIN
+  ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
+  : "";
 
 interface SellerProfile {
   id: string | number;
@@ -28,23 +30,16 @@ interface SellerProfile {
   phone?: string;
   telegram?: string;
   instagram?: string;
-  avatar?: unknown;
+  avatar?: string;
   dealsCount?: number;
   rating?: number;
   bio?: string;
 }
 
-function getAvatarUrl(avatar: unknown): string {
+function getAvatarUrl(avatar: string | undefined): string {
   if (!avatar) return "";
-  if (typeof avatar === "string") {
-    if (/^https?:/.test(avatar)) return avatar;
-    return `${ADMIN_API}${avatar}`;
-  }
-  // @ts-ignore
-  const url = avatar?.data?.attributes?.url || avatar?.url;
-  if (!url) return "";
-  if (/^https?:/.test(url)) return url;
-  return `${ADMIN_API}${url}`;
+  if (/^https?:/.test(avatar)) return avatar;
+  return `${BASE_URL}${avatar}`;
 }
 
 function initials(name: string): string {
@@ -52,11 +47,11 @@ function initials(name: string): string {
 }
 
 async function fetchSeller(id: string): Promise<SellerProfile | null> {
+  if (!BASE_URL) return null;
   try {
-    const res = await fetch(`${ADMIN_API}/api/profile?id=${id}`, { cache: "no-store" });
+    const res = await fetch(`${BASE_URL}/api/sellers/${id}`, { cache: "no-store" });
     if (!res.ok) return null;
-    const data = await res.json();
-    return data?.data?.attributes || data?.data || data || null;
+    return await res.json();
   } catch {
     return null;
   }

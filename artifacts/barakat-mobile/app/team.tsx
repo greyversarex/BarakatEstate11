@@ -17,7 +17,9 @@ import { useQuery } from "@tanstack/react-query";
 
 import { useColors } from "@/hooks/useColors";
 
-const ADMIN_API = "https://barakatestateadmin.vercel.app";
+const BASE_URL = process.env.EXPO_PUBLIC_DOMAIN
+  ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
+  : "";
 
 interface Agent {
   id: number | string;
@@ -26,25 +28,20 @@ interface Agent {
   role?: string;
   phone?: string;
   telegram?: string;
-  avatar?: { data?: { attributes?: { url?: string } }; url?: string } | string;
+  avatar?: string;
   dealsCount?: number;
   rating?: number;
 }
 
-function getAvatarUrl(avatar: Agent["avatar"]): string {
+function getAvatarUrl(avatar: string | undefined): string {
   if (!avatar) return "";
-  if (typeof avatar === "string") {
-    if (/^https?:/.test(avatar)) return avatar;
-    return `${ADMIN_API}${avatar}`;
-  }
-  const url = avatar?.data?.attributes?.url || (avatar as { url?: string }).url;
-  if (!url) return "";
-  if (/^https?:/.test(url)) return url;
-  return `${ADMIN_API}${url}`;
+  if (/^https?:/.test(avatar)) return avatar;
+  return `${BASE_URL}${avatar}`;
 }
 
 async function fetchTeam(): Promise<Agent[]> {
-  const res = await fetch(`${ADMIN_API}/api/users`, { cache: "no-store" });
+  if (!BASE_URL) return [];
+  const res = await fetch(`${BASE_URL}/api/users`, { cache: "no-store" });
   if (!res.ok) return [];
   const data = await res.json();
   return Array.isArray(data) ? data : data.data || [];
