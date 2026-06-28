@@ -1,0 +1,108 @@
+root@msk-1-vm-ixjw:~/BarakatEstate11/deploy# cd /root/BarakatEstate11
+git fetch origin
+git checkout origin/main -- . ':(exclude)deploy'
+remote: Enumerating objects: 21, done.
+remote: Counting objects: 100% (21/21), done.
+remote: Compressing objects: 100% (6/6), done.
+remote: Total 12 (delta 5), reused 12 (delta 5), pack-reused 0 (from 0)
+Unpacking objects: 100% (12/12), 5.18 KiB | 132.00 KiB/s, done.
+From https://github.com/greyversarex/BarakatEstate11
+   8c4a5f4..48d47e2  main       -> origin/main
+root@msk-1-vm-ixjw:~/BarakatEstate11# ls src? 2>/dev/null; ls artifacts/barakat-admin/src/lib/
+api.ts  store.ts  types.ts  validations.ts
+root@msk-1-vm-ixjw:~/BarakatEstate11# cd /root/BarakatEstate11/deploy
+docker compose up -d --build
+[+] Building 215.9s (15/19)
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 941B                                             0.0s
+ => [caddy internal] load build definition from Dockerfile                 0.1s
+ => => transferring dockerfile: 930B                                       0.1s
+ => [caddy] resolve image config for docker-image://docker.io/docker/dock  0.7s
+ => CACHED [caddy] docker-image://docker.io/docker/dockerfile:1@sha256:87  0.0s
+ => => resolve docker.io/docker/dockerfile:1@sha256:87999aa3d42bdc6bea605  0.0s
+ => [caddy internal] load metadata for docker.io/library/caddy:2-alpine    0.3s
+ => [api internal] load metadata for docker.io/library/node:24-slim        0.3s
+ => [caddy internal] load .dockerignore                                    0.0s
+ => => transferring context: 2B                                            0.0s
+ => [caddy builder 1/6] FROM docker.io/library/node:24-slim@sha256:b31e7a  0.1s
+ => => resolve docker.io/library/node:24-slim@sha256:b31e7a42fdf8b8aa5f5e  0.1s
+ => [caddy web 1/3] FROM docker.io/library/caddy:2-alpine@sha256:5f5c8640  0.0s
+ => => resolve docker.io/library/caddy:2-alpine@sha256:5f5c8640aae01df965  0.0s
+ => [caddy internal] load build context                                    0.5s
+ => => transferring context: 150.28kB                                      0.5s
+ => CACHED [api builder 2/6] RUN corepack enable                           0.0s
+ => CACHED [api builder 3/6] WORKDIR /app                                  0.0s
+ => [api builder 4/6] COPY . .                                             4.2s
+ => [caddy builder 5/6] RUN pnpm install --frozen-lockfile                70.9s
+ => ERROR [caddy builder 6/6] RUN pnpm --filter @workspace/api-server r  119.8s
+------
+ > [caddy builder 6/6] RUN pnpm --filter @workspace/api-server run build  && PORT=3000 BASE_PATH=/ pnpm --filter @workspace/barakat run build  && PORT=3001 pnpm --filter @workspace/barakat-admin run build:
+73.11
+73.11 > @workspace/api-server@0.0.0 build /app/artifacts/api-server
+73.11 > node ./build.mjs
+73.11
+75.58
+75.58   dist/index.mjs                       2.3mb ⚠️
+75.58   dist/pino-worker.mjs               153.4kb
+75.58   dist/pino-file.mjs                 142.0kb
+75.58   dist/pino-pretty.mjs               114.6kb
+75.58   dist/thread-stream-worker.mjs        7.3kb
+75.58   dist/index.mjs.map                   3.9mb
+75.58   dist/pino-worker.mjs.map           256.9kb
+75.58   dist/pino-file.mjs.map             229.0kb
+75.58   dist/pino-pretty.mjs.map           204.0kb
+75.58   dist/thread-stream-worker.mjs.map   12.0kb
+75.58
+75.58 ⚡ Done in 2269ms
+79.92
+79.92 > @workspace/barakat@0.0.0 build /app/artifacts/barakat
+79.92 > vite build --config vite.config.ts
+79.92
+85.58 vite v7.3.5 building client environment for production...
+85.71 transforming...
+89.70 src/components/BlogPostPage.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+89.70 src/components/ServiceDetailPage.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+96.46 ✓ 1765 modules transformed.
+98.29 rendering chunks...
+98.33 computing gzip size...
+99.34 dist/public/index.html                   1.87 kB │ gzip:   0.81 kB
+99.36 dist/public/assets/index-CRbog2gO.css  221.71 kB │ gzip:  38.04 kB
+99.36 dist/public/assets/index-Dx9p-RId.js   439.76 kB │ gzip: 124.97 kB
+99.36 ✓ built in 13.74s
+106.8
+106.8 > @workspace/barakat-admin@0.1.0 build /app/artifacts/barakat-admin
+106.8 > tsc -b && vite build
+106.8
+117.0 src/lib/store.ts(1,24): error TS2307: Cannot find module './prisma' or its corresponding type declarations.
+117.0 src/lib/store.ts(2,20): error TS2307: Cannot find module 'bcryptjs' or its corresponding type declarations.
+117.0 src/lib/store.ts(3,29): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+117.0 src/lib/store.ts(215,23): error TS7006: Parameter 'u' implicitly has an 'any' type.
+117.0 src/lib/store.ts(380,38): error TS7006: Parameter 'item' implicitly has an 'any' type.
+117.0 src/lib/store.ts(381,32): error TS7006: Parameter 'item' implicitly has an 'any' type.
+117.0 src/lib/validations.ts(1,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+117.0 /app/artifacts/barakat-admin:
+117.0  ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @workspace/barakat-admin@0.1.0 build: `tsc -b && vite build`
+117.0 Exit status 1
+------
+[+] up 0/2
+ ⠙ Image deploy-api   Building                                            216.9s
+ ⠙ Image deploy-caddy Building                                            216.9s
+Dockerfile:9
+
+--------------------
+
+   8 |     RUN pnpm install --frozen-lockfile
+
+   9 | >>> RUN pnpm --filter @workspace/api-server run build \
+
+  10 | >>>  && PORT=3000 BASE_PATH=/ pnpm --filter @workspace/barakat run build \
+
+  11 | >>>  && PORT=3001 pnpm --filter @workspace/barakat-admin run build
+
+  12 |
+
+--------------------
+
+target api: failed to solve: process "/bin/sh -c pnpm --filter @workspace/api-server run build  && PORT=3000 BASE_PATH=/ pnpm --filter @workspace/barakat run build  && PORT=3001 pnpm --filter @workspace/barakat-admin run build" did not complete successfully: exit code: 1
+
+root@msk-1-vm-ixjw:~/BarakatEstate11/deploy#
