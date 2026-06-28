@@ -1384,7 +1384,7 @@
   /* ── SEARCH BAR ── */
   .search-section {
     background: var(--cream);
-    padding: 0 40px 60px;
+    padding: 0 0 60px;
     position: relative; z-index: 2;
   }
   .search-wrap {
@@ -3921,7 +3921,6 @@
   .container,
   .footer-inner,
   .services-catalog-section .container,
-  .search-wrap,
   .agent-hero-inner,
   .seller-agent-stats-inner,
   .seller-contact-inner,
