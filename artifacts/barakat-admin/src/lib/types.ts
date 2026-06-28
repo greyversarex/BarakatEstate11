@@ -54,6 +54,7 @@ export type Listing = {
   isFeatured: boolean;
   isNew: boolean;
   isUrgent: boolean;
+  isHero: boolean;
   status: PublishStatus;
   createdAt: string;
   updatedAt: string;

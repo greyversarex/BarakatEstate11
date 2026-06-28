@@ -102,6 +102,7 @@ const emptyForms: FormState = {
     isFeatured: false,
     isNew: false,
     isUrgent: false,
+    isHero: false,
     status: "draft",
     documentType: "",
   },
@@ -862,6 +863,7 @@ function buildPayload(tab: Tab, data: FormData) {
     isFeatured: data.get("isFeatured") === "on",
     isNew: data.get("isNew") === "on",
     isUrgent: data.get("isUrgent") === "on",
+    isHero: data.get("isHero") === "on",
     status: toStatus(data.get("status")),
   };
 }
@@ -1307,6 +1309,18 @@ function renderForm(tab: Tab, form: FormState, loading: boolean, currentUser: Au
             />
             <span className="text-sm font-bold text-slate-700 group-hover:text-red-600 transition">Срочно</span>
           </label>
+
+          {currentUser?.role === "admin" && (
+            <label className="flex items-center gap-3 cursor-pointer group mt-6">
+              <input 
+                type="checkbox" 
+                name="isHero" 
+                defaultChecked={item.isHero} 
+                className="w-5 h-5 rounded border-slate-300 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
+              />
+              <span className="text-sm font-bold text-slate-700 group-hover:text-emerald-600 transition">На главной (витрина)</span>
+            </label>
+          )}
         </div>
 
         <button className="px-8 py-3.5 bg-yellow-500 hover:bg-yellow-400 text-yellow-950 font-bold rounded-xl transition shadow-sm text-sm w-full sm:w-auto mt-6 sm:mt-0 disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={loading}>

@@ -167,6 +167,7 @@ function mapAdminListing(entry) {
     year: item.yearBuilt || '',
     new: Boolean(item.isNew || item.isFeatured),
     urgent: Boolean(item.isUrgent),
+    isHero: Boolean(item.isHero),
     propertyType: mapPropertyType(item.propertyType),
     district: mapDistrict(item.district),
     features: Array.isArray(item.features) ? item.features.join(' ') : item.features || '',
@@ -835,7 +836,9 @@ function hydrateHeroCarousel() {
   const track = document.querySelector('.hero-cards-track');
   if (!track) return;
 
-  const listings = getAllProperties().slice(0, 6);
+  const allProps = getAllProperties();
+  const heroSelected = allProps.filter((p) => p.isHero);
+  const listings = (heroSelected.length ? heroSelected : allProps).slice(0, 6);
   if (!listings.length) return; // keep hardcoded cards if DB is empty
 
   const tagLabel = (p) => p.type === 'rent' ? 'Аренда' : 'Продажа';

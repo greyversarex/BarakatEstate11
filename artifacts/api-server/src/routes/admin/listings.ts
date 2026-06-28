@@ -36,8 +36,10 @@ router.post("/listings", async (req: Request, res: Response) => {
   const user = await getAuthUser(req);
   if (!user) { res.status(401).json({ error: "Unauthorized" }); return; }
   try {
-    const slug = (req.body.title || "listing").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") + "-" + Date.now();
-    const [row] = await db.insert(listingsTable).values({ ...req.body, slug }).returning();
+    const body = { ...req.body };
+    if (user.role !== "admin") delete body.isHero;
+    const slug = (body.title || "listing").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") + "-" + Date.now();
+    const [row] = await db.insert(listingsTable).values({ ...body, slug }).returning();
     res.status(201).json(row);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
@@ -48,7 +50,9 @@ async function updateListing(req: Request, res: Response) {
   const user = await getAuthUser(req);
   if (!user) { res.status(401).json({ error: "Unauthorized" }); return; }
   try {
-    const [row] = await db.update(listingsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(listingsTable.id, req.params.id)).returning();
+    const body = { ...req.body };
+    if (user.role !== "admin") delete body.isHero;
+    const [row] = await db.update(listingsTable).set({ ...body, updatedAt: new Date() }).where(eq(listingsTable.id, req.params.id)).returning();
     if (!row) { res.status(404).json({ error: "Not found" }); return; }
     res.json(row);
   } catch (err: any) {
