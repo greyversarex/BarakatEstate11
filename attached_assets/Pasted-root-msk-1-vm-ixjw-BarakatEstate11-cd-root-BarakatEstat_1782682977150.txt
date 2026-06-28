@@ -1,0 +1,124 @@
+root@msk-1-vm-ixjw:~/BarakatEstate11# cd /root/BarakatEstate11/deploy
+docker compose up -d --build
+[+] Building 99.6s (14/19)
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 941B                                             0.0s
+ => [caddy internal] load build definition from Dockerfile                 0.0s
+ => => transferring dockerfile: 930B                                       0.0s
+ => [api] resolve image config for docker-image://docker.io/docker/docker  0.5s
+ => CACHED [caddy] docker-image://docker.io/docker/dockerfile:1@sha256:87  0.1s
+ => => resolve docker.io/docker/dockerfile:1@sha256:87999aa3d42bdc6bea605  0.1s
+ => [caddy internal] load metadata for docker.io/library/caddy:2-alpine    0.3s
+ => [caddy internal] load metadata for docker.io/library/node:24-slim      0.3s
+ => [caddy internal] load .dockerignore                                    0.0s
+ => => transferring context: 2B                                            0.0s
+ => [caddy builder 1/6] FROM docker.io/library/node:24-slim@sha256:b31e7a  0.1s
+ => => resolve docker.io/library/node:24-slim@sha256:b31e7a42fdf8b8aa5f5e  0.1s
+ => [caddy web 1/3] FROM docker.io/library/caddy:2-alpine@sha256:5f5c8640  0.1s
+ => => resolve docker.io/library/caddy:2-alpine@sha256:5f5c8640aae01df965  0.1s
+ => [caddy internal] load build context                                    1.3s
+ => => transferring context: 68.18MB                                       1.2s
+ => CACHED [api builder 2/6] RUN corepack enable                           0.0s
+ => CACHED [api builder 3/6] WORKDIR /app                                  0.0s
+ => [caddy builder 4/6] COPY . .                                           0.9s
+ => ERROR [caddy builder 5/6] RUN pnpm install --frozen-lockfile          86.8s
+------
+ > [caddy builder 5/6] RUN pnpm install --frozen-lockfile:
+3.694 ! Corepack is about to download https://registry.npmjs.org/pnpm/-/pnpm-11.9.0.tgz
+5.653 Scope: all 11 workspace projects
+6.276 ? Verifying lockfile against supply-chain policies (1071 entries)...
+6.302 Lockfile is up to date, resolution step is skipped
+6.502 Progress: resolved 1, reused 0, downloaded 0, added 0
+6.609 Packages: +1095
+6.609 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+7.565 Progress: resolved 1095, reused 0, downloaded 0, added 0
+9.037 Progress: resolved 1095, reused 0, downloaded 1, added 0
+10.07 Progress: resolved 1095, reused 0, downloaded 11, added 0
+11.42 Progress: resolved 1095, reused 0, downloaded 12, added 0
+12.48 Progress: resolved 1095, reused 0, downloaded 34, added 0
+13.50 Progress: resolved 1095, reused 0, downloaded 58, added 0
+14.53 Progress: resolved 1095, reused 0, downloaded 94, added 4
+15.54 Progress: resolved 1095, reused 0, downloaded 127, added 5
+16.56 Progress: resolved 1095, reused 0, downloaded 149, added 8
+17.60 Progress: resolved 1095, reused 0, downloaded 185, added 10
+18.61 Progress: resolved 1095, reused 0, downloaded 206, added 12
+19.61 Progress: resolved 1095, reused 0, downloaded 246, added 14
+20.67 Progress: resolved 1095, reused 0, downloaded 260, added 16
+21.68 Progress: resolved 1095, reused 0, downloaded 273, added 16
+22.82 Progress: resolved 1095, reused 0, downloaded 302, added 16
+23.51 ✓ Lockfile passes supply-chain policies (1071 entries in 17.1s)
+23.82 Progress: resolved 1095, reused 0, downloaded 304, added 16
+24.90 Progress: resolved 1095, reused 0, downloaded 310, added 18
+25.87 Progress: resolved 1095, reused 0, downloaded 324, added 20
+27.63 Progress: resolved 1095, reused 0, downloaded 325, added 20
+28.75 Progress: resolved 1095, reused 0, downloaded 334, added 20
+29.77 Progress: resolved 1095, reused 0, downloaded 353, added 20
+30.86 Progress: resolved 1095, reused 0, downloaded 364, added 20
+31.86 Progress: resolved 1095, reused 0, downloaded 371, added 22
+32.87 Progress: resolved 1095, reused 0, downloaded 399, added 24
+33.87 Progress: resolved 1095, reused 0, downloaded 459, added 28
+34.87 Progress: resolved 1095, reused 0, downloaded 535, added 32
+35.91 Progress: resolved 1095, reused 0, downloaded 595, added 36
+36.96 Progress: resolved 1095, reused 0, downloaded 610, added 37
+37.96 Progress: resolved 1095, reused 0, downloaded 643, added 40
+39.17 Progress: resolved 1095, reused 0, downloaded 677, added 43
+40.60 Progress: resolved 1095, reused 0, downloaded 677, added 44
+41.63 Progress: resolved 1095, reused 0, downloaded 686, added 44
+42.69 Progress: resolved 1095, reused 0, downloaded 719, added 46
+43.68 Progress: resolved 1095, reused 0, downloaded 748, added 48
+44.88 Progress: resolved 1095, reused 0, downloaded 749, added 48
+45.88 Progress: resolved 1095, reused 0, downloaded 778, added 48
+46.89 Progress: resolved 1095, reused 0, downloaded 841, added 53
+48.63 Progress: resolved 1095, reused 0, downloaded 878, added 56
+49.64 Progress: resolved 1095, reused 0, downloaded 881, added 56
+50.71 Progress: resolved 1095, reused 0, downloaded 901, added 60
+51.75 Progress: resolved 1095, reused 0, downloaded 929, added 60
+52.75 Progress: resolved 1095, reused 0, downloaded 947, added 60
+53.79 Progress: resolved 1095, reused 0, downloaded 992, added 64
+54.79 Progress: resolved 1095, reused 0, downloaded 1067, added 68
+55.79 Progress: resolved 1095, reused 0, downloaded 1069, added 90
+56.79 Progress: resolved 1095, reused 0, downloaded 1069, added 155
+57.82 Progress: resolved 1095, reused 0, downloaded 1069, added 291
+58.79 Progress: resolved 1095, reused 0, downloaded 1069, added 327
+59.80 Progress: resolved 1095, reused 0, downloaded 1069, added 333
+60.80 Progress: resolved 1095, reused 0, downloaded 1069, added 336
+61.80 Progress: resolved 1095, reused 0, downloaded 1069, added 350
+62.81 Progress: resolved 1095, reused 0, downloaded 1069, added 469
+63.81 Progress: resolved 1095, reused 0, downloaded 1069, added 666
+64.81 Progress: resolved 1095, reused 0, downloaded 1069, added 786
+65.81 Progress: resolved 1095, reused 0, downloaded 1069, added 919
+66.81 Progress: resolved 1095, reused 0, downloaded 1069, added 1076
+67.04 Progress: resolved 1095, reused 0, downloaded 1069, added 1095, done
+74.37
+74.37 devDependencies:
+74.37 + prettier 3.8.4
+74.37 + typescript 5.9.3
+74.37
+74.61 . preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+75.44 . preinstall: Done
+77.11 [ERR_PNPM_IGNORED_BUILDS] Ignored build scripts: esbuild@0.27.3
+77.11
+77.11 Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.
+------
+[+] up 0/2
+ ⠙ Image deploy-api   Building                                            100.0s
+ ⠙ Image deploy-caddy Building                                            100.0s
+Dockerfile:8
+
+--------------------
+
+   6 |     WORKDIR /app
+
+   7 |     COPY . .
+
+   8 | >>> RUN pnpm install --frozen-lockfile
+
+   9 |     RUN pnpm --filter @workspace/api-server run build \
+
+  10 |      && PORT=3000 BASE_PATH=/ pnpm --filter @workspace/barakat run build \
+
+--------------------
+
+target caddy: failed to solve: process "/bin/sh -c pnpm install --frozen-lockfile" did not complete successfully: exit code: 1
+
+root@msk-1-vm-ixjw:~/BarakatEstate11/deploy#
