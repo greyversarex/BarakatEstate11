@@ -1,13 +1,63 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { ArrowLeft } from "lucide-react";
 
-import type { BlogPost } from "@/content/blog-posts";
-import { blogPostList } from "@/content/blog-posts";
+import { BLOG_API_BASE, toParagraphs, type BlogPost } from "@/content/blog-posts";
 
-export default function BlogPostPage({ post }: { post: BlogPost }) {
-  const others = blogPostList.filter((item) => item.slug !== post.slug).slice(0, 3);
+export default function BlogPostPage({ slug }: { slug: string }) {
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [others, setOthers] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setPost(null);
+    Promise.all([
+      fetch(`${BLOG_API_BASE}/api/blog/${encodeURIComponent(slug)}`).then((res) => (res.ok ? res.json() : null)),
+      fetch(`${BLOG_API_BASE}/api/blog`).then((res) => (res.ok ? res.json() : [])),
+    ])
+      .then(([single, list]) => {
+        if (!active) return;
+        setPost(single && single.id ? single : null);
+        const arr: BlogPost[] = Array.isArray(list) ? list : [];
+        setOthers(arr.filter((item) => item.slug !== slug).slice(0, 3));
+      })
+      .catch(() => {
+        if (active) setPost(null);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <main className="blog-post-page">
+        <div className="container" style={{ padding: "160px 0 120px", textAlign: "center", color: "var(--muted)" }}>
+          Загрузка статьи...
+        </div>
+      </main>
+    );
+  }
+
+  if (!post) {
+    return (
+      <main className="blog-post-page">
+        <div className="container" style={{ padding: "160px 0 120px", textAlign: "center" }}>
+          <h1 style={{ marginBottom: 16 }}>Статья не найдена</h1>
+          <Link className="btn-secondary" href="/blog">Вернуться в блог</Link>
+        </div>
+      </main>
+    );
+  }
+
+  const paragraphs = toParagraphs(post.content);
 
   return (
     <main className="blog-post-page">
@@ -21,7 +71,7 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
           <Link className="blog-post-back" href="/blog">
             <ArrowLeft size={16} /> Блог
           </Link>
-          <span className="blog-post-cat">{post.category}</span>
+          {post.category && <span className="blog-post-cat">{post.category}</span>}
           <h1>{post.title}</h1>
           <p>{post.excerpt}</p>
         </div>
@@ -29,7 +79,7 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
 
       <section className="blog-post-body-section">
         <div className="container blog-post-body-inner">
-          {post.paragraphs.map((text, index) => (
+          {paragraphs.map((text, index) => (
             <p key={index}>{text}</p>
           ))}
 
@@ -44,30 +94,32 @@ export default function BlogPostPage({ post }: { post: BlogPost }) {
         </div>
       </section>
 
-      <section className="blog-post-more">
-        <div className="container">
-          <h2 className="blog-post-more-head">Другие статьи</h2>
-          <div className="blog-post-more-grid">
-            {others.map((item) => (
-              <Link className="blog-card" href={`/blog/${item.slug}`} key={item.slug}>
-                <div
-                  className="blog-img"
-                  style={{
-                    backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 100%), url('${item.image}')`,
-                  }}
-                >
-                  <span className="blog-cat">{item.category}</span>
-                </div>
-                <div className="blog-content">
-                  <h3 className="blog-title">{item.title}</h3>
-                  <p className="blog-excerpt">{item.excerpt}</p>
-                  <span className="blog-more">Подробнее</span>
-                </div>
-              </Link>
-            ))}
+      {others.length > 0 && (
+        <section className="blog-post-more">
+          <div className="container">
+            <h2 className="blog-post-more-head">Другие статьи</h2>
+            <div className="blog-post-more-grid">
+              {others.map((item) => (
+                <Link className="blog-card" href={`/blog/${item.slug}`} key={item.id || item.slug}>
+                  <div
+                    className="blog-img"
+                    style={{
+                      backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 100%), url('${item.image}')`,
+                    }}
+                  >
+                    {item.category && <span className="blog-cat">{item.category}</span>}
+                  </div>
+                  <div className="blog-content">
+                    <h3 className="blog-title">{item.title}</h3>
+                    <p className="blog-excerpt">{item.excerpt}</p>
+                    <span className="blog-more">Подробнее</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </main>
   );
 }

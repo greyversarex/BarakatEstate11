@@ -45,9 +45,10 @@ import {
   Tag,
   Calculator,
   Zap,
+  Newspaper,
 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import type { AuthUser, Listing, Profile, PublishStatus, Application, Banner, User } from "@/lib/types";
+import type { AuthUser, Listing, Profile, PublishStatus, Application, Banner, User, BlogPost } from "@/lib/types";
 
 type Tab =
   | "listings"
@@ -57,6 +58,7 @@ type Tab =
   | "settings"
   | "reviews"
   | "viewings"
+  | "blog"
   | "app_rent"
   | "app_sell"
   | "app_appraisal"
@@ -103,6 +105,7 @@ type FormState = {
   settings: Partial<Profile>;
   reviews: any;
   viewings: any;
+  blog: Partial<BlogPost>;
   app_rent: Partial<Application>;
   app_sell: Partial<Application>;
   app_appraisal: Partial<Application>;
@@ -122,6 +125,7 @@ function getTabs(role: string): Array<{ id: Tab; label: string; icon: React.Reac
       { id: "app_other" as Tab, label: "Другие заявки", icon: <Inbox size={18} /> },
       { id: "viewings" as Tab, label: "Просмотры", icon: <CalendarClock size={18} /> },
       { id: "reviews" as Tab, label: "Отзывы", icon: <Star size={18} /> },
+      { id: "blog" as Tab, label: "Блог", icon: <Newspaper size={18} /> },
       { id: "users" as Tab, label: "Пользователи", icon: <Users size={18} /> },
       { id: "settings" as Tab, label: "Настройки сайта", icon: <Settings size={18} /> },
     ];
@@ -180,6 +184,7 @@ const emptyForms: FormState = {
   app_other: { name: "", phone: "", service: "", message: "", photos: "", status: "new" },
   reviews: { name: "", text: "", sellerId: "", status: "pending" },
   viewings: {},
+  blog: { title: "", category: "", excerpt: "", image: "", content: "", status: "draft" },
 
   users: { username: "", name: "", email: "", phone: "", whatsapp: "", telegram: "", instagram: "", facebook: "", avatar: "", bio: "", rating: 5, dealsCount: 0, experienceYears: 0, specializations: "", role: "seller" },
   settings: {
@@ -503,6 +508,12 @@ export default function UserDashboard() {
         }
       } else if (activeTab === "listings") {
         await prepareImageFields(data);
+      } else if (activeTab === "blog") {
+        const imageFile = data.get("imageFile");
+        if (imageFile instanceof File && imageFile.size > 0) {
+          const url = await uploadFile(imageFile);
+          data.set("image", url);
+        }
       }
 
       const payload = buildPayload(activeTab, data);
@@ -668,6 +679,7 @@ export default function UserDashboard() {
                   <h2 className="text-xl font-semibold text-slate-800">
                     {activeTab === "users" ? (editingId ? "Редактировать пользователя" : "Новый пользователь") :
                      activeTab === "applications" ? (editingId ? "Редактировать заявку" : "Создать заявку") :
+                     activeTab === "blog" ? (editingId ? "Редактировать статью" : "Создать статью") :
                      (editingId ? "Редактировать объявление" : "Создать объявление")}
                   </h2>
                   {!(["listings", "applications"].includes(activeTab) && currentUser?.role === "admin") && (
@@ -708,7 +720,7 @@ export default function UserDashboard() {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <h2 className="text-xl font-semibold text-slate-800">
-                  {activeTab === "listings" ? "Список объявлений" : (activeTab === "applications" || isAppTab(activeTab)) ? "Список заявок" : activeTab === "viewings" ? "Заявки на просмотр" : activeTab === "reviews" ? "Список отзывов" : "Пользователи"}
+                  {activeTab === "listings" ? "Список объявлений" : (activeTab === "applications" || isAppTab(activeTab)) ? "Список заявок" : activeTab === "viewings" ? "Заявки на просмотр" : activeTab === "reviews" ? "Список отзывов" : activeTab === "blog" ? "Список статей" : "Пользователи"}
                 </h2>
                 <div className="relative max-w-sm w-full">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -764,7 +776,22 @@ export default function UserDashboard() {
                         </div>
                       )}
 
-
+                      {activeTab === "blog" && (
+                        <div className="w-full sm:w-64 h-48 sm:h-auto shrink-0 bg-slate-100 overflow-hidden relative">
+                          {item.image ? (
+                            <img className="w-full h-full object-cover group-hover:scale-105 transition duration-500" src={item.image} alt={item.title} />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-slate-300">
+                              <Newspaper size={32} />
+                            </div>
+                          )}
+                          <div className="absolute top-3 left-3 flex gap-2">
+                            <span className={`px-2.5 py-1 text-xs font-semibold rounded-md shadow-sm ${item.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>
+                              {item.status === "published" ? "Опубликовано" : "Черновик"}
+                            </span>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="flex-1 p-5 flex flex-col justify-between min-w-0">
                         <div>
@@ -781,6 +808,16 @@ export default function UserDashboard() {
                             </>
                           )}
                           
+                          {activeTab === "blog" && (
+                            <>
+                              <h3 className="font-bold text-lg text-slate-900 truncate mb-1">{item.title}</h3>
+                              <div className="text-slate-500 text-sm font-medium mb-4 flex flex-col gap-1">
+                                {item.category && <span className="w-fit px-2 py-0.5 rounded text-xs font-bold bg-yellow-100 text-yellow-700">{item.category}</span>}
+                                {item.excerpt && <span className="line-clamp-2">{item.excerpt}</span>}
+                              </div>
+                            </>
+                          )}
+
                           {(activeTab === "applications" || isAppTab(activeTab)) && (
                             <>
                               <h3 className="font-bold text-lg text-slate-900 truncate mb-1">{item.name}</h3>
@@ -876,7 +913,7 @@ export default function UserDashboard() {
                               )}
                             </div>
                           )}
-                          {activeTab === "listings" && (
+                          {(activeTab === "listings" || activeTab === "blog") && (
                             <button onClick={() => togglePublish(item)} type="button" className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-green-600 transition bg-slate-50 hover:bg-green-50 px-3 py-1.5 rounded-lg">
                               <CheckCircle2 size={14} /> {item.status === "published" ? "Скрыть" : "Опубликовать"}
                             </button>
@@ -1044,6 +1081,17 @@ function buildPayload(tab: Tab, data: FormData) {
   }
 
 
+
+  if (tab === "blog") {
+    return {
+      title: String(data.get("title") || ""),
+      category: String(data.get("category") || ""),
+      excerpt: String(data.get("excerpt") || ""),
+      image: String(data.get("image") || ""),
+      content: String(data.get("content") || ""),
+      status: toStatus(data.get("status")),
+    };
+  }
 
   if (tab === "users") {
     return {
@@ -1401,6 +1449,36 @@ function renderForm(tab: Tab, form: FormState, loading: boolean, currentUser: Au
         <div className="flex justify-end pt-6 border-t border-slate-100">
           <button className="px-8 py-3 bg-yellow-500 hover:bg-yellow-400 text-yellow-950 font-bold rounded-xl transition shadow-sm text-sm" type="submit" disabled={loading}>
             {loading ? "Сохранение..." : "Сохранить"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (tab === "blog") {
+    const item = values as Partial<BlogPost>;
+    return (
+      <div className="flex flex-col gap-8">
+        <FormSection title="Статья">
+          <Field name="title" title="Заголовок" value={item.title} colSpan={2} />
+          <Field name="category" title="Категория" value={item.category} />
+          <TextArea name="excerpt" title="Краткое описание (анонс)" value={item.excerpt} rows={2} colSpan="full" />
+          <input type="hidden" name="image" value={item.image || ""} />
+          <div className="col-span-full flex flex-col gap-2">
+            <FileUpload name="imageFile" title="Обложка статьи (Файл)" colSpan="full" />
+            {item.image && (
+              <div className="mt-1">
+                <span className="text-xs font-semibold text-slate-500 block mb-1">Текущая обложка:</span>
+                <img src={item.image} alt="Обложка" className="h-24 w-auto rounded-lg object-cover border border-slate-200" />
+              </div>
+            )}
+          </div>
+          <TextArea name="content" title="Текст статьи (абзацы разделяйте пустой строкой)" value={item.content} rows={12} colSpan="full" />
+          <Select name="status" title="Статус публикации" value={item.status} options={[["draft", "Черновик"], ["published", "Опубликовано"]]} />
+        </FormSection>
+        <div className="flex justify-end pt-6 border-t border-slate-100">
+          <button className="px-8 py-3 bg-yellow-500 hover:bg-yellow-400 text-yellow-950 font-bold rounded-xl transition shadow-sm text-sm" type="submit" disabled={loading}>
+            {loading ? "Сохранение..." : "Сохранить статью"}
           </button>
         </div>
       </div>

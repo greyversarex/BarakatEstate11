@@ -10,8 +10,8 @@ import AuraPage from "@/components/AuraPage";
 import SellerProfilePage from "@/components/SellerProfilePage";
 import ServiceDetailPage from "@/components/ServiceDetailPage";
 import BlogPostPage from "@/components/BlogPostPage";
+import BlogListPage from "@/components/BlogListPage";
 import { serviceDetails } from "@/content/service-details";
-import { blogPosts, type BlogPostSlug } from "@/content/blog-posts";
 
 const queryClient = new QueryClient();
 
@@ -26,12 +26,9 @@ function Router() {
         <Route path="/map" component={() => <AuraPage page="map" />} />
         <Route path="/services" component={() => <AuraPage page="services" />} />
         <Route path="/team" component={() => <AuraPage page="team" />} />
-        <Route path="/blog" component={() => <AuraPage page="blog" />} />
+        <Route path="/blog" component={() => <BlogListPage />} />
         <Route path="/blog/:slug">
-          {(params) => {
-            const post = blogPosts[params.slug as BlogPostSlug];
-            return post ? <BlogPostPage post={post} /> : <AuraPage page="blog" />;
-          }}
+          {(params) => <BlogPostPage slug={params.slug} />}
         </Route>
         <Route path="/about" component={() => <AuraPage page="about" />} />
         <Route path="/favorites" component={() => <AuraPage page="favorites" />} />

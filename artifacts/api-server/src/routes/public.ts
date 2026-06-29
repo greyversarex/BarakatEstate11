@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import { db } from "@workspace/db";
-import { listingsTable, reviewsTable, adminUsersTable, siteSettingsTable } from "@workspace/db";
+import { listingsTable, reviewsTable, adminUsersTable, siteSettingsTable, blogPostsTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 
 const router = Router();
@@ -31,6 +31,25 @@ router.get("/listings", async (req: Request, res: Response) => {
 router.get("/listings/:id", async (req: Request, res: Response) => {
   try {
     const rows = await db.select().from(listingsTable).where(eq(listingsTable.id, req.params.id)).limit(1);
+    if (!rows[0] || rows[0].status !== "published") { res.status(404).json({ error: "Not found" }); return; }
+    res.json(rows[0]);
+  } catch {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/blog", async (_req: Request, res: Response) => {
+  try {
+    const rows = await db.select().from(blogPostsTable).where(eq(blogPostsTable.status, "published")).orderBy(desc(blogPostsTable.createdAt));
+    res.json(rows);
+  } catch {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/blog/:slug", async (req: Request, res: Response) => {
+  try {
+    const rows = await db.select().from(blogPostsTable).where(eq(blogPostsTable.slug, req.params.slug)).limit(1);
     if (!rows[0] || rows[0].status !== "published") { res.status(404).json({ error: "Not found" }); return; }
     res.json(rows[0]);
   } catch {

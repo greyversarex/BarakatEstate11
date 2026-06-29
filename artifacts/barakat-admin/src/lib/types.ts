@@ -168,6 +168,19 @@ export type Viewing = {
   updatedAt: string;
 };
 
-export type CollectionName = "listings" | "employees" | "services" | "applications" | "users" | "reviews" | "viewings";
+export type BlogPost = {
+  id: string;
+  slug: string;
+  title: string;
+  category: string;
+  excerpt: string;
+  image: string;
+  content: string;
+  status: PublishStatus;
+  createdAt: string;
+  updatedAt: string;
+};
 
-export type CollectionItem = Listing | Employee | ServiceItem | Application | User | Review | Viewing;
+export type CollectionName = "listings" | "employees" | "services" | "applications" | "users" | "reviews" | "viewings" | "blog";
+
+export type CollectionItem = Listing | Employee | ServiceItem | Application | User | Review | Viewing | BlogPost;

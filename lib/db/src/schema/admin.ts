@@ -120,6 +120,19 @@ export const reviewsTable = pgTable("reviews", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const blogPostsTable = pgTable("blog_posts", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  slug: text("slug").notNull().default(""),
+  title: text("title").notNull(),
+  category: text("category").notNull().default(""),
+  excerpt: text("excerpt").notNull().default(""),
+  image: text("image").notNull().default(""),
+  content: text("content").notNull().default(""),
+  status: publishStatusEnum("status").notNull().default("draft"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const siteSettingsTable = pgTable("site_settings", {
   key: text("key").primaryKey(),
   value: text("value").notNull().default(""),
@@ -131,12 +144,15 @@ export const insertApplicationSchema = createInsertSchema(applicationsTable).omi
 export const insertReviewSchema = createInsertSchema(reviewsTable).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertAdminUserSchema = createInsertSchema(adminUsersTable).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertViewingSchema = createInsertSchema(viewingsTable).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertBlogPostSchema = createInsertSchema(blogPostsTable).omit({ id: true, createdAt: true, updatedAt: true });
 
 export type Listing = typeof listingsTable.$inferSelect;
 export type Application = typeof applicationsTable.$inferSelect;
 export type Review = typeof reviewsTable.$inferSelect;
 export type AdminUser = typeof adminUsersTable.$inferSelect;
 export type Viewing = typeof viewingsTable.$inferSelect;
+export type BlogPost = typeof blogPostsTable.$inferSelect;
 export type InsertListing = z.infer<typeof insertListingSchema>;
 export type InsertApplication = z.infer<typeof insertApplicationSchema>;
 export type InsertViewing = z.infer<typeof insertViewingSchema>;
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
