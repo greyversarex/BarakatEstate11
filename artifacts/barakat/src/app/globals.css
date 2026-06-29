@@ -942,6 +942,20 @@
 }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
+  .brand-gold {
+    background: linear-gradient(100deg, #8F6728 0%, #C9912F 40%, #F3D27A 50%, #C9912F 60%, #8F6728 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    font-weight: 700;
+    animation: brandShine 3.5s linear infinite;
+  }
+  @keyframes brandShine {
+    to { background-position: -200% center; }
+  }
+
   body {
     font-family: 'Inter', sans-serif;
     background: var(--cream);

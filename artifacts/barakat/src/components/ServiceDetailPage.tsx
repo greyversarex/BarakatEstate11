@@ -322,7 +322,7 @@ export default function ServiceDetailPage({ service }: { service: ServiceDetail 
         <div className="service-detail-shell">
           <div className="service-detail-more-head">
             <span className="service-detail-eyebrow">Еще услуги</span>
-            <h2>Сервисы Barakat Estate</h2>
+            <h2>Сервисы <span className="brand-gold">Barakat Estate</span></h2>
           </div>
           <div className="service-detail-more-grid">
             {serviceList

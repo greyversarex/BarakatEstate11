@@ -192,7 +192,11 @@ export default function SellerProfilePage() {
   }
 
   const avatarText = initials(seller.name);
-  const profileLine = seller.bio || `${seller.specializations || "Продавец недвижимости"} · Barakat Estate`;
+  const profileFallback = (
+    <>
+      {seller.specializations || "Продавец недвижимости"} · <span className="brand-gold">Barakat Estate</span>
+    </>
+  );
   const whatsapp = seller.whatsapp || seller.phone;
   const telegramUrl = socialUrl("telegram", seller.telegram);
   const instagramUrl = socialUrl("instagram", seller.instagram);
@@ -211,7 +215,7 @@ export default function SellerProfilePage() {
 
           <div className="agent-info">
             <h1>{seller.name}</h1>
-            <p>{profileLine}</p>
+            <p>{seller.bio || profileFallback}</p>
             <div className="agent-badges">
               <span className="agent-badge">{seller.dealsCount || 0} сделок</span>
               <span className="agent-badge">

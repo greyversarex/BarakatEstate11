@@ -379,7 +379,7 @@ export const auraPages = {
       <div class="section-header" style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;flex-wrap:wrap;gap:16px;">
         <div>
           <div class="section-eyebrow">Мнения клиентов</div>
-          <h2 class="section-title">Отзывы о <strong>Barakat Estate</strong></h2>
+          <h2 class="section-title">Отзывы о <strong class="brand-gold">Barakat Estate</strong></h2>
         </div>
         <button class="btn-primary" onclick="openReviewModal()" style="padding:12px 24px;border-radius:100px;border:none;background:var(--gold);color:var(--ink);font-weight:600;cursor:pointer;">Оставить отзыв</button>
       </div>
@@ -418,7 +418,7 @@ export const auraPages = {
     <div class="footer-inner">
       <div class="footer-top">
         <div class="footer-brand">
-          <div class="footer-logo"><div class="dot"></div>Barakat Estate</div>
+          <div class="footer-logo"><div class="dot"></div><span class="brand-gold">Barakat Estate</span></div>
           <p>Платформа по поиску недвижимости в Душанбе. Помогаем найти дом вашей мечты.</p>
           <div class="footer-social">
             <a class="soc-btn" href="#">[[ICON_SMARTPHONE]]</a>
@@ -449,7 +449,7 @@ export const auraPages = {
         </div>
       </div>
       <div class="footer-bottom">
-        <p>© 2026 Barakat Estate. Все права защищены.</p>
+        <p>© 2026 <span class="brand-gold">Barakat Estate</span>. Все права защищены.</p>
         <span>Душанбе, Таджикистан</span>
       </div>
     </div>
@@ -614,7 +614,7 @@ export const auraPages = {
     <section class="services-hero-panel" style="background-image: linear-gradient(135deg, rgba(30, 45, 74, 0.85) 0%, rgba(212, 175, 55, 0.6) 100%), url('/Lol.png'); background-size: cover; background-position: center center; color: white; position: relative; min-height: 50vh; display: flex; align-items: center; justify-content: center; padding-top: 80px;">
       <div class="container" style="position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center;">
         <div class="section-eyebrow" style="color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);">Сервисы</div>
-        <h1 class="section-title" style="color: white; text-shadow: 0 4px 16px rgba(0,0,0,0.4);">Услуги <strong>Barakat Estate</strong></h1>
+        <h1 class="section-title" style="color: white; text-shadow: 0 4px 16px rgba(0,0,0,0.4);">Услуги <strong class="brand-gold">Barakat Estate</strong></h1>
         <p class="section-sub" style="color: rgba(255,255,255,0.9); text-shadow: 0 2px 8px rgba(0,0,0,0.3); margin-top: 16px;">Шесть сервисов для покупки, подготовки и оформления недвижимости в Душанбе.</p>
       </div>
     </section>
@@ -700,7 +700,7 @@ export const auraPages = {
       <div class="container" style="max-width: 800px; margin: 0 auto;">
         <h2 style="font-size: 32px; font-weight: 300; margin-bottom: 24px; color: var(--ink);">Доверьте покупку нам — получите больше выгоды!</h2>
         <p style="font-size: 18px; line-height: 1.8; color: var(--muted); margin-bottom: 24px;">
-          Barakat Estate совместно с ЧДММ «Баракат Хизматрасон» объявляет о запуске эксклюзивной акции для наших клиентов.
+          <span class="brand-gold">Barakat Estate</span> совместно с ЧДММ «Баракат Хизматрасон» объявляет о запуске эксклюзивной акции для наших клиентов.
           При покупке любого жилья через наше агентство недвижимости, мы берем на себя черновые отделочные работы, а именно — шпаклевку всех стен вашего нового дома, <strong>совершенно бесплатно!</strong>
         </p>
         
@@ -974,7 +974,7 @@ export const auraPages = {
         <div class="agent-avatar">АА</div>
         <div class="agent-info">
           <h1>Алиджон Ахмедов</h1>
-          <p>Риэлтор · Barakat Estate · Работает с 2019 года</p>
+          <p>Риэлтор · <span class="brand-gold">Barakat Estate</span> · Работает с 2019 года</p>
           <div class="agent-badges">
             <!-- Star removed -->
             <span class="agent-badge">47 сделок</span>
@@ -1030,7 +1030,7 @@ export const auraPages = {
     <section class="services-hero-panel" style="background-image: linear-gradient(135deg, rgba(30, 45, 74, 0.85) 0%, rgba(212, 175, 55, 0.6) 100%), url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center center; color: white; position: relative; min-height: 50vh; display: flex; align-items: center; justify-content: center; padding-top: 80px;">
       <div class="container" style="position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center;">
         <div class="section-eyebrow" style="color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);">О компании</div>
-        <h1 class="section-title" style="color: white; text-shadow: 0 4px 16px rgba(0,0,0,0.4);">Barakat <strong>Estate</strong></h1>
+        <h1 class="section-title" style="color: white; text-shadow: 0 4px 16px rgba(0,0,0,0.4);"><span class="brand-gold">Barakat Estate</span></h1>
         <p class="section-sub" style="color: rgba(255,255,255,0.9); text-shadow: 0 2px 8px rgba(0,0,0,0.3); margin-top: 16px; max-width: 600px; text-align: center;">Ваш надежный партнер в сфере недвижимости</p>
       </div>
     </section>
@@ -1039,10 +1039,10 @@ export const auraPages = {
       <div class="container about-hero-grid">
         <div>
           <h2 style="font-size: 36px; font-weight: 300; margin-bottom: 24px; font-family: 'Montserrat', sans-serif; color: var(--ink);">Кто мы <strong>такие?</strong></h2>
-          <p style="font-size: 16px; line-height: 1.8; color: var(--muted); margin-bottom: 20px;">
-            <strong>Barakat Estate</strong> — современное агентство недвижимости в Душанбе, которое помогает клиентам выгодно покупать, продавать, сдавать в аренду и инвестировать в недвижимость.
+          <p style="font-size: 18px; line-height: 1.8; color: var(--muted); margin-bottom: 20px;">
+            <span class="brand-gold">Barakat Estate</span> — современное агентство недвижимости в Душанбе, которое помогает клиентам выгодно покупать, продавать, сдавать в аренду и инвестировать в недвижимость.
           </p>
-          <p style="font-size: 16px; line-height: 1.8; color: var(--muted); margin-bottom: 30px;">
+          <p style="font-size: 18px; line-height: 1.8; color: var(--muted); margin-bottom: 30px;">
             Мы работаем с новостройками, вторичным жильем, коммерческой недвижимостью и инвестиционными проектами. Наша цель — обеспечить клиентам безопасные сделки, профессиональное сопровождение и лучшие предложения на рынке.
           </p>
         </div>
@@ -1184,7 +1184,7 @@ export const auraPages = {
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
       <h1 style="color: white; font-size: 48px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 12px; text-shadow: 0 4px 16px rgba(0,0,0,0.4); line-height: 1.1;">Наша Команда</h1>
-      <p style="color: rgba(255,255,255,0.95); font-size: 18px; font-weight: 500; max-width: 600px; margin: 0 auto; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">Познакомьтесь с профессионалами Barakat Estate, которые помогут вам найти идеальную недвижимость.</p>
+      <p style="color: rgba(255,255,255,0.95); font-size: 18px; font-weight: 500; max-width: 600px; margin: 0 auto; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">Познакомьтесь с профессионалами <span class="brand-gold">Barakat Estate</span>, которые помогут вам найти идеальную недвижимость.</p>
     </div>
   </section>
 
@@ -1207,7 +1207,7 @@ export const auraPages = {
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
       </div>
       <h1 style="color: white; font-size: 48px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 12px; text-shadow: 0 4px 16px rgba(0,0,0,0.4); line-height: 1.1;">Блог</h1>
-      <p style="color: rgba(255,255,255,0.95); font-size: 18px; font-weight: 500; max-width: 640px; margin: 0 auto; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">Полезные статьи и новости рынка недвижимости Душанбе от экспертов Barakat Estate.</p>
+      <p style="color: rgba(255,255,255,0.95); font-size: 18px; font-weight: 500; max-width: 640px; margin: 0 auto; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">Полезные статьи и новости рынка недвижимости Душанбе от экспертов <span class="brand-gold">Barakat Estate</span>.</p>
     </div>
   </section>
 

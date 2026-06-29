@@ -69,7 +69,7 @@ const icons = {
 };
 
 const brandLockup =
-  '<span class="brand-logo-lockup"><img src="/barakat.PNG" alt="Barakat Estate" /><span>Barakat Estate</span></span>';
+  '<span class="brand-logo-lockup"><img src="/barakat.PNG" alt="Barakat Estate" /><span class="brand-gold">Barakat Estate</span></span>';
 const legacyDomain = "aura" + ".tj";
 const oldMapStart = "#1e" + "2d4a 0%,#162" + "13e 40%,#0f" + "172a 100%";
 const oldMapShort = "#1e" + "2d4a,#0f" + "172a";

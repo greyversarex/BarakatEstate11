@@ -135,7 +135,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} {profile?.name || "Barakat Estate"}. Все права защищены.</p>
+          <p>© {new Date().getFullYear()} <span className="brand-gold">{profile?.name || "Barakat Estate"}</span>. Все права защищены.</p>
           <span>Душанбе, Таджикистан</span>
         </div>
       </div>

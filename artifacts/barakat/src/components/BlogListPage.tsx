@@ -50,7 +50,7 @@ export default function BlogListPage() {
           </div>
           <h1 style={{ color: "white", fontSize: 48, fontWeight: 800, letterSpacing: "-1.5px", marginBottom: 12, textShadow: "0 4px 16px rgba(0,0,0,0.4)", lineHeight: 1.1 }}>Блог</h1>
           <p style={{ color: "rgba(255,255,255,0.95)", fontSize: 18, fontWeight: 500, maxWidth: 640, margin: "0 auto", textShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
-            Полезные статьи и новости рынка недвижимости Душанбе от экспертов Barakat Estate.
+            Полезные статьи и новости рынка недвижимости Душанбе от экспертов <span className="brand-gold">Barakat Estate</span>.
           </p>
         </div>
       </section>
