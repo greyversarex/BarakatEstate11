@@ -4825,6 +4825,7 @@
       justify-content:flex-start;
       padding-bottom:4px;
       scrollbar-width:none;
+      -webkit-overflow-scrolling:touch;
     }
 
     .search-tabs::-webkit-scrollbar,
