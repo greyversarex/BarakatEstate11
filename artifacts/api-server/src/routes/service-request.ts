@@ -7,6 +7,8 @@ type ServiceRequest = {
   name?: string;
   phone?: string;
   service?: string;
+  district?: string;
+  landmark?: string;
   message?: string;
   photos?: unknown;
 };
@@ -33,6 +35,8 @@ router.post("/service-request", async (req, res) => {
   const name = clean(body.name);
   const phone = clean(body.phone);
   const service = clean(body.service);
+  const district = clean(body.district);
+  const landmark = clean(body.landmark);
   const message = clean(body.message);
   const photos = normalizePhotos(body.photos);
 
@@ -42,7 +46,7 @@ router.post("/service-request", async (req, res) => {
   }
 
   try {
-    await db.insert(applicationsTable).values({ name, phone, service, message, photos });
+    await db.insert(applicationsTable).values({ name, phone, service, district, landmark, message, photos });
   } catch {
     res.status(500).json({ error: "Failed to save application" });
     return;
@@ -52,7 +56,7 @@ router.post("/service-request", async (req, res) => {
   const telegramChatId = process.env.TELEGRAM_CHAT_ID;
 
   if (telegramBotToken && telegramChatId) {
-    const text = `🌟 *Новая заявка с сайта!* 🌟\n\n👤 *Имя:* ${name}\n📞 *Телефон:* ${phone}\n🛠 *Услуга:* ${service}\n💬 *Сообщение:* ${message || "Нет сообщения"}`;
+    const text = `🌟 *Новая заявка с сайта!* 🌟\n\n👤 *Имя:* ${name}\n📞 *Телефон:* ${phone}\n🛠 *Услуга:* ${service}\n📍 *Район:* ${district || "—"}\n🧭 *Ориентир:* ${landmark || "—"}\n💬 *Сообщение:* ${message || "Нет сообщения"}`;
     try {
       await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
         method: "POST",

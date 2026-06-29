@@ -787,6 +787,8 @@ function setupServiceRequestForm() {
         const data = {
           name: formData.get('name'),
           phone: formData.get('phone'),
+          district: formData.get('district') || '',
+          landmark: formData.get('landmark') || '',
           message: formData.get('message'),
           service: serviceType
         };
@@ -1560,6 +1562,8 @@ window.openRequestModal = function(type) {
           <input type="hidden" name="type" value="" />
           <input type="text" name="name" required placeholder="ФИО" style="${inputStyle}"/>
           <input type="tel" name="phone" required placeholder="Контактный телефон, +992 ___ __ __ __" style="${inputStyle}"/>
+          <select name="district" style="${inputStyle}"><option value="">Район</option></select>
+          <input type="text" name="landmark" placeholder="Ориентир" style="${inputStyle}"/>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
             <input type="number" name="area" required min="1" step="0.1" placeholder="Площадь, м²" style="${inputStyle}"/>
             <input type="number" name="rooms" required min="1" step="1" placeholder="Кол-во комнат" style="${inputStyle}"/>
@@ -1581,6 +1585,21 @@ window.openRequestModal = function(type) {
   modal.querySelector('#request-title').textContent = cfg.title;
   modal.querySelector('#request-subtitle').textContent = cfg.subtitle;
   modal.querySelector('input[name="type"]').value = type in REQUEST_TYPES ? type : 'rent';
+  const districtSelect = modal.querySelector('select[name="district"]');
+  if (districtSelect) {
+    const ds = (window.AuraSettings && window.AuraSettings.districts) || [];
+    districtSelect.replaceChildren();
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Район';
+    districtSelect.appendChild(placeholder);
+    ds.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d;
+      opt.textContent = d;
+      districtSelect.appendChild(opt);
+    });
+  }
   modal.style.display = 'flex';
 }
 
@@ -1623,6 +1642,8 @@ async function submitRequest(event) {
     const rooms = String(formData.get('rooms') || '').trim();
     const totalFloors = String(formData.get('totalFloors') || '').trim();
     const floor = String(formData.get('floor') || '').trim();
+    const district = String(formData.get('district') || '').trim();
+    const landmark = String(formData.get('landmark') || '').trim();
     const comment = String(formData.get('message') || '').trim();
 
     const lines = [
@@ -1637,6 +1658,8 @@ async function submitRequest(event) {
       name: String(formData.get('name') || '').trim(),
       phone: String(formData.get('phone') || '').trim(),
       service: cfg.service,
+      district,
+      landmark,
       message: lines.join('\n'),
       photos,
     };
@@ -1907,6 +1930,8 @@ document.addEventListener('submit', async (e) => {
     const data = {
       name: formData.get('name'),
       phone: formData.get('phone'),
+      district: formData.get('district') || '',
+      landmark: formData.get('landmark') || '',
       message: formData.get('message') || '',
       service
     };

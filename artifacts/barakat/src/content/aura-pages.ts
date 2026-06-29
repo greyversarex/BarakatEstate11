@@ -753,6 +753,14 @@ export const auraPages = {
                 <span style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: var(--ink);">Ваш телефон</span>
                 <input type="tel" name="phone" class="phone-input beautiful-input" required placeholder="+992 000 00 0000" style="width: 100%; padding: 16px 20px; border-radius: 12px; color: var(--ink); font-size: 15px;" />
               </label>
+              <label style="display: block;">
+                <span style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: var(--ink);">Район</span>
+                <input type="text" name="district" class="beautiful-input" placeholder="Например: Сино" style="width: 100%; padding: 16px 20px; border-radius: 12px; color: var(--ink); font-size: 15px;" />
+              </label>
+              <label style="display: block;">
+                <span style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: var(--ink);">Ориентир</span>
+                <input type="text" name="landmark" class="beautiful-input" placeholder="Например: возле рынка" style="width: 100%; padding: 16px 20px; border-radius: 12px; color: var(--ink); font-size: 15px;" />
+              </label>
               <label style="display: block; grid-column: 1 / -1;">
                 <span style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: var(--ink);">Комментарий</span>
                 <textarea name="message" class="beautiful-input" required placeholder="Детали заявки..." style="width: 100%; padding: 16px 20px; border-radius: 12px; color: var(--ink); font-size: 15px; min-height: 120px; resize: none;"></textarea>

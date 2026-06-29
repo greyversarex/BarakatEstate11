@@ -787,6 +787,8 @@ export default function UserDashboard() {
                               <div className="text-slate-500 text-sm font-medium mb-4 flex flex-col gap-1">
                                 <span>Телефон: {item.phone}</span>
                                 <span>Услуга: {item.service}</span>
+                                {item.district && <span>Район: {item.district}</span>}
+                                {item.landmark && <span>Ориентир: {item.landmark}</span>}
                                 {item.message && <span className="text-slate-700 whitespace-pre-line border-l-2 border-slate-200 pl-2 my-1">{item.message}</span>}
                                 {item.photos && (
                                   <div className="flex flex-wrap gap-2 my-1">
@@ -1413,6 +1415,8 @@ function renderForm(tab: Tab, form: FormState, loading: boolean, currentUser: Au
           <Field name="name" title="Имя" value={item.name} />
           <Field name="phone" title="Телефон" value={item.phone} />
           <Field name="service" title="Услуга" value={item.service} />
+          <Field name="district" title="Район" value={item.district || ""} />
+          <Field name="landmark" title="Ориентир" value={item.landmark || ""} />
           <Select name="status" title="Статус" value={item.status} options={[["new", "Новая"], ["processed", "Обработана"]]} />
           <TextArea name="message" title="Сообщение" value={item.message} rows={4} />
         </FormSection>

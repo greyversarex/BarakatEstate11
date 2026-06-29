@@ -100,6 +100,8 @@ export type Application = {
   name: string;
   phone: string;
   service: string;
+  district: string;
+  landmark: string;
   message: string;
   photos: string;
   status: "new" | "read" | "completed";
