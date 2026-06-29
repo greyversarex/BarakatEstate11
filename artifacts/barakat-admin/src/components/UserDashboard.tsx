@@ -40,11 +40,59 @@ import {
   Inbox,
   Star,
   CalendarClock,
+  Bell,
+  Home,
+  Tag,
+  Calculator,
+  Zap,
 } from "lucide-react";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import type { AuthUser, Listing, Profile, PublishStatus, Application, Banner, User } from "@/lib/types";
 
-type Tab = "listings" | "profile" | "applications" | "users" | "settings" | "reviews" | "viewings";
+type Tab =
+  | "listings"
+  | "profile"
+  | "applications"
+  | "users"
+  | "settings"
+  | "reviews"
+  | "viewings"
+  | "app_rent"
+  | "app_sell"
+  | "app_appraisal"
+  | "app_buyout"
+  | "app_other";
+
+const APPLICATION_CATEGORIES: Array<{ id: Tab; label: string; service: string; icon: React.ReactNode }> = [
+  { id: "app_rent", label: "Сдать в аренду", service: "Сдать в аренду", icon: <Home size={18} /> },
+  { id: "app_sell", label: "Продажа", service: "Объявление для продажи", icon: <Tag size={18} /> },
+  { id: "app_appraisal", label: "Оценка", service: "Оценка стоимости", icon: <Calculator size={18} /> },
+  { id: "app_buyout", label: "Срочный выкуп", service: "Срочный выкуп", icon: <Zap size={18} /> },
+];
+
+const KNOWN_APP_SERVICES = APPLICATION_CATEGORIES.map((c) => c.service);
+
+function isAppTab(tab: Tab): boolean {
+  return tab === "app_other" || APPLICATION_CATEGORIES.some((c) => c.id === tab);
+}
+
+function appServiceFor(tab: Tab): string | null {
+  return APPLICATION_CATEGORIES.find((c) => c.id === tab)?.service ?? null;
+}
+
+function appPredicate(tab: Tab): (a: any) => boolean {
+  if (tab === "app_other") return (a) => !KNOWN_APP_SERVICES.includes(a?.service);
+  const service = appServiceFor(tab);
+  return (a) => a?.service === service;
+}
+
+function endpointFor(tab: Tab): string {
+  return isAppTab(tab) ? "applications" : tab;
+}
+
+function tabForService(service: string): Tab {
+  return APPLICATION_CATEGORIES.find((c) => c.service === service)?.id ?? "app_other";
+}
 
 type FormState = {
   listings: Partial<Listing>;
@@ -55,6 +103,11 @@ type FormState = {
   settings: Partial<Profile>;
   reviews: any;
   viewings: any;
+  app_rent: Partial<Application>;
+  app_sell: Partial<Application>;
+  app_appraisal: Partial<Application>;
+  app_buyout: Partial<Application>;
+  app_other: Partial<Application>;
 };
 
 function getTabs(role: string): Array<{ id: Tab; label: string; icon: React.ReactNode }> {
@@ -65,7 +118,8 @@ function getTabs(role: string): Array<{ id: Tab; label: string; icon: React.Reac
   if (role === "admin") {
     return [
       ...baseTabs,
-      { id: "applications" as Tab, label: "Заявки", icon: <Inbox size={18} /> },
+      ...APPLICATION_CATEGORIES.map((c) => ({ id: c.id, label: c.label, icon: c.icon })),
+      { id: "app_other" as Tab, label: "Другие заявки", icon: <Inbox size={18} /> },
       { id: "viewings" as Tab, label: "Просмотры", icon: <CalendarClock size={18} /> },
       { id: "reviews" as Tab, label: "Отзывы", icon: <Star size={18} /> },
       { id: "users" as Tab, label: "Пользователи", icon: <Users size={18} /> },
@@ -119,6 +173,11 @@ const emptyForms: FormState = {
     experienceYears: 0,
   },
   applications: { name: "", phone: "", service: "", message: "", photos: "", status: "new" },
+  app_rent: { name: "", phone: "", service: "", message: "", photos: "", status: "new" },
+  app_sell: { name: "", phone: "", service: "", message: "", photos: "", status: "new" },
+  app_appraisal: { name: "", phone: "", service: "", message: "", photos: "", status: "new" },
+  app_buyout: { name: "", phone: "", service: "", message: "", photos: "", status: "new" },
+  app_other: { name: "", phone: "", service: "", message: "", photos: "", status: "new" },
   reviews: { name: "", text: "", sellerId: "", status: "pending" },
   viewings: {},
 
@@ -226,6 +285,29 @@ export default function UserDashboard() {
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(false);
   const [globalSettings, setGlobalSettings] = useState<Partial<Profile>>(emptyForms.settings);
+  const [allApplications, setAllApplications] = useState<any[]>([]);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement | null>(null);
+  const reqIdRef = useRef(0);
+
+  const appUnseen = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const c of APPLICATION_CATEGORIES) {
+      m[c.id] = allApplications.filter((a) => a.service === c.service && a.status === "new").length;
+    }
+    m["app_other"] = allApplications.filter((a) => !KNOWN_APP_SERVICES.includes(a.service) && a.status === "new").length;
+    return m;
+  }, [allApplications]);
+
+  const totalUnseen = useMemo(
+    () => allApplications.filter((a) => a.status === "new").length,
+    [allApplications],
+  );
+
+  const recentUnseen = useMemo(
+    () => allApplications.filter((a) => a.status === "new").slice(0, 8),
+    [allApplications],
+  );
 
   useEffect(() => {
     authFetch(`${ADMIN_API}/auth/me`)
@@ -250,7 +332,9 @@ export default function UserDashboard() {
 
   const filteredItems = useMemo(() => {
     if (activeTab === "profile" || activeTab === "settings") return [];
+    const matchesCategory = isAppTab(activeTab) ? appPredicate(activeTab) : () => true;
     return items.filter((item) => {
+      if (!matchesCategory(item)) return false;
       const text = JSON.stringify(item).toLowerCase();
       const matchesSearch = text.includes(query.toLowerCase());
       const matchesStatus = statusFilter === "all" || item.status === statusFilter || !("status" in item);
@@ -264,6 +348,34 @@ export default function UserDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
+  async function refreshApplications() {
+    if (currentUser?.role !== "admin") return;
+    try {
+      const res = await authFetch(`${ADMIN_API}/applications?admin=1`);
+      const payload = await res.json();
+      setAllApplications(Array.isArray(payload) ? payload : payload.data || []);
+    } catch {
+      // non-fatal: badges simply won't update
+    }
+  }
+
+  useEffect(() => {
+    if (currentUser?.role !== "admin") return;
+    void refreshApplications();
+    const timer = window.setInterval(() => void refreshApplications(), 20000);
+    return () => window.clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!notifOpen) return;
+    function onClick(e: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
+    }
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [notifOpen]);
+
   useEffect(() => {
     if (!toast) return;
     const timer = window.setTimeout(() => setToast(""), 2600);
@@ -272,15 +384,52 @@ export default function UserDashboard() {
 
   async function loadData(tab: Tab) {
     if (tab === "profile" || tab === "settings") return;
+    const myId = ++reqIdRef.current;
     setLoading(true);
     try {
-      const res = await authFetch(`${ADMIN_API}/${tab}?admin=1`);
+      const res = await authFetch(`${ADMIN_API}/${endpointFor(tab)}?admin=1`);
       const payload = await res.json();
+      if (reqIdRef.current !== myId) return;
       setItems(Array.isArray(payload) ? payload : (payload.data || []));
       setForm((prev) => ({ ...prev, profile: userToProfile(currentUser!) }));
     } finally {
-      setLoading(false);
+      if (reqIdRef.current === myId) setLoading(false);
     }
+  }
+
+  async function markCategorySeen(tab: Tab, rows: any[]) {
+    const predicate = appPredicate(tab);
+    const unseen = rows.filter((a) => predicate(a) && a.status === "new");
+    if (unseen.length === 0) return;
+    await Promise.all(
+      unseen.map((a) =>
+        authFetch(`${ADMIN_API}/applications/${a.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "read" }),
+        }),
+      ),
+    );
+    await loadData(tab);
+    await refreshApplications();
+  }
+
+  async function openAppCategory(tab: Tab) {
+    const myId = ++reqIdRef.current;
+    setLoading(true);
+    let rows: any[] = [];
+    try {
+      const res = await authFetch(`${ADMIN_API}/applications?admin=1`);
+      const payload = await res.json();
+      rows = Array.isArray(payload) ? payload : payload.data || [];
+      if (reqIdRef.current !== myId) return;
+      setItems(rows);
+    } finally {
+      if (reqIdRef.current === myId) setLoading(false);
+    }
+    // User navigated away while loading — don't mark or reload a stale category.
+    if (reqIdRef.current !== myId) return;
+    await markCategorySeen(tab, rows);
   }
 
   async function handleLogout() {
@@ -305,11 +454,14 @@ export default function UserDashboard() {
   function switchTab(tab: Tab) {
     setActiveTab(tab);
     setEditingId(null);
+    setQuery("");
+    setNotifOpen(false);
     setForm((prev) => ({
       ...prev,
       [tab]: tab === "profile" && currentUser ? userToProfile(currentUser) : tab === "settings" ? globalSettings : cloneForm((emptyForms as any)[tab]),
     }));
-    loadData(tab);
+    if (isAppTab(tab)) void openAppCategory(tab);
+    else loadData(tab);
   }
 
   function startEdit(item: Listing) {
@@ -320,8 +472,9 @@ export default function UserDashboard() {
 
   async function removeItem(id: string) {
     if (!window.confirm("Удалить?")) return;
-    await authFetch(`${ADMIN_API}/${activeTab}/${id}`, { method: "DELETE" });
+    await authFetch(`${ADMIN_API}/${endpointFor(activeTab)}/${id}`, { method: "DELETE" });
     await loadData(activeTab);
+    if (isAppTab(activeTab)) await refreshApplications();
     setToast("Удалено");
   }
 
@@ -433,7 +586,12 @@ export default function UserDashboard() {
                 }`}
               >
                 {tab.icon}
-                {tab.label}
+                <span className="truncate">{tab.label}</span>
+                {appUnseen[tab.id] > 0 && (
+                  <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                    {appUnseen[tab.id]}
+                  </span>
+                )}
               </button>
             ))}
           </nav>
@@ -454,14 +612,56 @@ export default function UserDashboard() {
         <section className="flex-1 min-w-0 flex flex-col gap-6 lg:gap-8 p-4 lg:p-0">
           
           {/* TOPBAR */}
-          <header className="bg-white rounded-2xl shadow-sm border border-slate-200 px-8 py-6 flex items-center justify-between">
+          <header className="bg-white rounded-2xl shadow-sm border border-slate-200 px-8 py-6 flex items-center justify-between gap-4">
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">
               {getTabs(currentUser.role).find((tab) => tab.id === activeTab)?.label}
             </h1>
+            {currentUser.role === "admin" && (
+              <div className="relative" ref={notifRef}>
+                <button
+                  type="button"
+                  onClick={() => setNotifOpen((v) => !v)}
+                  className="relative p-2.5 rounded-xl text-slate-600 hover:bg-slate-100 transition"
+                  aria-label="Уведомления"
+                >
+                  <Bell size={22} />
+                  {totalUnseen > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold leading-none text-white bg-red-500 rounded-full">
+                      {totalUnseen}
+                    </span>
+                  )}
+                </button>
+                {notifOpen && (
+                  <div className="absolute right-0 mt-2 w-80 max-w-[90vw] bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden">
+                    <div className="px-4 py-3 border-b border-slate-100 font-semibold text-slate-800 text-sm">
+                      Новые заявки ({totalUnseen})
+                    </div>
+                    {recentUnseen.length === 0 ? (
+                      <div className="px-4 py-6 text-center text-slate-400 text-sm">Нет новых заявок</div>
+                    ) : (
+                      <ul className="max-h-80 overflow-y-auto divide-y divide-slate-100">
+                        {recentUnseen.map((a) => (
+                          <li key={a.id}>
+                            <button
+                              type="button"
+                              onClick={() => switchTab(tabForService(a.service))}
+                              className="w-full text-left px-4 py-3 hover:bg-slate-50 transition"
+                            >
+                              <div className="font-medium text-slate-800 text-sm truncate">{a.name || "Без имени"}</div>
+                              <div className="text-xs text-slate-500 truncate">{a.service || "Без категории"} · {a.phone}</div>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </header>
 
           {/* MAIN FORMS */}
-          {activeTab !== "reviews" && activeTab !== "viewings" && !(["listings", "applications"].includes(activeTab) && !editingId && currentUser?.role === "admin") && (
+          {activeTab !== "reviews" && activeTab !== "viewings" && !isAppTab(activeTab) && !(["listings", "applications"].includes(activeTab) && !editingId && currentUser?.role === "admin") && (
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-8">
               {activeTab !== "settings" && activeTab !== "profile" && (
                 <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
@@ -508,7 +708,7 @@ export default function UserDashboard() {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <h2 className="text-xl font-semibold text-slate-800">
-                  {activeTab === "listings" ? "Список объявлений" : activeTab === "applications" ? "Список заявок" : activeTab === "viewings" ? "Заявки на просмотр" : activeTab === "reviews" ? "Список отзывов" : "Пользователи"}
+                  {activeTab === "listings" ? "Список объявлений" : (activeTab === "applications" || isAppTab(activeTab)) ? "Список заявок" : activeTab === "viewings" ? "Заявки на просмотр" : activeTab === "reviews" ? "Список отзывов" : "Пользователи"}
                 </h2>
                 <div className="relative max-w-sm w-full">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -581,7 +781,7 @@ export default function UserDashboard() {
                             </>
                           )}
                           
-                          {activeTab === "applications" && (
+                          {(activeTab === "applications" || isAppTab(activeTab)) && (
                             <>
                               <h3 className="font-bold text-lg text-slate-900 truncate mb-1">{item.name}</h3>
                               <div className="text-slate-500 text-sm font-medium mb-4 flex flex-col gap-1">
@@ -597,7 +797,7 @@ export default function UserDashboard() {
                                     ))}
                                   </div>
                                 )}
-                                <span className={`w-fit px-2 py-0.5 rounded text-xs font-bold mt-1 ${item.status === 'new' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{item.status === 'new' ? 'Новая' : 'Обработана'}</span>
+                                <span className={`w-fit px-2 py-0.5 rounded text-xs font-bold mt-1 ${item.status === 'new' ? 'bg-red-100 text-red-700' : item.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>{item.status === 'new' ? 'Новая' : item.status === 'completed' ? 'Завершена' : 'Просмотрена'}</span>
                               </div>
                             </>
                           )}
@@ -640,9 +840,18 @@ export default function UserDashboard() {
                         </div>
                         
                         <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100">
-                          {activeTab !== "applications" && activeTab !== "reviews" && activeTab !== "viewings" && (
+                          {activeTab !== "applications" && !isAppTab(activeTab) && activeTab !== "reviews" && activeTab !== "viewings" && (
                             <button onClick={() => startEdit(item)} type="button" className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-yellow-600 transition bg-slate-50 hover:bg-yellow-50 px-3 py-1.5 rounded-lg">
                               <Pencil size={14} /> Редактировать
+                            </button>
+                          )}
+                          {isAppTab(activeTab) && item.status !== "completed" && (
+                            <button onClick={async () => {
+                              await authFetch(`${ADMIN_API}/applications/${item.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "completed" }) });
+                              await loadData(activeTab);
+                              await refreshApplications();
+                            }} type="button" className="flex items-center gap-2 text-sm font-medium text-green-600 hover:text-green-700 transition bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg">
+                              <CheckCircle2 size={14} /> Завершить
                             </button>
                           )}
                           {activeTab === "viewings" && (

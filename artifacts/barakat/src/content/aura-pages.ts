@@ -137,7 +137,7 @@ export const auraPages = {
         <button class="s-tab" onclick="openRequestModal('rent')">Сдать</button>
         <button class="s-tab" onclick="navigate('map')">На карте</button>
         <button class="s-tab" onclick="openRequestModal('appraisal')">Оценить</button>
-        <button class="s-tab" onclick="navigate('services')">Сроч. выкуп</button>
+        <button class="s-tab" onclick="openRequestModal('buyout')">Сроч. выкуп</button>
       </div>
       <div class="search-row" style="align-items: center; gap: 12px;">
         <div style="flex: 1.2;">
