@@ -89,7 +89,8 @@ export default function SiteFooter() {
               <img src={profile?.logoUrl || "/barakat.PNG"} alt={profile?.name || "Barakat Estate"} width={100} height={78} />
             </div>
             <p>{desc}</p>
-            <p style={{ marginTop: '8px', fontSize: '14px', color: 'var(--muted)' }}>Адрес: г. Душанбе, ул. Бухоро 2</p>
+            <p style={{ marginTop: '8px', fontSize: '14px', color: 'rgba(255,255,255,.5)' }}>Адрес: г. Душанбе, ул. Бухоро 2</p>
+            <p style={{ marginTop: '4px', fontSize: '14px', color: 'rgba(255,255,255,.5)' }}>Режим работы: без выходных, ежедневно с 9:00 до 19:00</p>
             <div className="footer-social">
               <a className="soc-btn" href={`tel:${phone.replace(/\s/g, '')}`} aria-label="Телефон">
                 <Phone size={16} color="#a97c32" />
