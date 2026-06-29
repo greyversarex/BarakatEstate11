@@ -943,7 +943,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   .brand-gold {
-    background: linear-gradient(100deg, #8F6728 0%, #C9912F 40%, #F3D27A 50%, #C9912F 60%, #8F6728 100%);
+    background: linear-gradient(100deg, #BE8A2B 0%, #DDB45D 28%, #F6E3A4 50%, #DDB45D 72%, #BE8A2B 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
