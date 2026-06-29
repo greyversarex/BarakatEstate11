@@ -87,7 +87,7 @@ export default function BlogPostPage({ slug }: { slug: string }) {
             <h3>Нужна консультация?</h3>
             <p>Специалисты <span className="brand-gold">Barakat Estate</span> помогут с покупкой, продажей и оформлением недвижимости в Душанбе.</p>
             <div className="blog-post-cta-actions">
-              <a className="btn-primary" href="tel:+99220107771">Позвонить</a>
+              <a className="btn-primary" href="tel:+992201077771">Позвонить</a>
               <Link className="btn-secondary" href="/listings">Смотреть объявления</Link>
             </div>
           </div>

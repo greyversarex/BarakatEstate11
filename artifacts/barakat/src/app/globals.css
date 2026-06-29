@@ -4344,8 +4344,9 @@
     .search-tabs { flex-wrap: wrap; justify-content: center; }
     .hero-stats { display: flex !important; flex-direction: row !important; justify-content: space-between !important; padding: 0 !important; gap: 8px !important; width: 100%; flex-wrap: nowrap !important; }
     .hero-stats .stat-item { display: flex !important; flex-direction: column !important; align-items: center; text-align: center; flex: 1; }
-    .hero-stats .stat-num { font-size: 28px !important; }
-    .hero-stats .stat-label { font-size: 10px !important; }
+    .hero-stats .stat-num { font-size: 28px !important; height: 34px; display:flex; align-items:center; justify-content:center; }
+    .hero-stats .stat-num svg { width: 28px; height: 28px; }
+    .hero-stats .stat-label { font-size: 10px !important; margin-top: 4px; }
     .hero-cards { height: 420px; margin-top: 20px; }
     .search-row { flex-direction: column; align-items: stretch; }
     .s-select, .s-btn { width: 100%; }
