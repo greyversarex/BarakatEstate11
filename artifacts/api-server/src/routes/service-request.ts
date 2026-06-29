@@ -8,10 +8,24 @@ type ServiceRequest = {
   phone?: string;
   service?: string;
   message?: string;
+  photos?: unknown;
 };
 
 function clean(value: unknown) {
   return String(value || "").trim();
+}
+
+const MAX_PHOTOS = 8;
+const MAX_PHOTO_LEN = 3_500_000; // ~3.5MB per data URL
+const PHOTO_RE = /^data:image\/(jpeg|jpg|png|webp);base64,[A-Za-z0-9+/=\s]+$/;
+
+function normalizePhotos(value: unknown): string {
+  const arr = Array.isArray(value) ? value : value ? [value] : [];
+  return arr
+    .map((v) => String(v || "").trim())
+    .filter((v) => v.length > 0 && v.length <= MAX_PHOTO_LEN && PHOTO_RE.test(v))
+    .slice(0, MAX_PHOTOS)
+    .join("\n");
 }
 
 router.post("/service-request", async (req, res) => {
@@ -20,6 +34,7 @@ router.post("/service-request", async (req, res) => {
   const phone = clean(body.phone);
   const service = clean(body.service);
   const message = clean(body.message);
+  const photos = normalizePhotos(body.photos);
 
   if (!name || !phone || !service) {
     res.status(400).json({ error: "Заполните имя, телефон и услугу" });
@@ -27,7 +42,7 @@ router.post("/service-request", async (req, res) => {
   }
 
   try {
-    await db.insert(applicationsTable).values({ name, phone, service, message });
+    await db.insert(applicationsTable).values({ name, phone, service, message, photos });
   } catch {
     res.status(500).json({ error: "Failed to save application" });
     return;

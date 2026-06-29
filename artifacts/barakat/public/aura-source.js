@@ -1488,6 +1488,177 @@ window.openBookingModal = function() {
   modal.style.display = 'flex';
 }
 
+// ── REQUEST MODALS (Сдать / Продать / Оценить) ──
+const REQUEST_TYPES = {
+  rent: {
+    service: 'Сдать в аренду',
+    title: 'Сдать в аренду',
+    subtitle: 'Оставьте заявку — мы поможем сдать вашу квартиру.',
+  },
+  sell: {
+    service: 'Объявление для продажи',
+    title: 'Объявление для продажи',
+    subtitle: 'Оставьте заявку — мы разместим объявление о продаже.',
+  },
+  appraisal: {
+    service: 'Оценка стоимости',
+    title: 'Оценка стоимости',
+    subtitle: 'Оставьте заявку — мы бесплатно оценим вашу недвижимость.',
+  },
+};
+
+const REQUEST_MAX_PHOTOS = 8;
+
+function resizeImageToDataUrl(file, maxSize = 1280, quality = 0.7) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('read error'));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('image error'));
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > height && width > maxSize) {
+          height = Math.round((height * maxSize) / width);
+          width = maxSize;
+        } else if (height > maxSize) {
+          width = Math.round((width * maxSize) / height);
+          height = maxSize;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+window.openRequestModal = function(type) {
+  const cfg = REQUEST_TYPES[type] || REQUEST_TYPES.rent;
+  let modal = document.getElementById('modal-request');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-request';
+    modal.style.cssText = "display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:20px;";
+    const inputStyle = "padding:14px 16px;border-radius:10px;border:1px solid #cbd5e1;font-size:15px;color:#0f172a;outline:none;font-family:inherit;background:white;";
+    modal.innerHTML = `
+      <div style="background:white;padding:32px;border-radius:24px;width:100%;max-width:460px;position:relative;max-height:90vh;overflow-y:auto;">
+        <button onclick="document.getElementById('modal-request').style.display='none'" style="position:absolute;top:16px;right:16px;border:none;background:transparent;font-size:24px;cursor:pointer;color:#64748b;">&times;</button>
+        <h3 id="request-title" style="font-size:22px;font-weight:700;margin-bottom:8px;color:#0f172a;text-align:center;"></h3>
+        <p id="request-subtitle" style="font-size:14px;color:#64748b;margin-bottom:24px;text-align:center;"></p>
+        <form id="form-request" style="display:flex;flex-direction:column;gap:14px;" onsubmit="submitRequest(event)">
+          <input type="hidden" name="type" value="" />
+          <input type="text" name="name" required placeholder="ФИО" style="${inputStyle}"/>
+          <input type="tel" name="phone" required placeholder="Контактный телефон, +992 ___ __ __ __" style="${inputStyle}"/>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <input type="number" name="area" required min="1" step="0.1" placeholder="Площадь, м²" style="${inputStyle}"/>
+            <input type="number" name="rooms" required min="1" step="1" placeholder="Кол-во комнат" style="${inputStyle}"/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <input type="number" name="totalFloors" required min="1" step="1" placeholder="Этажность дома" style="${inputStyle}"/>
+            <input type="number" name="floor" required min="1" step="1" placeholder="Этаж квартиры" style="${inputStyle}"/>
+          </div>
+          <label style="font-size:13px;color:#64748b;font-weight:600;margin-bottom:-6px;">Фотографии (обязательно)</label>
+          <input type="file" name="photos" accept="image/*" multiple required style="${inputStyle}"/>
+          <textarea name="message" placeholder="Комментарий" rows="3" style="${inputStyle}resize:none;"></textarea>
+          <button type="submit" style="padding:14px;background:var(--gold);color:var(--ink);font-weight:700;border:none;border-radius:10px;cursor:pointer;font-size:15px;margin-top:4px;font-family:inherit;">Отправить заявку</button>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+  modal.querySelector('#form-request').reset();
+  modal.querySelector('#request-title').textContent = cfg.title;
+  modal.querySelector('#request-subtitle').textContent = cfg.subtitle;
+  modal.querySelector('input[name="type"]').value = type in REQUEST_TYPES ? type : 'rent';
+  modal.style.display = 'flex';
+}
+
+async function submitRequest(event) {
+  event.preventDefault();
+  const form = event.target;
+  const btn = form.querySelector('button[type="submit"]');
+  const formData = new FormData(form);
+  const type = String(formData.get('type') || 'rent');
+  const cfg = REQUEST_TYPES[type] || REQUEST_TYPES.rent;
+
+  const files = form.querySelector('input[name="photos"]').files;
+  if (!files || files.length === 0) {
+    showNotif('Добавьте хотя бы одну фотографию.');
+    return;
+  }
+  if (files.length > REQUEST_MAX_PHOTOS) {
+    showNotif(`Можно добавить не более ${REQUEST_MAX_PHOTOS} фотографий.`);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Отправка...';
+
+  try {
+    const photos = [];
+    for (let i = 0; i < files.length; i++) {
+      photos.push(await resizeImageToDataUrl(files[i]));
+    }
+
+    const totalSize = photos.reduce((sum, p) => sum + p.length, 0);
+    if (totalSize > 9_000_000) {
+      showNotif('Фотографии слишком большие. Уменьшите их количество или размер.');
+      btn.disabled = false;
+      btn.textContent = 'Отправить заявку';
+      return;
+    }
+
+    const area = String(formData.get('area') || '').trim();
+    const rooms = String(formData.get('rooms') || '').trim();
+    const totalFloors = String(formData.get('totalFloors') || '').trim();
+    const floor = String(formData.get('floor') || '').trim();
+    const comment = String(formData.get('message') || '').trim();
+
+    const lines = [
+      `Площадь: ${area} м²`,
+      `Количество комнат: ${rooms}`,
+      `Этажность дома: ${totalFloors}`,
+      `Этаж квартиры: ${floor}`,
+    ];
+    if (comment) lines.push(`Комментарий: ${comment}`);
+
+    const payload = {
+      name: String(formData.get('name') || '').trim(),
+      phone: String(formData.get('phone') || '').trim(),
+      service: cfg.service,
+      message: lines.join('\n'),
+      photos,
+    };
+
+    const baseUrl = window.BARAKAT_API_URL ?? '';
+    const response = await fetch(`${baseUrl}/api/service-request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (response.status === 413) throw new Error('too-large');
+    if (!response.ok) throw new Error('Ошибка отправки');
+    showNotif('Заявка отправлена! Мы свяжемся с вами в ближайшее время.');
+    form.reset();
+    document.getElementById('modal-request').style.display = 'none';
+  } catch (error) {
+    if (error && error.message === 'too-large') {
+      showNotif('Фотографии слишком большие. Уменьшите их количество или размер.');
+    } else {
+      showNotif('Не удалось отправить заявку. Попробуйте позже.');
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Отправить заявку';
+  }
+}
+
 function getFavoriteIds() {
   return getFavorites();
 }

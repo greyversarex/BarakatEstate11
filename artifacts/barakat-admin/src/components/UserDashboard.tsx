@@ -118,7 +118,7 @@ const emptyForms: FormState = {
     dealsCount: 0,
     experienceYears: 0,
   },
-  applications: { name: "", phone: "", service: "", message: "", status: "new" },
+  applications: { name: "", phone: "", service: "", message: "", photos: "", status: "new" },
   reviews: { name: "", text: "", sellerId: "", status: "pending" },
   viewings: {},
 
@@ -587,7 +587,16 @@ export default function UserDashboard() {
                               <div className="text-slate-500 text-sm font-medium mb-4 flex flex-col gap-1">
                                 <span>Телефон: {item.phone}</span>
                                 <span>Услуга: {item.service}</span>
-                                {item.message && <span className="text-slate-700 italic border-l-2 border-slate-200 pl-2 my-1">Комментарий: {item.message}</span>}
+                                {item.message && <span className="text-slate-700 whitespace-pre-line border-l-2 border-slate-200 pl-2 my-1">{item.message}</span>}
+                                {item.photos && (
+                                  <div className="flex flex-wrap gap-2 my-1">
+                                    {item.photos.split("\n").filter(Boolean).filter((src: string) => /^(data:image\/(jpeg|jpg|png|webp);base64,|https?:\/\/)/.test(src)).map((src: string, i: number) => (
+                                      <a key={i} href={src} target="_blank" rel="noreferrer">
+                                        <img src={src} alt={`Фото ${i + 1}`} className="w-16 h-16 object-cover rounded-lg border border-slate-200" />
+                                      </a>
+                                    ))}
+                                  </div>
+                                )}
                                 <span className={`w-fit px-2 py-0.5 rounded text-xs font-bold mt-1 ${item.status === 'new' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{item.status === 'new' ? 'Новая' : 'Обработана'}</span>
                               </div>
                             </>

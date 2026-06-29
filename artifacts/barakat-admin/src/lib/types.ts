@@ -101,6 +101,7 @@ export type Application = {
   phone: string;
   service: string;
   message: string;
+  photos: string;
   status: "new" | "read" | "completed";
   createdAt: string;
   updatedAt: string;

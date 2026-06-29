@@ -86,6 +86,7 @@ export const applicationsTable = pgTable("applications", {
   phone: text("phone").notNull(),
   service: text("service").notNull().default(""),
   message: text("message").notNull().default(""),
+  photos: text("photos").notNull().default(""),
   status: applicationStatusEnum("status").notNull().default("new"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

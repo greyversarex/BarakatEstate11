@@ -130,13 +130,13 @@ export const auraPages = {
   <!-- SEARCH -->
   <section class="search-section">
     <div class="search-wrap">
-      <div class="search-tabs" style="gap: 8px; margin-bottom: 24px;">
+      <div class="search-tabs" style="margin-bottom: 24px;">
         <button class="s-tab active" onclick="setSearchTab(this,'buy')" style="background: var(--gold); color: var(--ink);">Купить</button>
-        <button class="s-tab" onclick="window.location.href='https://barakatestateadmin.vercel.app'">Продать</button>
+        <button class="s-tab" onclick="openRequestModal('sell')">Продать</button>
         <button class="s-tab" onclick="setSearchTab(this,'rent')">Снять</button>
-        <button class="s-tab" onclick="window.location.href='https://barakatestateadmin.vercel.app'">Сдать</button>
+        <button class="s-tab" onclick="openRequestModal('rent')">Сдать</button>
         <button class="s-tab" onclick="navigate('map')">На карте</button>
-        <button class="s-tab" onclick="navigate('services')">Оценить</button>
+        <button class="s-tab" onclick="openRequestModal('appraisal')">Оценить</button>
         <button class="s-tab" onclick="navigate('services')">Сроч. выкуп</button>
       </div>
       <div class="search-row" style="align-items: center; gap: 12px;">

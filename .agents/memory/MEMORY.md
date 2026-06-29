@@ -1,2 +1,3 @@
 - [Timeweb deploy](timeweb-deploy.md) — self-hosted Docker deploy traps: deploy/ not in repo (hard reset wipes it), pin pnpm@10.26.1, admin prod build runs tsc -b (kills dead files).
 - [Listings access-control gap](barakat-listings-access-control.md) — listings mutate routes only auth-check, no ownership/role/field-allowlist (IDOR); only isHero is admin-gated.
+- [Public application photos & XSS](barakat-public-application-photos.md) — public /api/service-request lead forms; photos as base64 data URLs (Timeweb has no object storage); allowlist data:image both server-side and at admin render.
