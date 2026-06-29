@@ -623,7 +623,7 @@ export default function UserDashboard() {
         <section className="flex-1 min-w-0 flex flex-col gap-6 lg:gap-8 p-4 lg:p-0">
           
           {/* TOPBAR */}
-          <header className="bg-white rounded-2xl shadow-sm border border-slate-200 px-8 py-6 flex items-center justify-between gap-4">
+          <header className="bg-white rounded-2xl shadow-sm border border-slate-200 px-5 py-5 sm:px-8 sm:py-6 flex items-center justify-between gap-4">
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">
               {getTabs(currentUser.role).find((tab) => tab.id === activeTab)?.label}
             </h1>
@@ -673,7 +673,7 @@ export default function UserDashboard() {
 
           {/* MAIN FORMS */}
           {activeTab !== "reviews" && activeTab !== "viewings" && !isAppTab(activeTab) && !(["listings", "applications"].includes(activeTab) && !editingId && currentUser?.role === "admin") && (
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-8 mb-8">
               {activeTab !== "settings" && activeTab !== "profile" && (
                 <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
                   <h2 className="text-xl font-semibold text-slate-800">
@@ -717,7 +717,7 @@ export default function UserDashboard() {
 
           {/* DATA GRID */}
           {activeTab !== "profile" && activeTab !== "settings" && (
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <h2 className="text-xl font-semibold text-slate-800">
                   {activeTab === "listings" ? "Список объявлений" : (activeTab === "applications" || isAppTab(activeTab)) ? "Список заявок" : activeTab === "viewings" ? "Заявки на просмотр" : activeTab === "reviews" ? "Список отзывов" : activeTab === "blog" ? "Список статей" : "Пользователи"}
@@ -1581,7 +1581,7 @@ function renderForm(tab: Tab, form: FormState, loading: boolean, currentUser: Au
         <TextArea name="description" title="Детальное описание" value={item.description} rows={5} colSpan="full" />
       </FormSection>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-slate-100 bg-slate-50 -mx-8 -mb-8 px-8 py-6 rounded-b-2xl">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-slate-100 bg-slate-50 -mx-5 -mb-5 px-5 py-5 sm:-mx-8 sm:-mb-8 sm:px-8 sm:py-6 rounded-b-2xl">
         <div className="flex items-center gap-6">
           <Select name="status" title="Статус публикации" value={item.status} options={[["draft", "Черновик"], ["published", "Опубликовано"]]} />
           
