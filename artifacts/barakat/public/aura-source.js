@@ -1772,6 +1772,7 @@ window.hydrateAuraPage = async function(page) {
   if (page === 'home' || page === '') {
     setupHomeServices();
     renderCards('featured-grid', 6);
+    if (typeof hydrateHeroCarousel === 'function') hydrateHeroCarousel();
     if (typeof setupHomeCarousel === 'function') setupHomeCarousel();
     initYandexMaps();
     initRangeInputs();

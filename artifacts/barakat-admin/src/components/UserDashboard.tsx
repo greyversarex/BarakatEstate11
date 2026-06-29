@@ -772,6 +772,11 @@ export default function UserDashboard() {
                                 Срочно
                               </span>
                             )}
+                            {item.isHero && (
+                              <span className="px-2.5 py-1 text-xs font-semibold rounded-md shadow-sm bg-emerald-100 text-emerald-700">
+                                В витрине
+                              </span>
+                            )}
                           </div>
                         </div>
                       )}
@@ -1611,14 +1616,17 @@ function renderForm(tab: Tab, form: FormState, loading: boolean, currentUser: Au
           </label>
 
           {currentUser?.role === "admin" && (
-            <label className="flex items-center gap-3 cursor-pointer group mt-6">
+            <label className="flex items-start gap-3 cursor-pointer group mt-6 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3">
               <input 
                 type="checkbox" 
                 name="isHero" 
                 defaultChecked={item.isHero} 
-                className="w-5 h-5 rounded border-slate-300 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
+                className="w-5 h-5 mt-0.5 rounded border-slate-300 text-emerald-500 focus:ring-emerald-500 cursor-pointer shrink-0"
               />
-              <span className="text-sm font-bold text-slate-700 group-hover:text-emerald-600 transition">На главной (витрина)</span>
+              <span className="flex flex-col">
+                <span className="text-sm font-bold text-slate-800 group-hover:text-emerald-700 transition">Показывать в витрине на главной</span>
+                <span className="text-xs text-slate-500 mt-0.5">Объявление попадёт в большую карусель в самом верху главной страницы сайта</span>
+              </span>
             </label>
           )}
         </div>
