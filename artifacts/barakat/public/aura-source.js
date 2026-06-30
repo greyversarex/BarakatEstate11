@@ -214,7 +214,7 @@ function initials(name) {
 }
 
 function normalizeNumber(value) {
-  const match = String(value || '').replace(',', '.').match(/-?\d+(\.\d+)?/);
+  const match = String(value || '').replace(/\s/g, '').replace(',', '.').match(/-?\d+(\.\d+)?/);
   return match ? Number(match[0]) : 0;
 }
 

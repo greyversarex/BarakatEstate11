@@ -18,6 +18,35 @@ function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
   });
 }
 
+function dataUrlToBlob(dataUrl: string): Blob {
+  const [header, base64 = ""] = dataUrl.split(",");
+  const mime = header.match(/data:(.*?);base64/)?.[1] || "image/jpeg";
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: mime });
+}
+
+function openPhoto(src: string): void {
+  if (!src.startsWith("data:")) {
+    window.open(src, "_blank", "noopener,noreferrer");
+    return;
+  }
+  try {
+    const url = URL.createObjectURL(dataUrlToBlob(src));
+    const win = window.open(url, "_blank", "noopener,noreferrer");
+    if (!win) {
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "photo.jpg";
+      a.click();
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  } catch {
+    /* ignore: malformed data url */
+  }
+}
+
 
 import {
   Building2,
@@ -875,9 +904,9 @@ export default function UserDashboard() {
                                 {item.photos && (
                                   <div className="flex flex-wrap gap-2 my-1">
                                     {item.photos.split("\n").filter(Boolean).filter((src: string) => /^(data:image\/(jpeg|jpg|png|webp);base64,|https?:\/\/)/.test(src)).map((src: string, i: number) => (
-                                      <a key={i} href={src} target="_blank" rel="noreferrer">
+                                      <button key={i} type="button" onClick={() => openPhoto(src)} className="p-0 border-0 bg-transparent cursor-pointer" title="Открыть фото">
                                         <img src={src} alt={`Фото ${i + 1}`} className="w-16 h-16 object-cover rounded-lg border border-slate-200" />
-                                      </a>
+                                      </button>
                                     ))}
                                   </div>
                                 )}
