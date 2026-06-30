@@ -22,3 +22,12 @@ DIRECTLY as a full color, e.g. inline `color: var(--muted)` (79+ uses) → liter
 #8A7F6A muted, #DDB45D gold, #F9F3E4 cream, transparent borders/input), keeping
 `--destructive` an actual error-red. Setting full colors is safe — the hsl()-wrapped
 Tailwind side was already broken by `hsl(red)`, so nothing regresses.
+
+## Gradient brand text (.brand-gold) looking muddy/olive
+`.brand-gold` uses `background-clip:text` + transparent fill. A dark `text-shadow`
+INHERITED from a parent (e.g. hero `<h1 style="text-shadow:0 4px 16px rgba(0,0,0,.4)">`)
+bleeds THROUGH the transparent-filled letters and visually darkens the gold into a
+mustard/olive ("reddish") tone.
+**Fix:** set `text-shadow: none` on `.brand-gold` and use `filter: drop-shadow(...)`
+instead for contrast over photos — drop-shadow sits behind the rendered gold glyphs
+and does not muddy the fill.
