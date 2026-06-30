@@ -77,9 +77,12 @@ function phoneDigits(value: string) {
 
 function socialUrl(type: "telegram" | "instagram", value: string) {
   if (!value) return "";
-  if (value.startsWith("http")) return value;
-  const clean = value.replace(/^@/, "");
-  return type === "telegram" ? `https://t.me/${clean}` : `https://instagram.com/${clean}`;
+  if (value.startsWith("http") || value.startsWith("tg:")) return value;
+  const clean = value.replace(/^@/, "").trim();
+  if (type === "instagram") return `https://instagram.com/${clean}`;
+  const digits = clean.replace(/\D/g, "");
+  const looksLikePhone = /^\+?[\d\s()-]+$/.test(clean) && digits.length >= 7;
+  return looksLikePhone ? `https://t.me/+${digits}` : `https://t.me/${clean}`;
 }
 
 function PropertyCard({ item }: { item: Listing }) {
@@ -117,7 +120,7 @@ export default function SellerProfilePage() {
 
   useEffect(() => {
     let ignore = false;
-    const baseUrl = import.meta.env.VITE_ADMIN_API_URL || "https://barakatestateadmin.vercel.app";
+    const baseUrl = import.meta.env.VITE_ADMIN_API_URL ?? "";
 
     async function loadSeller() {
       if (!sellerId) {
@@ -140,13 +143,16 @@ export default function SellerProfilePage() {
         }
 
         const sellerPayload = await sellerResponse.json();
-        const listingsPayload = await listingsResponse.json();
-        const sellerListings = ((listingsPayload.data || []) as Listing[]).filter(
+        const listingsPayload = listingsResponse.ok ? await listingsResponse.json() : [];
+        const allListings = (Array.isArray(listingsPayload)
+          ? listingsPayload
+          : listingsPayload.data || []) as Listing[];
+        const sellerListings = allListings.filter(
           (item) => item.sellerId === sellerId && item.status !== "draft",
         );
 
         if (!ignore) {
-          setSeller(sellerPayload.data);
+          setSeller(sellerPayload.data ?? sellerPayload);
           setListings(sellerListings);
         }
       } catch (loadError) {
