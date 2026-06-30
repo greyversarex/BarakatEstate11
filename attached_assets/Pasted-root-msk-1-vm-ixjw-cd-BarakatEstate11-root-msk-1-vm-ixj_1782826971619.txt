@@ -1,0 +1,76 @@
+root@msk-1-vm-ixjw:~# cd ~/BarakatEstate11
+root@msk-1-vm-ixjw:~/BarakatEstate11# cd /root/BarakatEstate11
+docker compose -f deploy/docker-compose.yml exec -T db \
+  psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" < lib/db/migrations/sync-prod-schema.sql
+-bash: lib/db/migrations/sync-prod-schema.sql: No such file or directory
+root@msk-1-vm-ixjw:~/BarakatEstate11# docker compose -f deploy/docker-compose.yml exec -T db \
+  sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"' < lib/db/migrations/sync-prod-schema.sql
+-bash: lib/db/migrations/sync-prod-schema.sql: No such file or directory
+root@msk-1-vm-ixjw:~/BarakatEstate11# cat update.sh
+cat: update.sh: No such file or directory
+root@msk-1-vm-ixjw:~/BarakatEstate11# bash ~/update.sh                          ==> 1/5 Резервная копия deploy/
+==> 2/5 Синхронизация с GitHub (origin/main)
+HEAD is now at b9c58e6 Improve dashboard save functionality and error handling
+==> 3/5 Восстановление deploy/ (с вашим .env)
+==> 4/5 Проверка
+  "packageManager": "pnpm@10.26.1",
+Файлы admin/src/lib:
+api.ts  types.ts
+==> 5/5 Пересборка контейнеров
+[+] Building 110.6s (23/23) FINISHED
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 941B                                             0.0s
+ => [api internal] load build definition from Dockerfile                   0.1s
+ => => transferring dockerfile: 930B                                       0.0s
+ => [api] resolve image config for docker-image://docker.io/docker/docker  0.5s
+ => CACHED [api] docker-image://docker.io/docker/dockerfile:1@sha256:8799  0.1s
+ => => resolve docker.io/docker/dockerfile:1@sha256:87999aa3d42bdc6bea605  0.0s
+ => [api internal] load metadata for docker.io/library/node:24-slim        0.5s
+ => [caddy internal] load metadata for docker.io/library/caddy:2-alpine    0.4s
+ => [caddy internal] load .dockerignore                                    0.0s
+ => => transferring context: 2B                                            0.0s
+ => [caddy builder 1/6] FROM docker.io/library/node:24-slim@sha256:b31e7a  0.0s
+ => => resolve docker.io/library/node:24-slim@sha256:b31e7a42fdf8b8aa5f5e  0.0s
+ => [api internal] load build context                                      0.5s
+ => => transferring context: 174.79kB                                      0.5s
+ => [caddy web 1/3] FROM docker.io/library/caddy:2-alpine@sha256:5f5c8640  0.1s
+ => => resolve docker.io/library/caddy:2-alpine@sha256:5f5c8640aae01df965  0.1s
+ => CACHED [api builder 2/6] RUN corepack enable                           0.0s
+ => CACHED [api builder 3/6] WORKDIR /app                                  0.0s
+ => [api builder 4/6] COPY . .                                             2.4s
+ => [api builder 5/6] RUN pnpm install --frozen-lockfile                  45.9s
+ => [api builder 6/6] RUN pnpm --filter @workspace/api-server run build   42.2s
+ => CACHED [api api 2/3] WORKDIR /app                                      0.0s
+ => CACHED [api api 3/3] COPY --from=builder /app/artifacts/api-server/di  0.1s
+ => CACHED [caddy web 2/3] COPY --from=builder /app/artifacts/barakat/dis  0.0s
+ => CACHED [caddy web 3/3] COPY --from=builder /app/artifacts/barakat-adm  0.0s
+ => [api] exporting to image                                               9.1s
+ => => exporting layers                                                    0.6s
+ => => exporting manifest sha256:5ebc2ea801ecd9ff564916b3dd94afffbc158be4  0.3s
+ => => exporting config sha256:94261efe7699aa3951f770be0db011eec9528f9d5c  0.1s
+ => => exporting attestation manifest sha256:96802465d3a3f700362c924aa138  0.3s
+ => => exporting manifest list sha256:575382770a64a389e8cdefd2ae5ebb3937d  0.1s
+ => => naming to docker.io/library/deploy-api:latest                       0.5s
+ => => unpacking to docker.io/library/deploy-api:latest                    3.7s
+ => [caddy] exporting to image                                             9.7s
+ => => exporting layers                                                    0.6s
+ => => exporting manifest sha256:d55eab44fe9dc3a84c4495f02f0500710e55bf49  0.2s
+ => => exporting config sha256:3fdc2e451ebd4142080bb54470eddbc4b8dadba960  0.1s
+ => => exporting attestation manifest sha256:2e24df76f6863007ac11be72bbc8  0.3s
+ => => exporting manifest list sha256:66fcda460c08ff370d733ceca5ef7de3469  0.1s
+ => => naming to docker.io/library/deploy-caddy:latest                     0.5s
+ => => unpacking to docker.io/library/deploy-caddy:latest                  3.6s
+ => [api] resolving provenance for metadata file                           0.9s
+ => [caddy] resolving provenance for metadata file                         0.9s
+[+] up 5/5
+ ✔ Image deploy-api         Built                                         110.8s
+ ✔ Image deploy-caddy       Built                                         110.8s
+ ✔ Container deploy-db-1    Healthy                                        13.3s
+ ✔ Container deploy-api-1   Started                                        13.7s
+ ✔ Container deploy-caddy-1 Started                                         3.2s
+NAME             IMAGE                COMMAND                  SERVICE   CREATED          STATUS                  PORTS
+deploy-api-1     deploy-api           "docker-entrypoint.s…"   api       15 seconds ago   Up 2 seconds            8080/tcp
+deploy-caddy-1   deploy-caddy         "caddy run --config …"   caddy     4 seconds ago    Up 1 second             0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp, 443/udp, 2019/tcp
+deploy-db-1      postgres:16-alpine   "docker-entrypoint.s…"   db        46 hours ago     Up 46 hours (healthy)   5432/tcp
+==> Готово.
+root@msk-1-vm-ixjw:~/BarakatEstate11#
