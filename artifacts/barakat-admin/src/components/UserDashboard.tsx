@@ -580,14 +580,14 @@ export default function UserDashboard() {
       const url = activeTab === "settings" ? `${ADMIN_API}/profile` : editingId ? `${ADMIN_API}/${activeTab}/${editingId}` : `${ADMIN_API}/${activeTab}`;
       const method = activeTab === "settings" ? "PUT" : editingId ? "PATCH" : "POST";
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        const err = await response.json();
+        const err = await response.json().catch(() => ({}));
         setToast(err.error || "Ошибка сохранения");
         setLoading(false);
         return;
@@ -1000,8 +1000,8 @@ export default function UserDashboard() {
       </div>
 
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-xl font-medium text-sm animate-in fade-in slide-in-from-bottom-4">
-          {toast}
+        <div className="fixed bottom-6 right-6 z-50 max-w-sm break-words bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-xl font-medium text-sm animate-in fade-in slide-in-from-bottom-4">
+          {toast.length > 160 ? `${toast.slice(0, 160)}…` : toast}
         </div>
       )}
     </main>
