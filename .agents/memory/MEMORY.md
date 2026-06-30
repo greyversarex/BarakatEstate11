@@ -1,3 +1,1 @@
-- [barakat hydration entrypoint](barakat-aura-source-hydration.md) — aura-source.js has two hydrateAuraPage defs; only the later window.* one runs, edit that one.
-- [barakat admin collection visibility](barakat-admin-collection-visibility.md) — admin GET routes must enforce role==admin so drafts don't leak to public.
-- [Barakat brand-gold styling](barakat-brand-gold.md) — apply .brand-gold to TEXT 'Barakat Estate' only (logo images untouched); service.description renders plain text.
+- [Barakat index.css red placeholders](barakat-index-css-red-placeholders.md) — scaffold ships `--muted`/etc as `red`; loads after globals.css so it wins the cascade and poisons aura text.
