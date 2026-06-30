@@ -867,7 +867,7 @@ export default function UserDashboard() {
                             </span>
                             {item.isFeatured && (
                               <span className="px-2.5 py-1 text-xs font-semibold rounded-md shadow-sm bg-yellow-100 text-yellow-700">
-                                В Избранном
+                                VIP
                               </span>
                             )}
                             {item.isNew && (
@@ -1716,7 +1716,7 @@ function renderForm(tab: Tab, form: FormState, loading: boolean, currentUser: Au
               defaultChecked={item.isFeatured} 
               className="w-5 h-5 rounded border-slate-300 text-yellow-500 focus:ring-yellow-500 cursor-pointer"
             />
-            <span className="text-sm font-bold text-slate-700 group-hover:text-yellow-600 transition">В Избранное (Featured)</span>
+            <span className="text-sm font-bold text-slate-700 group-hover:text-yellow-600 transition">VIP объявление</span>
           </label>
 
           <label className="flex items-center gap-3 cursor-pointer group mt-6">
