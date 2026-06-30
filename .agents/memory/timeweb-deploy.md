@@ -29,3 +29,11 @@ api Docker image contains only compiled dist (no pnpm/drizzle/source) -> `db pus
 2. On server: fetch origin, checkout origin/main excluding deploy, verify `grep packageManager package.json`.
 3. `cd deploy && docker compose up -d --build`.
 4. Apply any new DB migrations via psql.
+
+## Schema drift symptom + fix script
+If admin create/save fails with a toast like `Failed query: insert into "listings" (...)`,
+the prod DB is missing columns the code inserts (schema drift — code updated, DB not migrated).
+Idempotent fix committed at `lib/db/migrations/sync-prod-schema.sql` (ADD COLUMN IF NOT EXISTS
+for every table/column + enum guards). Apply on server:
+  docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" < lib/db/migrations/sync-prod-schema.sql
+Verified: identical browser payload inserts fine on dev DB, so failures are prod-DB-only.
