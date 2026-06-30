@@ -209,13 +209,53 @@ function toStatus(value: FormDataEntryValue | null): PublishStatus {
   return value === "published" ? "published" : "draft";
 }
 
-async function uploadFile(file: File): Promise<string> {
-  const formData = new FormData();
-  formData.append("file", file);
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("Не удалось прочитать файл"));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function compressImage(file: File, maxSize = 1600, quality = 0.82): Promise<string> {
+  if (!file.type.startsWith("image/")) {
+    return readFileAsDataUrl(file);
+  }
   try {
+    const objectUrl = URL.createObjectURL(file);
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error("Не удалось загрузить изображение"));
+      image.src = objectUrl;
+    });
+    let { width, height } = img;
+    if (width > maxSize || height > maxSize) {
+      const scale = Math.min(maxSize / width, maxSize / height);
+      width = Math.round(width * scale);
+      height = Math.round(height * scale);
+    }
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("no canvas context");
+    ctx.drawImage(img, 0, 0, width, height);
+    URL.revokeObjectURL(objectUrl);
+    return canvas.toDataURL("image/jpeg", quality);
+  } catch {
+    return readFileAsDataUrl(file);
+  }
+}
+
+async function uploadFile(file: File): Promise<string> {
+  try {
+    const image = await compressImage(file);
     const res = await authFetch(`${ADMIN_API}/upload`, {
       method: "POST",
-      body: formData,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image }),
     });
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
