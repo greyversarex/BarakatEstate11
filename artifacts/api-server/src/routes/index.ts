@@ -5,6 +5,7 @@ import serviceRequestRouter from "./service-request";
 import viewingRequestRouter from "./viewing-request";
 import adminRouter from "./admin/index";
 import publicRouter from "./public";
+import storageRouter from "./storage";
 
 const router: IRouter = Router();
 
@@ -13,6 +14,7 @@ router.use(sellersRouter);
 router.use(serviceRequestRouter);
 router.use(viewingRequestRouter);
 router.use("/admin", adminRouter);
+router.use(storageRouter);
 router.use(publicRouter);
 
 export default router;

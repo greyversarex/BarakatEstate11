@@ -47,6 +47,27 @@ function openPhoto(src: string): void {
   }
 }
 
+function downloadPhoto(src: string, index = 0): void {
+  if (src.startsWith("data:")) {
+    try {
+      const url = URL.createObjectURL(dataUrlToBlob(src));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `photo-${index + 1}.jpg`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch {
+      /* ignore: malformed data url */
+    }
+    return;
+  }
+  const sep = src.includes("?") ? "&" : "?";
+  const a = document.createElement("a");
+  a.href = `${src}${sep}download=1`;
+  a.rel = "noopener noreferrer";
+  a.click();
+}
+
 
 import {
   Building2,
@@ -75,6 +96,7 @@ import {
   Calculator,
   Zap,
   Newspaper,
+  Download,
 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import type { AuthUser, Listing, Profile, PublishStatus, Application, Banner, User, BlogPost } from "@/lib/types";
@@ -919,10 +941,20 @@ export default function UserDashboard() {
                                 {item.message && <span className="text-slate-700 whitespace-pre-line border-l-2 border-slate-200 pl-2 my-1">{item.message}</span>}
                                 {item.photos && (
                                   <div className="flex flex-wrap gap-2 my-1">
-                                    {item.photos.split("\n").filter(Boolean).filter((src: string) => /^(data:image\/(jpeg|jpg|png|webp);base64,|https?:\/\/)/.test(src)).map((src: string, i: number) => (
-                                      <button key={i} type="button" onClick={() => openPhoto(src)} className="p-0 border-0 bg-transparent cursor-pointer" title="Открыть фото">
-                                        <img src={src} alt={`Фото ${i + 1}`} className="w-16 h-16 object-cover rounded-lg border border-slate-200" />
-                                      </button>
+                                    {item.photos.split("\n").filter(Boolean).filter((src: string) => /^(data:image\/(jpeg|jpg|png|webp);base64,|https?:\/\/|\/)/.test(src)).map((src: string, i: number) => (
+                                      <div key={i} className="relative group">
+                                        <button type="button" onClick={() => openPhoto(src)} className="p-0 border-0 bg-transparent cursor-pointer block" title="Открыть фото">
+                                          <img src={src} alt={`Фото ${i + 1}`} className="w-16 h-16 object-cover rounded-lg border border-slate-200" />
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => downloadPhoto(src, i)}
+                                          className="absolute bottom-0.5 right-0.5 p-1 rounded-md bg-slate-900/70 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-slate-900"
+                                          title="Скачать фото"
+                                        >
+                                          <Download className="w-3.5 h-3.5" />
+                                        </button>
+                                      </div>
                                     ))}
                                   </div>
                                 )}
