@@ -97,6 +97,7 @@ ALTER TABLE listings ADD COLUMN IF NOT EXISTS is_featured boolean NOT NULL DEFAU
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS is_new boolean NOT NULL DEFAULT false;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS is_urgent boolean NOT NULL DEFAULT false;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS is_hero boolean NOT NULL DEFAULT false;
+ALTER TABLE listings ADD COLUMN IF NOT EXISTS views integer NOT NULL DEFAULT 0;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS status publish_status NOT NULL DEFAULT 'draft';
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS created_at timestamp NOT NULL DEFAULT now();
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS updated_at timestamp NOT NULL DEFAULT now();
