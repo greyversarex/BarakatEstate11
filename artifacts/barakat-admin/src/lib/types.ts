@@ -55,6 +55,7 @@ export type Listing = {
   isNew: boolean;
   isUrgent: boolean;
   isHero: boolean;
+  views: number;
   status: PublishStatus;
   createdAt: string;
   updatedAt: string;

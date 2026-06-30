@@ -167,7 +167,12 @@ function mapAdminListing(entry) {
     year: item.yearBuilt || '',
     new: Boolean(item.isNew || item.isFeatured),
     urgent: Boolean(item.isUrgent),
+    vip: Boolean(item.isFeatured),
+    views: Number(item.views || 0),
     isHero: Boolean(item.isHero),
+    dealType: item.dealType || 'sale',
+    rawPropertyType: item.propertyType || '',
+    createdAt: item.createdAt || '',
     propertyType: mapPropertyType(item.propertyType),
     district: mapDistrict(item.district),
     features: Array.isArray(item.features) ? item.features.join(' ') : item.features || '',
@@ -200,6 +205,21 @@ async function loadAdminProperties() {
     adminProperties = items.map(mapAdminListing);
   } catch {
     adminProperties = [];
+  }
+}
+
+const viewedProperties = new Set();
+async function trackPropertyView(id) {
+  if (!id || viewedProperties.has(id)) return;
+  viewedProperties.add(id);
+  const baseUrl = window.BARAKAT_API_URL ?? '';
+  try {
+    await fetch(`${baseUrl}/api/listings/${encodeURIComponent(id)}/view`, {
+      method: 'POST',
+      keepalive: true,
+    });
+  } catch {
+    /* non-critical: view tracking should never block the UI */
   }
 }
 
@@ -292,6 +312,8 @@ const lucideIcons = {
   clipboard: '<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>',
   shieldCheck: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
   arrowRight: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+  crown: '<path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/>',
 };
 
 function lucideIcon(name, className = 'lucide-inline', size = 16) {
@@ -484,6 +506,156 @@ function renderCards(containerId, count) {
         <h3 style="font-size: 20px; font-weight: 600; color: var(--ink); margin: 0 0 8px 0;">Объявлений пока нет</h3>
         <p style="font-size: 15px; color: var(--muted); max-width: 400px; margin: 0; line-height: 1.5;">В данный момент база данных пуста. Объекты появятся здесь сразу после того, как администратор их опубликует.</p>
       </div>`;
+}
+
+// ── VIP SHOWCASE ──
+let vipFilter = 'all';
+
+function getVipProperties() {
+  return getAllProperties().filter((p) => p.vip);
+}
+
+function vipMatchesFilter(p, filter) {
+  if (filter === 'all') return true;
+  const t = p.rawPropertyType;
+  if (filter === 'new_building') return t === 'new_building';
+  if (filter === 'house') return t === 'house' || t === 'cottage' || t === 'townhouse';
+  if (filter === 'secondary') return !['new_building', 'house', 'cottage', 'townhouse'].includes(t);
+  return true;
+}
+
+function vipDateLabel(p) {
+  if (!p.createdAt) return '';
+  const d = new Date(p.createdAt);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+}
+
+function vipCard(p, featured) {
+  const isFav = isFavoriteProperty(p.id);
+  const imgs = (p.images && p.images.length > 0) ? p.images : [p.image];
+  const uniqueImgs = [...new Set(imgs.filter(Boolean))];
+  const slideId = `vip-${p.id}-${Math.random().toString(36).slice(2, 7)}`;
+
+  const slides = uniqueImgs.length
+    ? uniqueImgs.map((src, i) => `<img src="${src}" alt="${p.addr}" loading="lazy" class="prop-slide${i === 0 ? ' active' : ''}" />`).join('')
+    : `<div class="vip-img-empty">${lucideIcon('building2', '', 44)}</div>`;
+
+  const dots = uniqueImgs.length > 1
+    ? `<div class="vip-dots">${uniqueImgs.map((_, i) => `<span class="prop-dot${i === 0 ? ' active' : ''}" data-i="${i}"></span>`).join('')}</div>`
+    : '';
+
+  const arrows = uniqueImgs.length > 1 ? `
+    <button class="vip-slider-btn prev" onclick="event.stopPropagation();slideCard('${slideId}',-1)" aria-label="Назад">‹</button>
+    <button class="vip-slider-btn next" onclick="event.stopPropagation();slideCard('${slideId}',1)" aria-label="Вперед">›</button>
+  ` : '';
+
+  const meta = `
+    <span>${lucideIcon('bed')} <strong>${p.rooms}</strong> комн</span>
+    <span>${lucideIcon('ruler')} <strong>${p.area}</strong> м²</span>
+    <span>${lucideIcon('building2')} <strong>${p.floor}</strong> эт</span>
+    <span>${lucideIcon('eye')} <strong>${(p.views || 0).toLocaleString('ru-RU')}</strong></span>
+  `;
+
+  const date = vipDateLabel(p);
+  const agentBlock = featured ? `
+    <div class="vip-agent">
+      <div class="vip-agent-ava">${p.agentAvatar ? `<img src="${p.agentAvatar}" alt="${p.agentName}" />` : p.agent}</div>
+      <div class="vip-agent-info">
+        <strong onclick="event.stopPropagation();navigate('profile','${p.sellerId || ''}')">${p.agentName}</strong>
+        <span class="vip-verified">${lucideIcon('shieldCheck', '', 13)} Проверено</span>
+      </div>
+      ${date ? `<span class="vip-date">${lucideIcon('crown', '', 13)} ${date}</span>` : ''}
+    </div>` : '';
+
+  return `<article class="vip-card${featured ? ' vip-card-featured' : ''}" onclick="navigate('property','${p.id}')">
+    <div class="vip-img" id="${slideId}" data-slide="0" data-total="${uniqueImgs.length}">
+      ${slides}
+      <div class="vip-img-shade"></div>
+      <span class="vip-badge">${lucideIcon('crown', '', 14)} VIP</span>
+      <span class="vip-deal tag-${p.tag}">${p.tagLabel}</span>
+      <button class="vip-fav${isFav ? ' active' : ''}" onclick="event.stopPropagation();toggleFav(this)" aria-label="В избранное" data-prop-id="${p.id}" data-fav="${isFav ? 'true' : 'false'}">${lucideIcon('heart', 'lucide-fav')}</button>
+      ${arrows}
+      ${dots}
+    </div>
+    <div class="vip-body">
+      <div class="vip-price">${p.price}</div>
+      <h3 class="vip-card-title">${p.title || p.addr}</h3>
+      <div class="vip-addr">${lucideIcon('mapPin')} ${p.district || p.addr}</div>
+      <div class="vip-meta">${meta}</div>
+      ${agentBlock}
+    </div>
+  </article>`;
+}
+
+function renderVipShowcase() {
+  const featuredSlot = document.getElementById('vip-featured');
+  const gridSlot = document.getElementById('vip-grid');
+  const section = document.querySelector('.vip-section');
+  if (!featuredSlot || !gridSlot) return;
+
+  const all = getVipProperties();
+  if (!all.length) {
+    if (section) section.style.display = 'none';
+    return;
+  }
+  if (section) section.style.display = '';
+
+  const filtered = all.filter((p) => vipMatchesFilter(p, vipFilter));
+
+  // Disable tabs that have no matching listings
+  document.querySelectorAll('#vip-tabs .vip-tab').forEach((tab) => {
+    const f = tab.dataset.vipFilter;
+    const has = all.some((p) => vipMatchesFilter(p, f));
+    tab.classList.toggle('disabled', !has);
+  });
+
+  if (!filtered.length) {
+    featuredSlot.innerHTML = '';
+    gridSlot.innerHTML = `<div class="vip-empty">${lucideIcon('search', '', 28)}<p>В этой категории пока нет VIP-объявлений</p></div>`;
+    return;
+  }
+
+  const [featured, ...rest] = filtered;
+  featuredSlot.innerHTML = vipCard(featured, true);
+  gridSlot.innerHTML = rest.slice(0, 4).map((p) => vipCard(p, false)).join('');
+
+  initVipSliders();
+}
+
+function initVipSliders() {
+  document.querySelectorAll('.vip-img[data-total]').forEach((container) => {
+    const total = Number(container.dataset.total);
+    if (total <= 1 || container.dataset.autoSlide) return;
+    container.dataset.autoSlide = 'true';
+    const id = container.id;
+    const interval = 3500 + Math.random() * 2000;
+    setInterval(() => {
+      if (!document.getElementById(id)) return;
+      slideCard(id, 1);
+    }, interval);
+    container.querySelectorAll('.prop-dot').forEach((dot) => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const target = Number(dot.dataset.i);
+        const current = Number(container.dataset.slide || 0);
+        slideCard(id, target - current);
+      });
+    });
+  });
+}
+
+function setupVipTabs() {
+  const tabs = document.getElementById('vip-tabs');
+  if (!tabs || tabs.dataset.bound) return;
+  tabs.dataset.bound = 'true';
+  tabs.addEventListener('click', (e) => {
+    const btn = e.target.closest('.vip-tab');
+    if (!btn || btn.classList.contains('disabled')) return;
+    vipFilter = btn.dataset.vipFilter || 'all';
+    tabs.querySelectorAll('.vip-tab').forEach((t) => t.classList.toggle('active', t === btn));
+    renderVipShowcase();
+  });
 }
 
 function renderMapResults() {
@@ -726,6 +898,8 @@ async function hydrateAuraPage(page) {
 
   if (page === 'home') {
     setupHomeServices();
+    setupVipTabs();
+    renderVipShowcase();
     renderCards('featured-grid', 6);
     hydrateHeroCarousel();
     setupHomeCarousel();
@@ -1269,6 +1443,8 @@ function renderPropertyDetail() {
     return;
   }
 
+  trackPropertyView(property.id);
+
   const detailPrice = document.querySelector('.detail-price');
   const detailPricePer = document.querySelector('.detail-price-per');
   const detailTitle = document.querySelector('.detail-title');
@@ -1771,6 +1947,8 @@ window.hydrateAuraPage = async function(page) {
 
   if (page === 'home' || page === '') {
     setupHomeServices();
+    if (typeof setupVipTabs === 'function') setupVipTabs();
+    if (typeof renderVipShowcase === 'function') renderVipShowcase();
     renderCards('featured-grid', 6);
     if (typeof hydrateHeroCarousel === 'function') hydrateHeroCarousel();
     if (typeof setupHomeCarousel === 'function') setupHomeCarousel();

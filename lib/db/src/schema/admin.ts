@@ -75,6 +75,7 @@ export const listingsTable = pgTable("listings", {
   isNew: boolean("is_new").notNull().default(false),
   isUrgent: boolean("is_urgent").notNull().default(false),
   isHero: boolean("is_hero").notNull().default(false),
+  views: integer("views").notNull().default(0),
   status: publishStatusEnum("status").notNull().default("draft"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

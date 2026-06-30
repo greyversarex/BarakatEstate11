@@ -97,6 +97,7 @@ import {
   Zap,
   Newspaper,
   Download,
+  Eye,
 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import type { AuthUser, Listing, Profile, PublishStatus, Application, Banner, User, BlogPost } from "@/lib/types";
@@ -884,6 +885,12 @@ export default function UserDashboard() {
                                 В витрине
                               </span>
                             )}
+                          </div>
+                          <div className="absolute bottom-3 left-3">
+                            <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-900/75 text-white backdrop-blur-sm" title="Количество просмотров">
+                              <Eye size={13} />
+                              {(item.views ?? 0).toLocaleString("ru-RU")}
+                            </span>
                           </div>
                         </div>
                       )}

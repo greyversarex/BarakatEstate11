@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { listingsTable, reviewsTable, adminUsersTable, siteSettingsTable, blogPostsTable } from "@workspace/db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql, or } from "drizzle-orm";
 
 const router = Router();
 
@@ -33,6 +33,20 @@ router.get("/listings/:id", async (req: Request, res: Response) => {
     const rows = await db.select().from(listingsTable).where(eq(listingsTable.id, req.params.id)).limit(1);
     if (!rows[0] || rows[0].status !== "published") { res.status(404).json({ error: "Not found" }); return; }
     res.json(rows[0]);
+  } catch {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/listings/:id/view", async (req: Request, res: Response) => {
+  try {
+    const [updated] = await db
+      .update(listingsTable)
+      .set({ views: sql`${listingsTable.views} + 1` })
+      .where(or(eq(listingsTable.id, req.params.id), eq(listingsTable.slug, req.params.id)))
+      .returning({ views: listingsTable.views });
+    if (!updated) { res.status(404).json({ error: "Not found" }); return; }
+    res.json({ views: updated.views });
   } catch {
     res.status(500).json({ error: "Internal server error" });
   }
