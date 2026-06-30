@@ -360,6 +360,8 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(false);
   const [globalSettings, setGlobalSettings] = useState<Partial<Profile>>(emptyForms.settings);
   const [allApplications, setAllApplications] = useState<any[]>([]);
+  const [allViewings, setAllViewings] = useState<any[]>([]);
+  const [allReviews, setAllReviews] = useState<any[]>([]);
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement | null>(null);
   const reqIdRef = useRef(0);
@@ -382,6 +384,13 @@ export default function UserDashboard() {
     () => allApplications.filter((a) => a.status === "new").slice(0, 8),
     [allApplications],
   );
+
+  const tabBadges = useMemo(() => {
+    const m: Record<string, number> = { ...appUnseen };
+    m["viewings"] = allViewings.filter((v) => v.status === "new").length;
+    m["reviews"] = allReviews.filter((r) => r.status === "pending").length;
+    return m;
+  }, [appUnseen, allViewings, allReviews]);
 
   useEffect(() => {
     authFetch(`${ADMIN_API}/auth/me`)
@@ -424,13 +433,20 @@ export default function UserDashboard() {
 
   async function refreshApplications() {
     if (currentUser?.role !== "admin") return;
-    try {
-      const res = await authFetch(`${ADMIN_API}/applications?admin=1`);
-      const payload = await res.json();
-      setAllApplications(Array.isArray(payload) ? payload : payload.data || []);
-    } catch {
-      // non-fatal: badges simply won't update
-    }
+    const fetchList = async (path: string, set: (v: any[]) => void) => {
+      try {
+        const res = await authFetch(`${ADMIN_API}/${path}?admin=1`);
+        const payload = await res.json();
+        set(Array.isArray(payload) ? payload : payload.data || []);
+      } catch {
+        // non-fatal: this badge simply won't update this cycle
+      }
+    };
+    await Promise.allSettled([
+      fetchList("applications", setAllApplications),
+      fetchList("viewings", setAllViewings),
+      fetchList("reviews", setAllReviews),
+    ]);
   }
 
   useEffect(() => {
@@ -667,9 +683,9 @@ export default function UserDashboard() {
               >
                 {tab.icon}
                 <span className="truncate">{tab.label}</span>
-                {appUnseen[tab.id] > 0 && (
+                {tabBadges[tab.id] > 0 && (
                   <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
-                    {appUnseen[tab.id]}
+                    {tabBadges[tab.id]}
                   </span>
                 )}
               </button>
