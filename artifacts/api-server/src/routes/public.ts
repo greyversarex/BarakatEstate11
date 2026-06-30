@@ -66,6 +66,25 @@ router.get("/reviews", async (_req: Request, res: Response) => {
   }
 });
 
+router.post("/reviews", async (req: Request, res: Response) => {
+  try {
+    const name = typeof req.body?.name === "string" ? req.body.name.trim() : "";
+    const text = typeof req.body?.text === "string" ? req.body.text.trim() : "";
+    const sellerId = typeof req.body?.sellerId === "string" && req.body.sellerId.trim() ? req.body.sellerId.trim() : null;
+    if (!name || !text) {
+      res.status(400).json({ error: "Имя и текст отзыва обязательны" });
+      return;
+    }
+    const [created] = await db
+      .insert(reviewsTable)
+      .values({ name, text, sellerId, status: "pending" })
+      .returning();
+    res.status(201).json(created);
+  } catch {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.get("/profile", async (_req: Request, res: Response) => {
   try {
     const rows = await db.select().from(siteSettingsTable).where(eq(siteSettingsTable.key, "site_profile")).limit(1);
