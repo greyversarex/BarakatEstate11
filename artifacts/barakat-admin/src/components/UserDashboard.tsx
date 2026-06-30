@@ -161,7 +161,7 @@ const emptyForms: FormState = {
     isNew: false,
     isUrgent: false,
     isHero: false,
-    status: "draft",
+    status: "published",
     documentType: "",
   },
   profile: {
@@ -560,7 +560,7 @@ export default function UserDashboard() {
 
       if (activeTab === "profile") {
         const response = await authFetch(`${ADMIN_API}/auth/profile`, {
-          method: "PUT",
+          method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });

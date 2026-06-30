@@ -18,3 +18,19 @@ cookie OR `Authorization: Bearer` (token in localStorage). Most writes use the
 auth helper, but the main create/update path used plain `fetch` and relied only
 on the cookie. On self-hosted prod the cookie path is fragile; prefer the Bearer
 helper for every write for consistent auth.
+
+**HTTP method mismatch → "Unexpected token '<', <!DOCTYPE" in admin.** When a
+frontend call uses a verb the API route doesn't define (e.g. PUT to a route
+registered as POST), Express 404s and Caddy serves the SPA index.html; the
+client's `res.json()` then throws the DOCTYPE parse error. **Rule:** that error
+almost always means a routing/verb mismatch (or wrong path), NOT a JSON bug —
+check the method/path against the api-server route. Note the two profile routes
+differ: `POST /api/admin/auth/profile` (auth router, agent's own profile) vs
+`PUT /api/admin/profile` (settings router, global site settings). Easy to swap.
+
+**New listings default to draft → invisible on public site.** Public listing
+GET only returns `status === "published"`; admin sees all. A freshly created
+listing with the form's default status will save fine and show in admin but not
+on the website, which reads as "save did nothing". Default the create form's
+status to `published` so created listings appear immediately (selector still
+lets the user choose draft).
