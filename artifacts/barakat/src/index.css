@@ -109,7 +109,7 @@
 
   --foreground: red; /*replace with H S L */
 
-  --border: red; /*replace with H S L */
+  --border: transparent; /*replace with H S L */
 
   --card: red; /*replace with H S L */
 
@@ -227,7 +227,7 @@
 
   --foreground: red; /*replace with H S L */
 
-  --border: red; /*replace with H S L */
+  --border: transparent; /*replace with H S L */
 
   --card: red; /*replace with H S L */
 
