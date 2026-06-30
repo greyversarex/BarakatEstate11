@@ -34,3 +34,16 @@ listing with the form's default status will save fine and show in admin but not
 on the website, which reads as "save did nothing". Default the create form's
 status to `published` so created listings appear immediately (selector still
 lets the user choose draft).
+
+**Admin auth response shape must stay `{ user }`.** `/auth/login` and `/auth/me`
+return `{ user: safeUser }`; the profile-save handler once returned the user
+object *bare*. The dashboard reads `payload.user` then `userToProfile(...)`, so a
+bare object makes `userToProfile(undefined)` throw → blank white screen (React
+crash), not a toast. **Rule:** every admin auth endpoint returns `{ user }`.
+
+**Listing create must stamp the creator as seller.** POST /listings inserts the
+body as-is; the admin form sends no seller fields. Result: `sellerId`/
+`sellerName` empty → public card shows the "Продавец" fallback AND the
+non-admin listings filter (`sellerId === user.id || employeeId === user.id`)
+hides it from its own creator. **Rule:** default sellerId/employeeId/sellerName/
+phone/whatsapp/avatar from the authenticated user when absent on create.

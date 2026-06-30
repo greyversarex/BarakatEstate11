@@ -123,7 +123,7 @@ router.post("/auth/profile", async (req: Request, res: Response) => {
     await db.update(adminUsersTable).set(updateData).where(eq(adminUsersTable.id, user.id));
     const updated = await db.select().from(adminUsersTable).where(eq(adminUsersTable.id, user.id)).limit(1);
     const { passwordHash: _, ...safeUser } = updated[0];
-    res.json(safeUser);
+    res.json({ user: safeUser });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }

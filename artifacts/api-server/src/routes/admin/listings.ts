@@ -38,6 +38,12 @@ router.post("/listings", async (req: Request, res: Response) => {
   try {
     const body = { ...req.body };
     if (user.role !== "admin") delete body.isHero;
+    if (!body.sellerId) body.sellerId = user.id;
+    if (!body.employeeId) body.employeeId = user.id;
+    if (!body.sellerName) body.sellerName = user.name || "";
+    if (!body.sellerPhone) body.sellerPhone = user.phone || "";
+    if (!body.sellerWhatsapp) body.sellerWhatsapp = user.whatsapp || "";
+    if (!body.sellerAvatar) body.sellerAvatar = user.avatar || "";
     const slug = (body.title || "listing").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") + "-" + Date.now();
     const [row] = await db.insert(listingsTable).values({ ...body, slug }).returning();
     res.status(201).json(row);
