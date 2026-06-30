@@ -7,7 +7,7 @@
     --white: #FFFFFF;
     --ink: #1A1610;
     --ink-light: #3D3526;
-    --muted: #8A7F6A;
+    --muted: #4F4F4F;
     --border: transparent;
     --shadow: rgba(26,22,16,0.08);
     --radius: 16px;
@@ -943,7 +943,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   .brand-gold {
-    background: linear-gradient(100deg, #E6C158 0%, #F5DE8E 40%, #FBEFC0 50%, #F5DE8E 60%, #E6C158 100%);
+    background: linear-gradient(100deg, #F0C849 0%, #FBE48F 40%, #FFF6CE 50%, #FBE48F 60%, #F0C849 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
