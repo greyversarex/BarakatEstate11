@@ -34,10 +34,6 @@ minimumReleaseAgeExclude:
   - '@replit/*'
   - stripe-replit-sync
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 191d4c0 (Task start baseline checkpoint for code review)
 packages:
   - artifacts/*
   - lib/*
