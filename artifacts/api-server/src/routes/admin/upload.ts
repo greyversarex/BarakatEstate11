@@ -1,16 +1,23 @@
 import { Router, type Request, type Response } from "express";
 import { getAuthUser } from "./auth";
-import { ObjectStorageService } from "../../lib/objectStorage";
+import { ObjectStorageService, UnsupportedImageError } from "../../lib/objectStorage";
 
 const router = Router();
 const objectStorageService = new ObjectStorageService();
 
-function parseDataUrl(input: string): { buffer: Buffer; contentType: string } {
-  const match = input.match(/^data:([^;]+);base64,(.*)$/s);
+/**
+ * Extract the raw bytes from a base64 payload. The payload may be a full data
+ * URL ("data:<mime>;base64,....") or a bare base64 string. The declared MIME is
+ * intentionally ignored — the real format is detected from the bytes in
+ * ObjectStorageService.saveObject, so a spoofed content type cannot smuggle in
+ * an executable file.
+ */
+function parseImagePayload(input: string): Buffer {
+  const match = input.match(/^data:[^;]+;base64,(.*)$/s);
   if (match) {
-    return { contentType: match[1], buffer: Buffer.from(match[2], "base64") };
+    return Buffer.from(match[1], "base64");
   }
-  return { contentType: "image/jpeg", buffer: Buffer.from(input, "base64") };
+  return Buffer.from(input, "base64");
 }
 
 function publicBaseUrl(req: Request): string {
@@ -21,7 +28,10 @@ function publicBaseUrl(req: Request): string {
 
 router.post("/upload", async (req: Request, res: Response) => {
   const user = await getAuthUser(req);
-  if (!user) { res.status(401).json({ error: "Unauthorized" }); return; }
+  if (!user) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
   try {
     const { image } = req.body;
     if (!image || typeof image !== "string") {
@@ -29,27 +39,23 @@ router.post("/upload", async (req: Request, res: Response) => {
       return;
     }
 
-    const { buffer, contentType } = parseDataUrl(image);
+    const buffer = parseImagePayload(image);
+    const objectPath = await objectStorageService.saveObject(buffer);
 
-    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-    const putRes = await fetch(uploadURL, {
-      method: "PUT",
-      headers: { "Content-Type": contentType },
-      body: new Uint8Array(buffer),
-    });
-    if (!putRes.ok) {
-      throw new Error(`Storage PUT failed with status ${putRes.status}`);
-    }
-
-    const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
-      uploadURL,
-      { owner: user.id, visibility: "public" },
-    );
-
-    const url = `${publicBaseUrl(req)}/api/storage${objectPath}`;
-    res.json({ url, path: `/api/storage${objectPath}` });
+    const path = `/api/storage${objectPath}`;
+    const url = `${publicBaseUrl(req)}${path}`;
+    res.json({ url, path });
   } catch (err) {
-    req.log.error({ err }, "Upload failed");
+    if (err instanceof UnsupportedImageError) {
+      res.status(400).json({
+        error: "Unsupported image format. Use JPEG, PNG, WebP, GIF or AVIF.",
+      });
+      return;
+    }
+    req.log.error(
+      { err, userId: user.id },
+      "Image upload failed while saving object to storage",
+    );
     res.status(500).json({ error: "Upload failed" });
   }
 });

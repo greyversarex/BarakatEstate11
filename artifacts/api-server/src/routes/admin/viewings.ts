@@ -1,4 +1,5 @@
 import { Router, type Request, type Response } from "express";
+import { getErrorMessage } from "../../lib/errors";
 import { db } from "@workspace/db";
 import { viewingsTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
@@ -46,8 +47,9 @@ async function updateViewing(req: Request, res: Response) {
       .where(eq(viewingsTable.id, req.params.id))
       .returning();
     res.json(row);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err) {
+    req.log.error({ err }, "Admin request failed");
+    res.status(400).json({ error: getErrorMessage(err) });
   }
 }
 

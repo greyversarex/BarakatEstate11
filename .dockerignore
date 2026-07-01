@@ -1,0 +1,32 @@
+# Keep the Docker build context small and avoid leaking local/dev artifacts into
+# the image. The build only needs source + workspace manifests; pnpm installs
+# fresh inside the builder stage.
+.git
+.gitignore
+
+# dependencies (reinstalled inside the image)
+node_modules
+**/node_modules
+
+# build output (rebuilt inside the image)
+dist
+**/dist
+build
+**/build
+out-tsc
+*.tsbuildinfo
+**/*.tsbuildinfo
+
+# local uploads / runtime data (served from a persistent volume in prod)
+artifacts/api-server/data
+
+# editor / OS / logs
+.vscode
+.idea
+*.log
+.DS_Store
+
+# Replit-only tooling not needed in the image
+.local
+.agents
+attached_assets

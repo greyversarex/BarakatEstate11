@@ -1,4 +1,5 @@
 import { Router, type Request, type Response } from "express";
+import { getErrorMessage } from "../../lib/errors";
 import { db } from "@workspace/db";
 import { adminUsersTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
@@ -40,8 +41,9 @@ router.post("/users", async (req: Request, res: Response) => {
     const [row] = await db.insert(adminUsersTable).values({ ...rest, passwordHash }).returning();
     const { passwordHash: _, ...safeUser } = row;
     res.status(201).json(safeUser);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err) {
+    req.log.error({ err }, "Admin request failed");
+    res.status(400).json({ error: getErrorMessage(err) });
   }
 });
 
@@ -56,8 +58,9 @@ router.put("/users/:id", async (req: Request, res: Response) => {
     if (!row) { res.status(404).json({ error: "Not found" }); return; }
     const { passwordHash: _, ...safeUser } = row;
     res.json(safeUser);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err) {
+    req.log.error({ err }, "Admin request failed");
+    res.status(400).json({ error: getErrorMessage(err) });
   }
 });
 

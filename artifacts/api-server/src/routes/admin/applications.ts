@@ -1,4 +1,5 @@
 import { Router, type Request, type Response } from "express";
+import { getErrorMessage } from "../../lib/errors";
 import { db } from "@workspace/db";
 import { applicationsTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
@@ -30,11 +31,14 @@ router.get("/applications/:id", async (req: Request, res: Response) => {
 });
 
 router.post("/applications", async (req: Request, res: Response) => {
+  // Public submission endpoint (no auth): keep the client message generic so DB
+  // internals are never leaked to anonymous callers. The real error is logged.
   try {
     const [row] = await db.insert(applicationsTable).values(req.body).returning();
     res.status(201).json(row);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err) {
+    req.log.error({ err }, "Application submission failed");
+    res.status(400).json({ error: "Не удалось отправить заявку. Проверьте введённые данные." });
   }
 });
 
@@ -45,8 +49,9 @@ router.put("/applications/:id", async (req: Request, res: Response) => {
     const [row] = await db.update(applicationsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(applicationsTable.id, req.params.id)).returning();
     if (!row) { res.status(404).json({ error: "Not found" }); return; }
     res.json(row);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err) {
+    req.log.error({ err }, "Admin request failed");
+    res.status(400).json({ error: getErrorMessage(err) });
   }
 });
 
@@ -57,8 +62,9 @@ router.patch("/applications/:id", async (req: Request, res: Response) => {
     const [row] = await db.update(applicationsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(applicationsTable.id, req.params.id)).returning();
     if (!row) { res.status(404).json({ error: "Not found" }); return; }
     res.json(row);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err) {
+    req.log.error({ err }, "Admin request failed");
+    res.status(400).json({ error: getErrorMessage(err) });
   }
 });
 

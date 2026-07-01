@@ -93,6 +93,7 @@ router.post("/auth/login", async (req: Request, res: Response) => {
     const { passwordHash: _, ...safeUser } = users[0];
     res.json({ success: true, user: safeUser, token });
   } catch (err) {
+    req.log.error({ err }, "Auth request failed");
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -125,6 +126,7 @@ router.post("/auth/profile", async (req: Request, res: Response) => {
     const { passwordHash: _, ...safeUser } = updated[0];
     res.json({ user: safeUser });
   } catch (err) {
+    req.log.error({ err }, "Auth request failed");
     res.status(500).json({ error: "Internal server error" });
   }
 });

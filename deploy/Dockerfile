@@ -4,22 +4,24 @@
 FROM node:24-slim AS builder
 RUN corepack enable
 WORKDIR /app
+# Yandex Maps JS API key is inlined into the barakat static bundle at build time
+# (Vite bakes VITE_* vars). Supplied as a build arg from docker-compose.yml.
+ARG VITE_YANDEX_MAPS_API_KEY=""
 COPY . .
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @workspace/api-server run build \
- && PORT=3000 BASE_PATH=/ pnpm --filter @workspace/barakat run build \
+ && VITE_YANDEX_MAPS_API_KEY="$VITE_YANDEX_MAPS_API_KEY" PORT=3000 BASE_PATH=/ pnpm --filter @workspace/barakat run build \
  && PORT=3001 pnpm --filter @workspace/barakat-admin run build
 
 # ---- API runtime: lightweight Node image with the bundled server ----
 FROM node:24-slim AS api
 WORKDIR /app
 ENV NODE_ENV=production
-# esbuild bundles everything EXCEPT the externalized packages in build.mjs.
-# @google-cloud/storage is externalized but imported at startup (object storage),
-# so it must be present in the runtime image or the API crashes on boot with
-# ERR_MODULE_NOT_FOUND. Install just that runtime external here.
+# The server bundle (dist/index.mjs) is fully self-contained. Object storage
+# uses the local filesystem (UPLOAD_DIR, default ./data/uploads), which is
+# backed by a persistent volume in docker-compose.yml, so no extra runtime
+# dependencies are required here.
 COPY --from=builder /app/artifacts/api-server/dist ./dist
-RUN npm install --omit=dev --no-package-lock --no-fund --no-audit @google-cloud/storage@^7.21.0
 EXPOSE 8080
 CMD ["node", "--enable-source-maps", "./dist/index.mjs"]
 

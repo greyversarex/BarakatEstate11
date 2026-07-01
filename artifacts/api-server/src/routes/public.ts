@@ -24,6 +24,7 @@ router.get("/listings", async (req: Request, res: Response) => {
     }
     res.json(results);
   } catch (err) {
+    req.log.error({ err }, "Failed to list published listings");
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -33,7 +34,8 @@ router.get("/listings/:id", async (req: Request, res: Response) => {
     const rows = await db.select().from(listingsTable).where(eq(listingsTable.id, req.params.id)).limit(1);
     if (!rows[0] || rows[0].status !== "published") { res.status(404).json({ error: "Not found" }); return; }
     res.json(rows[0]);
-  } catch {
+  } catch (err) {
+    req.log.error({ err, id: req.params.id }, "Failed to fetch listing");
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -47,16 +49,18 @@ router.post("/listings/:id/view", async (req: Request, res: Response) => {
       .returning({ views: listingsTable.views });
     if (!updated) { res.status(404).json({ error: "Not found" }); return; }
     res.json({ views: updated.views });
-  } catch {
+  } catch (err) {
+    req.log.error({ err, id: req.params.id }, "Failed to increment listing views");
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-router.get("/blog", async (_req: Request, res: Response) => {
+router.get("/blog", async (req: Request, res: Response) => {
   try {
     const rows = await db.select().from(blogPostsTable).where(eq(blogPostsTable.status, "published")).orderBy(desc(blogPostsTable.createdAt));
     res.json(rows);
-  } catch {
+  } catch (err) {
+    req.log.error({ err }, "Failed to list blog posts");
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -66,16 +70,18 @@ router.get("/blog/:slug", async (req: Request, res: Response) => {
     const rows = await db.select().from(blogPostsTable).where(eq(blogPostsTable.slug, req.params.slug)).limit(1);
     if (!rows[0] || rows[0].status !== "published") { res.status(404).json({ error: "Not found" }); return; }
     res.json(rows[0]);
-  } catch {
+  } catch (err) {
+    req.log.error({ err, slug: req.params.slug }, "Failed to fetch blog post");
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-router.get("/reviews", async (_req: Request, res: Response) => {
+router.get("/reviews", async (req: Request, res: Response) => {
   try {
     const rows = await db.select().from(reviewsTable).where(eq(reviewsTable.status, "approved")).orderBy(desc(reviewsTable.createdAt));
     res.json(rows);
-  } catch {
+  } catch (err) {
+    req.log.error({ err }, "Failed to list approved reviews");
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -94,12 +100,13 @@ router.post("/reviews", async (req: Request, res: Response) => {
       .values({ name, text, sellerId, status: "pending" })
       .returning();
     res.status(201).json(created);
-  } catch {
+  } catch (err) {
+    req.log.error({ err }, "Failed to create review");
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-router.get("/profile", async (_req: Request, res: Response) => {
+router.get("/profile", async (req: Request, res: Response) => {
   try {
     const rows = await db.select().from(siteSettingsTable).where(eq(siteSettingsTable.key, "site_profile")).limit(1);
     if (!rows[0]) {
@@ -107,16 +114,18 @@ router.get("/profile", async (_req: Request, res: Response) => {
       return;
     }
     res.json(JSON.parse(rows[0].value));
-  } catch {
+  } catch (err) {
+    req.log.error({ err }, "Failed to fetch site profile");
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-router.get("/users", async (_req: Request, res: Response) => {
+router.get("/users", async (req: Request, res: Response) => {
   try {
     const rows = await db.select().from(adminUsersTable).orderBy(desc(adminUsersTable.createdAt));
     res.json(rows.map(({ passwordHash: _, ...u }) => u));
-  } catch {
+  } catch (err) {
+    req.log.error({ err }, "Failed to list users");
     res.status(500).json({ error: "Internal server error" });
   }
 });

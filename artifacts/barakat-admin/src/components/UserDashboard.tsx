@@ -102,6 +102,12 @@ import {
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import type { AuthUser, Listing, Profile, PublishStatus, Application, Banner, User, BlogPost } from "@/lib/types";
 
+type AdminRow = { id: string; status?: string; [key: string]: any };
+
+function errMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err ?? "");
+}
+
 type Tab =
   | "listings"
   | "profile"
@@ -134,7 +140,7 @@ function appServiceFor(tab: Tab): string | null {
   return APPLICATION_CATEGORIES.find((c) => c.id === tab)?.service ?? null;
 }
 
-function appPredicate(tab: Tab): (a: any) => boolean {
+function appPredicate(tab: Tab): (a: AdminRow) => boolean {
   if (tab === "app_other") return (a) => !KNOWN_APP_SERVICES.includes(a?.service);
   const service = appServiceFor(tab);
   return (a) => a?.service === service;
@@ -155,8 +161,8 @@ type FormState = {
 
   users: Partial<AuthUser>;
   settings: Partial<Profile>;
-  reviews: any;
-  viewings: any;
+  reviews: Record<string, any>;
+  viewings: Record<string, any>;
   blog: Partial<BlogPost>;
   app_rent: Partial<Application>;
   app_sell: Partial<Application>;
@@ -318,9 +324,9 @@ async function uploadFile(file: File): Promise<string> {
       throw new Error("Сервер не вернул URL файла");
     }
     return data.url;
-  } catch (err: any) {
+  } catch (err) {
     console.error("uploadFile error:", err);
-    throw new Error(err.message || "Ошибка при отправке файла на сервер");
+    throw new Error(errMessage(err) || "Ошибка при отправке файла на сервер");
   }
 }
 
@@ -373,7 +379,7 @@ export default function UserDashboard() {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [authReady, setAuthReady] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("listings");
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<AdminRow[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formKeyCounter, setFormKeyCounter] = useState(0);
   const [form, setForm] = useState<FormState>(cloneForm(emptyForms));
@@ -382,9 +388,9 @@ export default function UserDashboard() {
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(false);
   const [globalSettings, setGlobalSettings] = useState<Partial<Profile>>(emptyForms.settings);
-  const [allApplications, setAllApplications] = useState<any[]>([]);
-  const [allViewings, setAllViewings] = useState<any[]>([]);
-  const [allReviews, setAllReviews] = useState<any[]>([]);
+  const [allApplications, setAllApplications] = useState<AdminRow[]>([]);
+  const [allViewings, setAllViewings] = useState<AdminRow[]>([]);
+  const [allReviews, setAllReviews] = useState<AdminRow[]>([]);
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement | null>(null);
   const reqIdRef = useRef(0);
@@ -456,7 +462,7 @@ export default function UserDashboard() {
 
   async function refreshApplications() {
     if (currentUser?.role !== "admin") return;
-    const fetchList = async (path: string, set: (v: any[]) => void) => {
+    const fetchList = async (path: string, set: (v: AdminRow[]) => void) => {
       try {
         const res = await authFetch(`${ADMIN_API}/${path}?admin=1`);
         const payload = await res.json();
@@ -510,7 +516,7 @@ export default function UserDashboard() {
     }
   }
 
-  async function markCategorySeen(tab: Tab, rows: any[]) {
+  async function markCategorySeen(tab: Tab, rows: AdminRow[]) {
     const predicate = appPredicate(tab);
     const unseen = rows.filter((a) => predicate(a) && a.status === "new");
     if (unseen.length === 0) return;
@@ -530,7 +536,7 @@ export default function UserDashboard() {
   async function openAppCategory(tab: Tab) {
     const myId = ++reqIdRef.current;
     setLoading(true);
-    let rows: any[] = [];
+    let rows: AdminRow[] = [];
     try {
       const res = await authFetch(`${ADMIN_API}/applications?admin=1`);
       const payload = await res.json();
@@ -577,7 +583,7 @@ export default function UserDashboard() {
     else loadData(tab);
   }
 
-  function startEdit(item: Listing) {
+  function startEdit(item: AdminRow) {
     setEditingId(item.id);
     setForm((prev) => ({ ...prev, [activeTab]: cloneForm(item) }));
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -591,7 +597,7 @@ export default function UserDashboard() {
     setToast("Удалено");
   }
 
-  async function togglePublish(item: any) {
+  async function togglePublish(item: AdminRow) {
     const status: PublishStatus = item.status === "published" ? "draft" : "published";
     await authFetch(`${ADMIN_API}/${activeTab}/${item.id}`, {
       method: "PATCH",
@@ -671,9 +677,9 @@ export default function UserDashboard() {
       }
       
       setToast("Сохранено");
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setToast(err.message || "Ошибка при сохранении");
+      setToast(errMessage(err) || "Ошибка при сохранении");
     } finally {
       setLoading(false);
     }

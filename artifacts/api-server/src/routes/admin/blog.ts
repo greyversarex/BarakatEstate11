@@ -1,4 +1,5 @@
 import { Router, type Request, type Response } from "express";
+import { getErrorMessage } from "../../lib/errors";
 import { db } from "@workspace/db";
 import { blogPostsTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
@@ -57,8 +58,9 @@ router.post("/blog", async (req: Request, res: Response) => {
     const slug = slugify(body.title);
     const [row] = await db.insert(blogPostsTable).values({ ...body, slug }).returning();
     res.status(201).json(row);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err) {
+    req.log.error({ err }, "Admin request failed");
+    res.status(400).json({ error: getErrorMessage(err) });
   }
 });
 
@@ -71,8 +73,9 @@ async function updatePost(req: Request, res: Response) {
     const [row] = await db.update(blogPostsTable).set({ ...body, updatedAt: new Date() }).where(eq(blogPostsTable.id, req.params.id)).returning();
     if (!row) { res.status(404).json({ error: "Not found" }); return; }
     res.json(row);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err) {
+    req.log.error({ err }, "Admin request failed");
+    res.status(400).json({ error: getErrorMessage(err) });
   }
 }
 
