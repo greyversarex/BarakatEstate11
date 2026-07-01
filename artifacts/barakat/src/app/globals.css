@@ -1948,29 +1948,27 @@
     margin-top:16px;width:100%;
     display:flex;align-items:center;justify-content:center;gap:8px;
     padding:12px 18px;border:none;border-radius:12px;
-    background:linear-gradient(110deg,#E9C877 0%,#F7E7B0 18%,#CFA23A 38%,#F9EDBC 58%,#E4BE6B 78%,#CFA23A 100%);
-    background-size:220% auto;
+    background:linear-gradient(110deg,#E9C877 0%,#F3DA95 50%,#DDB45D 100%);
     color:#3d2f12;
     font-family:'Inter',sans-serif;font-size:14px;font-weight:700;
     cursor:pointer;position:relative;overflow:hidden;
-    box-shadow:0 4px 16px rgba(201,153,46,.35);
-    animation:goldShimmer 4s linear infinite;
-    transition:transform .25s ease, box-shadow .25s ease;
+    box-shadow:0 3px 12px rgba(201,153,46,.22);
+    transition:transform .25s ease, box-shadow .25s ease, filter .25s ease;
   }
   .prop-details-btn::after {
     content:'';position:absolute;top:0;left:-160%;
-    width:65%;height:100%;transform:skewX(-22deg);pointer-events:none;
-    background:linear-gradient(120deg,transparent,rgba(255,255,255,.7),transparent);
-    animation:goldSheen 3.6s ease-in-out infinite;
+    width:55%;height:100%;transform:skewX(-22deg);pointer-events:none;
+    background:linear-gradient(120deg,transparent,rgba(255,255,255,.35),transparent);
+    animation:goldSheen 7s ease-in-out infinite;
   }
   .prop-details-btn:hover {
     transform:translateY(-2px);
-    box-shadow:0 10px 28px rgba(201,153,46,.5);
+    box-shadow:0 8px 22px rgba(201,153,46,.32);
+    filter:brightness(1.03);
   }
   .prop-details-arrow { width:16px;height:16px;transition:transform .25s ease;position:relative; }
   .prop-details-btn:hover .prop-details-arrow { transform:translateX(3px); }
-  @keyframes goldShimmer { 0%{background-position:0% 50%} 100%{background-position:220% 50%} }
-  @keyframes goldSheen { 0%{left:-160%} 60%{left:160%} 100%{left:160%} }
+  @keyframes goldSheen { 0%{left:-160%} 22%{left:160%} 100%{left:160%} }
 
   /* ── SERVICES ── */
   .services-section { padding:80px 40px; background:var(--ink); color:white; position:relative;overflow:hidden; }
