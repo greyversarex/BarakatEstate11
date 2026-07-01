@@ -1632,7 +1632,7 @@
   }
   .vip-title strong {
     font-weight: 700;
-    background: linear-gradient(120deg, var(--gold-dark), var(--gold) 55%, #B98B3C);
+    background: linear-gradient(120deg, var(--gold), var(--gold-light) 50%, var(--gold));
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
   .vip-sub { font-size: 15.5px; color: var(--muted); margin: 0 auto 28px; max-width: 560px; line-height: 1.55; }
