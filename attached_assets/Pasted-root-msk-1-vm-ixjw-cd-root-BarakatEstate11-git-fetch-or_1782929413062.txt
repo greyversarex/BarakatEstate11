@@ -1,0 +1,303 @@
+root@msk-1-vm-ixjw:~# cd /root/BarakatEstate11 && git fetch origin && git reset --hard origin/main && bash deploy/update.sh
+remote: Enumerating objects: 7, done.
+remote: Counting objects: 100% (7/7), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 4 (delta 3), reused 4 (delta 3), pack-reused 0 (from 0)
+Unpacking objects: 100% (4/4), 1.40 KiB | 119.00 KiB/s, done.
+From https://github.com/greyversarex/BarakatEstate11
+   aec43f8..cc6e297  main       -> origin/main
+HEAD is now at cc6e297 Update deployment script to correctly handle environment variables and map integration
+
+==> Шаг 1/6 — бэкап базы данных
+
+==> Бэкап сохранён: /root/barakat-backups/backup_2026-07-01_18-04-32.sql
+
+==> Шаг 2/6 — забираю свежий код из git
+HEAD is now at cc6e297 Update deployment script to correctly handle environment variables and map integration
+
+==> Шаг 3/6 — проверяю пин pnpm
+  "packageManager": "pnpm@10.26.1",
+
+==> Шаг 4/6 — пересобираю и поднимаю контейнеры (это займёт несколько минут)
+[+] Building 124.0s (23/23) FINISHED
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 941B                                             0.0s
+ => [api internal] load build definition from Dockerfile                   0.2s
+ => => transferring dockerfile: 1.19kB                                     0.1s
+ => [caddy] resolve image config for docker-image://docker.io/docker/dock  1.8s
+ => CACHED [caddy] docker-image://docker.io/docker/dockerfile:1@sha256:87  0.1s
+ => => resolve docker.io/docker/dockerfile:1@sha256:87999aa3d42bdc6bea605  0.1s
+ => [api internal] load metadata for docker.io/library/node:24-slim        0.4s
+ => [caddy internal] load metadata for docker.io/library/caddy:2-alpine    0.3s
+ => [api internal] load .dockerignore                                      0.0s
+ => => transferring context: 667B                                          0.0s
+ => [api builder 1/6] FROM docker.io/library/node:24-slim@sha256:b31e7a42  0.1s
+ => => resolve docker.io/library/node:24-slim@sha256:b31e7a42fdf8b8aa5f5e  0.0s
+ => CACHED [caddy web 1/3] FROM docker.io/library/caddy:2-alpine@sha256:5  0.3s
+ => => resolve docker.io/library/caddy:2-alpine@sha256:5f5c8640aae01df965  0.0s
+ => [caddy internal] load build context                                    0.8s
+ => => transferring context: 852.93kB                                      0.8s
+ => CACHED [caddy builder 2/6] RUN corepack enable                         0.0s
+ => CACHED [caddy builder 3/6] WORKDIR /app                                0.0s
+ => [caddy builder 4/6] COPY . .                                           0.9s
+ => [caddy builder 5/6] RUN pnpm install --frozen-lockfile                47.2s
+ => [caddy builder 6/6] RUN pnpm --filter @workspace/api-server run buil  51.9s
+ => [caddy web 2/3] COPY --from=builder /app/artifacts/barakat/dist/publi  1.0s
+ => CACHED [api api 2/3] WORKDIR /app                                      0.1s
+ => [api api 3/3] COPY --from=builder /app/artifacts/api-server/dist ./di  0.6s
+ => [caddy web 3/3] COPY --from=builder /app/artifacts/barakat-admin/dist  2.8s
+ => [api] exporting to image                                               8.0s
+ => => exporting layers                                                    6.4s
+ => => exporting manifest sha256:77587798f0ee6a4cec6d8563ac2239dd38ac7d65  0.1s
+ => => exporting config sha256:7a7eb9b7a21db935dc851c175f63c415bcfcec6124  0.1s
+ => => exporting attestation manifest sha256:74b7afd5bf13213bde2e810926e7  0.1s
+ => => exporting manifest list sha256:6b928fe61aabd3815878abbe816d1883b4f  0.0s
+ => => naming to docker.io/library/deploy-api:latest                       0.0s
+ => => unpacking to docker.io/library/deploy-api:latest                    0.5s
+ => [caddy] exporting to image                                             7.4s
+ => => exporting layers                                                    6.3s
+ => => exporting manifest sha256:fd5a02075af116d433b8dd07ccd1252b3899ac47  0.0s
+ => => exporting config sha256:d6397809d5430e391ed4a5a5f98e36995b0e16f0aa  0.0s
+ => => exporting attestation manifest sha256:94eae356433816d4d22624ba98f9  0.2s
+ => => exporting manifest list sha256:ee59662e39e02a85bc6ace88b2f388eef7d  0.0s
+ => => naming to docker.io/library/deploy-caddy:latest                     0.0s
+ => => unpacking to docker.io/library/deploy-caddy:latest                  0.5s
+ => [api] resolving provenance for metadata file                           1.1s
+ => [caddy] resolving provenance for metadata file                         1.0s
+[+] up 6/6
+ ✔ Image deploy-api         Built                                         124.2s
+ ✔ Image deploy-caddy       Built                                         124.2s
+ ✔ Volume deploy_uploads    Created                                         0.0s
+ ✔ Container deploy-db-1    Healthy                                        65.1s
+ ✔ Container deploy-api-1   Started                                        65.7s
+ ✔ Container deploy-caddy-1 Started                                         3.8s
+
+==> Шаг 5/6 — накатываю миграцию схемы на базу
+BEGIN
+DO
+NOTICE:  relation "admin_users" already exists, skipping
+CREATE TABLE
+NOTICE:  relation "listings" already exists, skipping
+CREATE TABLE
+NOTICE:  relation "applications" already exists, skipping
+CREATE TABLE
+NOTICE:  relation "viewings" already exists, skipping
+CREATE TABLE
+NOTICE:  relation "reviews" already exists, skipping
+CREATE TABLE
+CREATE TABLE
+NOTICE:  relation "blog_posts" already exists, skipping
+NOTICE:  relation "site_settings" already exists, skipping
+CREATE TABLE
+NOTICE:  column "username" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "password_hash" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "name" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "email" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "phone" of relation "admin_users" already exists, skipping
+ALTER TABLE
+ALTER TABLE
+NOTICE:  column "whatsapp" of relation "admin_users" already exists, skipping
+NOTICE:  column "telegram" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "instagram" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "facebook" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "avatar" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "bio" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "rating" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "deals_count" of relation "admin_users" already exists, skipping
+ALTER TABLE
+ALTER TABLE
+NOTICE:  column "experience_years" of relation "admin_users" already exists, skipping
+NOTICE:  column "specializations" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "role" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "created_at" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "admin_users" already exists, skipping
+ALTER TABLE
+DO
+NOTICE:  column "title" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "slug" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "deal_type" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "property_type" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "price" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "currency" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "district" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "address" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "rooms" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "area" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "floor" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "total_floors" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "year_built" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "description" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "features" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "construction_stage" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "renovation" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "document_type" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "landmark" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "latitude" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "longitude" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "map_x" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "map_y" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "main_image" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "gallery" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "employee_id" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_id" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_name" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_phone" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_whatsapp" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_avatar" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "is_featured" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "is_new" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "is_urgent" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "is_hero" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "views" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "status" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "created_at" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "name" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "phone" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "service" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "district" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "landmark" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "message" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "photos" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "status" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "created_at" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "listing_id" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "listing_title" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "employee_id" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_id" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "name" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "phone" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "date" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "time" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "message" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "status" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "created_at" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "name" of relation "reviews" already exists, skipping
+ALTER TABLE
+NOTICE:  column "text" of relation "reviews" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_id" of relation "reviews" already exists, skipping
+ALTER TABLE
+NOTICE:  column "status" of relation "reviews" already exists, skipping
+ALTER TABLE
+NOTICE:  column "created_at" of relation "reviews" already exists, skipping
+ALTER TABLE
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "reviews" already exists, skipping
+NOTICE:  column "slug" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "title" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "category" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "excerpt" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "image" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "content" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "status" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "created_at" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "value" of relation "site_settings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "site_settings" already exists, skipping
+ALTER TABLE
+COMMIT
+
+==> Схема синхронизирована
+
+==> Шаг 6/6 — проверяю, что API поднялся
+NAME             IMAGE                COMMAND                  SERVICE   CREATED              STATUS                PORTS
+deploy-api-1     deploy-api           "docker-entrypoint.s…"   api       About a minute ago   Up 6 seconds          8080/tcp
+deploy-caddy-1   deploy-caddy         "caddy run --config …"   caddy     9 seconds ago        Up 5 seconds          0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp, 443/udp, 2019/tcp
+deploy-db-1      postgres:16-alpine   "docker-entrypoint.s…"   db        3 days ago           Up 3 days (healthy)   5432/tcp
+
+
+==> Последние строки логов API:
+api-1  | {"level":30,"time":1782929273501,"pid":1,"hostname":"0017166f5c85","port":8080,"msg":"Server listening"}
+
+
+==> Готово. Открой https://barakat-estate.tj/barakat-admin/ и проверь вход.
+
+==> Если в логах выше есть ERR_MODULE_NOT_FOUND или ошибки — пришли их разработчику.
+root@msk-1-vm-ixjw:~/BarakatEstate11#
