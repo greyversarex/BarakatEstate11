@@ -280,12 +280,7 @@ export const auraPages = {
         <div class="vip-eyebrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h20"/><path d="m4 14 2-9 4 5 2-7 2 7 4-5 2 9"/></svg> Премиум-подборка</div>
         <h2 class="vip-title">VIP <strong>объявления</strong></h2>
         <p class="vip-sub">Эксклюзивные объекты с приоритетным размещением — выбор Barakat Estate</p>
-        <div class="vip-tabs" id="vip-tabs">
-          <button class="vip-tab active" data-vip-filter="all">Все</button>
-          <button class="vip-tab" data-vip-filter="new_building">Новостройки</button>
-          <button class="vip-tab" data-vip-filter="secondary">Вторичка</button>
-          <button class="vip-tab" data-vip-filter="house">Дома</button>
-        </div>
+        <div class="vip-tabs" id="vip-tabs"></div>
       </div>
       <div class="vip-showcase">
         <div class="vip-featured-slot" id="vip-featured"></div>

@@ -108,6 +108,8 @@ function mapPropertyType(value) {
     house: 'Дом',
     commercial: 'Коммерческая',
     new_building: 'Новостройка',
+    newbuild: 'Новостройка',
+    secondary: 'Вторичка',
   };
   return labels[value] || value || 'Квартира';
 }
@@ -388,10 +390,10 @@ function propCard(p, onclick) {
   const isFav = isFavoriteProperty(p.id);
   const imgs = (p.images && p.images.length > 0) ? p.images : [p.image];
   const uniqueImgs = [...new Set(imgs.filter(Boolean))];
-  const slideId = `slider-${p.id}-${Math.random().toString(36).slice(2,7)}`;
+  const slideId = safeSlideId('slider', p.id);
 
   const slides = uniqueImgs.map((src, i) =>
-    `<img src="${src}" alt="${p.addr}" loading="lazy" class="prop-slide${i === 0 ? ' active' : ''}" />`
+    `<img src="${escapeAttr(src)}" alt="${escapeAttr(p.addr)}" loading="lazy" class="prop-slide${i === 0 ? ' active' : ''}" />`
   ).join('');
 
   const dots = uniqueImgs.length > 1
@@ -402,16 +404,16 @@ function propCard(p, onclick) {
     ? `<div class="prop-img-counter"><span>1</span>/${uniqueImgs.length}</div>`
     : '';
 
-  return `<div class="prop-card" onclick="${onclick||`navigate('property','${p.id}')`}" style="animation-delay:${Math.random()*.3}s">
+  return `<div class="prop-card" onclick="${onclick||`navigate('property','${escapeJsAttr(p.id)}')`}" style="animation-delay:${Math.random()*.3}s">
     <div class="prop-img" id="${slideId}" data-slide="0" data-total="${uniqueImgs.length}">
       ${slides}
       <div class="prop-img-gradient"></div>
       <div class="prop-tags">
-        <span class="tag tag-${p.tag}">${p.tagLabel}</span>
+        <span class="tag tag-${escapeAttr(p.tag)}">${escapeAttr(p.tagLabel)}</span>
         ${p.new?'<span class="tag tag-new">Новое</span>':''}
         ${p.urgent?'<span class="tag tag-urgent">Срочно</span>':''}
       </div>
-      <button class="prop-fav${isFav ? ' active' : ''}" onclick="event.stopPropagation();toggleFav(this)" aria-label="Добавить в избранное" data-prop-id="${p.id}" data-fav="${isFav ? 'true' : 'false'}">${lucideIcon('heart', 'lucide-fav')}</button>
+      <button class="prop-fav${isFav ? ' active' : ''}" onclick="event.stopPropagation();toggleFav(this)" aria-label="Добавить в избранное" data-prop-id="${escapeAttr(p.id)}" data-fav="${isFav ? 'true' : 'false'}">${lucideIcon('heart', 'lucide-fav')}</button>
       ${counter}
       ${dots}
       ${uniqueImgs.length > 1 ? `
@@ -421,31 +423,31 @@ function propCard(p, onclick) {
     </div>
     <div class="prop-body">
       <div class="prop-price-row">
-        <div class="prop-price">${p.price}</div>
-        <div class="prop-price-note">${p.priceNote}${p.propertyType ? ` &middot; ${p.propertyType}` : ''}</div>
+        <div class="prop-price">${escapeAttr(p.price)}</div>
+        <div class="prop-price-note">${escapeAttr(p.priceNote)}${p.propertyType ? ` &middot; ${escapeAttr(p.propertyType)}` : ''}</div>
       </div>
-      <div class="prop-addr">${lucideIcon('mapPin')} ${p.addr} ${p.landmark ? `<span style="opacity: 0.7; font-size: 0.9em;">(Ор: ${p.landmark})</span>` : ''}</div>
+      <div class="prop-addr">${lucideIcon('mapPin')} ${escapeAttr(p.addr)} ${p.landmark ? `<span style="opacity: 0.7; font-size: 0.9em;">(Ор: ${escapeAttr(p.landmark)})</span>` : ''}</div>
       <div class="prop-meta" style="flex-direction: column; gap: 10px; height: auto; overflow: visible; white-space: normal; align-items: flex-start;">
         <div style="display: flex; gap: 18px; flex-wrap: wrap; width: 100%;">
-          <span>${lucideIcon('bed')} <strong>${p.rooms}</strong> комн</span>
-          <span>${lucideIcon('ruler')} <strong>${p.area}</strong> м²</span>
-          <span>${lucideIcon('building2')} <strong>${p.floor}</strong> эт</span>
+          <span>${lucideIcon('bed')} <strong>${escapeAttr(p.rooms)}</strong> комн</span>
+          <span>${lucideIcon('ruler')} <strong>${escapeAttr(p.area)}</strong> м²</span>
+          <span>${lucideIcon('building2')} <strong>${escapeAttr(p.floor)}</strong> эт</span>
         </div>
         ${(p.renovation && p.renovation !== 'Любая') || (p.constructionStage && p.constructionStage !== 'Любая') || (p.documentType && p.documentType !== 'Любой') ? `
         <div style="display: flex; gap: 18px; flex-wrap: wrap; width: 100%;">
-          ${p.renovation && p.renovation !== 'Любая' ? `<span>${lucideIcon('sparkles')} ${p.renovation}</span>` : ''}
-          ${p.constructionStage && p.constructionStage !== 'Любая' ? `<span>${lucideIcon('construction')} ${p.constructionStage}</span>` : ''}
-          ${p.documentType && p.documentType !== 'Любой' ? `<span>${lucideIcon('clipboard')} ${p.documentType}</span>` : ''}
+          ${p.renovation && p.renovation !== 'Любая' ? `<span>${lucideIcon('sparkles')} ${escapeAttr(p.renovation)}</span>` : ''}
+          ${p.constructionStage && p.constructionStage !== 'Любая' ? `<span>${lucideIcon('construction')} ${escapeAttr(p.constructionStage)}</span>` : ''}
+          ${p.documentType && p.documentType !== 'Любой' ? `<span>${lucideIcon('clipboard')} ${escapeAttr(p.documentType)}</span>` : ''}
         </div>` : ''}
       </div>
       <div class="prop-agent">
-        <div class="agent-ava">${p.agentAvatar ? `<img src="${p.agentAvatar}" alt="${p.agentName}" />` : p.agent}</div>
+        <div class="agent-ava">${p.agentAvatar ? `<img src="${escapeAttr(p.agentAvatar)}" alt="${escapeAttr(p.agentName)}" />` : escapeAttr(p.agent)}</div>
         <div>
-          <strong onclick="event.stopPropagation();navigate('profile','${p.sellerId || ''}')">${p.agentName}</strong>
+          <strong onclick="event.stopPropagation();navigate('profile','${escapeJsAttr(p.sellerId || '')}')">${escapeAttr(p.agentName)}</strong>
         </div>
         <span class="prop-verified" title="Проверено Barakat Estate">${lucideIcon('shieldCheck', 'prop-verified-icon', 14)} Проверено</span>
       </div>
-      <button class="prop-details-btn" onclick="event.stopPropagation();navigate('property','${p.id}')">
+      <button class="prop-details-btn" onclick="event.stopPropagation();navigate('property','${escapeJsAttr(p.id)}')">
         Подробнее ${lucideIcon('arrowRight', 'prop-details-arrow', 16)}
       </button>
     </div>
@@ -515,13 +517,41 @@ function getVipProperties() {
   return getAllProperties().filter((p) => p.vip);
 }
 
+function escapeAttr(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function escapeJsAttr(s) {
+  return String(s == null ? '' : s)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function safeSlideId(prefix, id) {
+  return `${prefix}-${String(id == null ? '' : id).replace(/[^A-Za-z0-9_-]/g, '')}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
 function vipMatchesFilter(p, filter) {
   if (filter === 'all') return true;
-  const t = p.rawPropertyType;
-  if (filter === 'new_building') return t === 'new_building';
-  if (filter === 'house') return t === 'house' || t === 'cottage' || t === 'townhouse';
-  if (filter === 'secondary') return !['new_building', 'house', 'cottage', 'townhouse'].includes(t);
-  return true;
+  return mapPropertyType(p.rawPropertyType) === filter;
+}
+
+function buildVipTabs() {
+  const tabs = document.getElementById('vip-tabs');
+  if (!tabs) return;
+  const types = [];
+  getVipProperties().forEach((p) => {
+    const label = mapPropertyType(p.rawPropertyType);
+    if (label && !types.includes(label)) types.push(label);
+  });
+  if (vipFilter !== 'all' && !types.includes(vipFilter)) vipFilter = 'all';
+  const btns = ['<button class="vip-tab' + (vipFilter === 'all' ? ' active' : '') + '" data-vip-filter="all">Все</button>']
+    .concat(types.map((t) => '<button class="vip-tab' + (vipFilter === t ? ' active' : '') + '" data-vip-filter="' + escapeAttr(t) + '">' + escapeAttr(t) + '</button>'));
+  tabs.innerHTML = btns.join('');
 }
 
 function vipDateLabel(p) {
@@ -535,10 +565,10 @@ function vipCard(p, featured) {
   const isFav = isFavoriteProperty(p.id);
   const imgs = (p.images && p.images.length > 0) ? p.images : [p.image];
   const uniqueImgs = [...new Set(imgs.filter(Boolean))];
-  const slideId = `vip-${p.id}-${Math.random().toString(36).slice(2, 7)}`;
+  const slideId = safeSlideId('vip', p.id);
 
   const slides = uniqueImgs.length
-    ? uniqueImgs.map((src, i) => `<img src="${src}" alt="${p.addr}" loading="lazy" class="prop-slide${i === 0 ? ' active' : ''}" />`).join('')
+    ? uniqueImgs.map((src, i) => `<img src="${escapeAttr(src)}" alt="${escapeAttr(p.addr)}" loading="lazy" class="prop-slide${i === 0 ? ' active' : ''}" />`).join('')
     : `<div class="vip-img-empty">${lucideIcon('building2', '', 44)}</div>`;
 
   const dots = uniqueImgs.length > 1
@@ -551,39 +581,44 @@ function vipCard(p, featured) {
   ` : '';
 
   const meta = `
-    <span>${lucideIcon('bed')} <strong>${p.rooms}</strong> комн</span>
-    <span>${lucideIcon('ruler')} <strong>${p.area}</strong> м²</span>
-    <span>${lucideIcon('building2')} <strong>${p.floor}</strong> эт</span>
-    <span>${lucideIcon('eye')} <strong>${(p.views || 0).toLocaleString('ru-RU')}</strong></span>
+    <span>${lucideIcon('bed')} <strong>${escapeAttr(p.rooms)}</strong> комн</span>
+    <span>${lucideIcon('ruler')} <strong>${escapeAttr(p.area)}</strong> м²</span>
+    <span>${lucideIcon('building2')} <strong>${escapeAttr(p.floor)}</strong> эт</span>
+    <span>${lucideIcon('eye')} <strong>${(Number(p.views) || 0).toLocaleString('ru-RU')}</strong></span>
   `;
 
   const date = vipDateLabel(p);
-  const agentBlock = featured ? `
+  const agentBlock = `
     <div class="vip-agent">
-      <div class="vip-agent-ava">${p.agentAvatar ? `<img src="${p.agentAvatar}" alt="${p.agentName}" />` : p.agent}</div>
+      <div class="vip-agent-ava">${p.agentAvatar ? `<img src="${escapeAttr(p.agentAvatar)}" alt="${escapeAttr(p.agentName)}" />` : escapeAttr(p.agent)}</div>
       <div class="vip-agent-info">
-        <strong onclick="event.stopPropagation();navigate('profile','${p.sellerId || ''}')">${p.agentName}</strong>
+        <strong onclick="event.stopPropagation();navigate('profile','${escapeJsAttr(p.sellerId || '')}')">${escapeAttr(p.agentName)}</strong>
         <span class="vip-verified">${lucideIcon('shieldCheck', '', 13)} Проверено</span>
       </div>
-      ${date ? `<span class="vip-date">${lucideIcon('crown', '', 13)} ${date}</span>` : ''}
-    </div>` : '';
+      ${featured && date ? `<span class="vip-date">${lucideIcon('crown', '', 13)} ${escapeAttr(date)}</span>` : ''}
+    </div>`;
+  const detailsBtn = `
+    <button class="prop-details-btn vip-details-btn" onclick="event.stopPropagation();navigate('property','${escapeJsAttr(p.id)}')">
+      Подробнее ${lucideIcon('arrowRight', 'prop-details-arrow', 16)}
+    </button>`;
 
-  return `<article class="vip-card${featured ? ' vip-card-featured' : ''}" onclick="navigate('property','${p.id}')">
+  return `<article class="vip-card${featured ? ' vip-card-featured' : ''}" onclick="navigate('property','${escapeJsAttr(p.id)}')">
     <div class="vip-img" id="${slideId}" data-slide="0" data-total="${uniqueImgs.length}">
       ${slides}
       <div class="vip-img-shade"></div>
       <span class="vip-badge">${lucideIcon('crown', '', 14)} VIP</span>
-      <span class="vip-deal tag-${p.tag}">${p.tagLabel}</span>
-      <button class="vip-fav${isFav ? ' active' : ''}" onclick="event.stopPropagation();toggleFav(this)" aria-label="В избранное" data-prop-id="${p.id}" data-fav="${isFav ? 'true' : 'false'}">${lucideIcon('heart', 'lucide-fav')}</button>
+      <span class="vip-deal tag-${escapeAttr(p.tag)}">${escapeAttr(p.tagLabel)}</span>
+      <button class="vip-fav${isFav ? ' active' : ''}" onclick="event.stopPropagation();toggleFav(this)" aria-label="В избранное" data-prop-id="${escapeAttr(p.id)}" data-fav="${isFav ? 'true' : 'false'}">${lucideIcon('heart', 'lucide-fav')}</button>
       ${arrows}
       ${dots}
     </div>
     <div class="vip-body">
-      <div class="vip-price">${p.price}</div>
-      <h3 class="vip-card-title">${p.title || p.addr}</h3>
-      <div class="vip-addr">${lucideIcon('mapPin')} ${p.district || p.addr}</div>
+      <div class="vip-price">${escapeAttr(p.price)}</div>
+      <h3 class="vip-card-title">${escapeAttr(p.title || p.addr)}</h3>
+      <div class="vip-addr">${lucideIcon('mapPin')} ${escapeAttr(p.district || p.addr)}</div>
       <div class="vip-meta">${meta}</div>
       ${agentBlock}
+      ${detailsBtn}
     </div>
   </article>`;
 }
@@ -601,14 +636,9 @@ function renderVipShowcase() {
   }
   if (section) section.style.display = '';
 
-  const filtered = all.filter((p) => vipMatchesFilter(p, vipFilter));
+  buildVipTabs();
 
-  // Disable tabs that have no matching listings
-  document.querySelectorAll('#vip-tabs .vip-tab').forEach((tab) => {
-    const f = tab.dataset.vipFilter;
-    const has = all.some((p) => vipMatchesFilter(p, f));
-    tab.classList.toggle('disabled', !has);
-  });
+  const filtered = all.filter((p) => vipMatchesFilter(p, vipFilter));
 
   if (!filtered.length) {
     featuredSlot.innerHTML = '';
