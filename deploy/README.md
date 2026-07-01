@@ -76,7 +76,7 @@ nano .env
 - `ACME_EMAIL` — ваш email (для уведомлений Let's Encrypt).
 - `SITE_ADDRESS` — оставьте `barakat-estate.tj www.barakat-estate.tj`.
 - `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` — заполните, если нужны уведомления о заявках в Telegram. Иначе оставьте пустыми.
-- `VITE_YANDEX_MAPS_API_KEY` — ключ Yandex Maps для карт на сайте (получить: https://developer.tech.yandex.ru/). Оставьте пустым — карты просто не отображаются. **Важно:** ключ вшивается в сайт на этапе `docker compose build`, поэтому после его изменения нужно пересобрать образ (`docker compose build && docker compose up -d`).
+- `VITE_YANDEX_MAPS_API_KEY` — ключ Yandex Maps для карт на сайте (получить: https://developer.tech.yandex.ru/). Оставьте пустым — карты просто не отображаются. Это **публичный** клиентский ключ (виден в коде сайта — это нормально); защищайте его привязкой к домену `barakat-estate.tj` в кабинете Yandex, а не секретностью. **Важно:** ключ вшивается в сайт на этапе `docker compose build`, поэтому после его изменения нужно пересобрать образ (`docker compose build && docker compose up -d`).
 
 ---
 
