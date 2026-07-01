@@ -22,8 +22,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$ROOT_DIR"
 
-COMPOSE="docker compose -f deploy/docker-compose.yml"
 ENV_FILE="deploy/.env"
+# --env-file: docker compose сам читает deploy/.env своим парсером (значения
+# с пробелами, например SITE_ADDRESS, обрабатываются корректно — без shell).
+COMPOSE="docker compose -f deploy/docker-compose.yml --env-file $ENV_FILE"
 
 log()  { printf '\n\033[1;33m==> %s\033[0m\n' "$*"; }
 fail() { printf '\n\033[1;31mОШИБКА: %s\033[0m\n' "$*" >&2; exit 1; }
@@ -32,9 +34,21 @@ fail() { printf '\n\033[1;31mОШИБКА: %s\033[0m\n' "$*" >&2; exit 1; }
 [ -f "$ENV_FILE" ] || fail "Не найден $ENV_FILE. Создай его из deploy/.env.example."
 command -v docker >/dev/null || fail "Docker не установлен."
 
-# подтянуть переменные БД из deploy/.env
-set -a; # shellcheck disable=SC1090
-source "$ENV_FILE"; set +a
+# Прочитать нужные переменные из deploy/.env БЕЗОПАСНО, без `source`.
+# Значения вроде `SITE_ADDRESS=barakat-estate.tj www.barakat-estate.tj` содержат
+# пробел: для docker compose это валидно, но `source` в bash пытается выполнить
+# второй домен как команду и падает. Поэтому читаем значения буквально.
+read_env() {
+  local val
+  val="$(grep -E "^$1=" "$ENV_FILE" | tail -n1 | cut -d= -f2-)"
+  val="${val%$'\r'}"                 # убрать CR (файл с Windows-переводами строк)
+  val="${val#\"}"; val="${val%\"}"   # снять обрамляющие двойные кавычки
+  val="${val#\'}"; val="${val%\'}"   # снять обрамляющие одинарные кавычки
+  printf '%s' "$val"
+}
+POSTGRES_USER="$(read_env POSTGRES_USER)"
+POSTGRES_DB="$(read_env POSTGRES_DB)"
+SITE_ADDRESS="$(read_env SITE_ADDRESS)"
 : "${POSTGRES_USER:?POSTGRES_USER не задан в deploy/.env}"
 : "${POSTGRES_DB:?POSTGRES_DB не задан в deploy/.env}"
 
