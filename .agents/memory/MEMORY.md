@@ -1,4 +1,5 @@
 - [Barakat index.css red placeholders](barakat-index-css-red-placeholders.md) — scaffold ships `--muted`/etc as `red`; loads after globals.css so it wins the cascade and poisons aura text.
 - [Barakat public listing id is the slug](barakat-public-id-is-slug.md) — public site exposes slug as `id`; api endpoints fed that id must match id-OR-slug, not just DB UUID.
 - [Barakat object storage](barakat-object-storage.md) — uploads are local filesystem (UPLOAD_DIR + docker volume), NOT Replit GCS; never re-add GCS or SVG uploads (stored-XSS).
+- [Barakat map = Leaflet/OSM](barakat-map-leaflet.md) — public map is Leaflet+OpenStreetMap (no key) despite legacy `yandex`/`_ymap` naming; never re-add Yandex.
 - [Empty dev DB → 500 everywhere](dev-db-empty-500.md) — fresh Replit dev Postgres has no tables; `db push` + seed from `deploy/initdb/02-seed.sql` fixes it. Prod (Timeweb) unaffected.

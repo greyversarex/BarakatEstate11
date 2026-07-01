@@ -37,7 +37,7 @@ api Docker image contains only compiled dist (no pnpm/drizzle/source) -> `db pus
 ## Workflow each update
 1. Push Replit -> GitHub (manual, via Replit Git pane). Replit does NOT auto-push.
 2. On server: `cd /root/BarakatEstate11 && git fetch origin && git reset --hard origin/main && bash deploy/update.sh`.
-   `deploy/update.sh` does it all safely: DB backup -> git reset (keeps untracked `deploy/.env`) -> pnpm-pin check -> `docker compose up -d --build` -> idempotent schema migration (`lib/db/migrations/sync-prod-schema.sql`) -> API health check. It `source`+exports `deploy/.env` into the shell before running compose, so compose resolves every `${VAR}` — both runtime env AND build args (e.g. `VITE_YANDEX_MAPS_API_KEY`, baked into the barakat bundle at build time).
+   `deploy/update.sh` does it all safely: DB backup -> git reset (keeps untracked `deploy/.env`) -> pnpm-pin check -> `docker compose up -d --build` -> idempotent schema migration (`lib/db/migrations/sync-prod-schema.sql`) -> API health check. It `source`+exports `deploy/.env` into the shell before running compose, so compose resolves every `${VAR}` for runtime env.
 
 ## Schema drift symptom + fix script
 If admin create/save fails with a toast like `Failed query: insert into "listings" (...)`,

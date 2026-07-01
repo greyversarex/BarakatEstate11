@@ -712,92 +712,134 @@ function loadScript(src) {
   });
 }
 
+// ── MAPS (Leaflet + OpenStreetMap) ──
+// These functions keep their legacy "Yandex" names and the container._ymap /
+// _ymapMarkers property names so the rest of this file works unchanged, but the
+// implementation is now Leaflet with OpenStreetMap tiles — no API key or
+// registration required. Leaflet (window.L) is bundled by the app in main.tsx.
 function loadYandexMap() {
   return new Promise((resolve) => {
-    if (window.ymaps && window.ymaps.Map) return resolve(window.ymaps);
-    if (window.__ymapsLoading) return resolve(window.__ymapsLoading);
+    if (window.L && window.L.map) return resolve(window.L);
+    if (window.__leafletLoading) return resolve(window.__leafletLoading);
 
-    window.__ymapsLoading = new Promise((res) => {
-      const ymapsTimeout = setTimeout(() => { clearInterval(checkYmaps); res(null); }, 5000);
-      const checkYmaps = setInterval(() => {
-        if (window.ymaps && window.ymaps.ready) {
-          clearInterval(checkYmaps); clearTimeout(ymapsTimeout);
-          window.ymaps.ready(() => res(window.ymaps));
+    window.__leafletLoading = new Promise((res) => {
+      const timeout = setTimeout(() => { clearInterval(check); res(null); }, 8000);
+      const check = setInterval(() => {
+        if (window.L && window.L.map) {
+          clearInterval(check); clearTimeout(timeout);
+          res(window.L);
         }
-      }, 100);
+      }, 50);
     });
-    return resolve(window.__ymapsLoading);
+    return resolve(window.__leafletLoading);
   });
 }
 
 function createYandexMap(elementId, center, zoom = 12) {
   const container = document.getElementById(elementId);
-  if (!container || !window.ymaps) return null;
+  if (!container || !window.L) return null;
   if (container._ymap) return container._ymap;
 
-  const map = new window.ymaps.Map(container, {
+  const L = window.L;
+  const isPreview = elementId === 'preview-yandex-map';
+  const map = L.map(container, {
     center: center,
     zoom: zoom,
-    controls: ['zoomControl', 'fullscreenControl']
+    zoomControl: true,
+    scrollWheelZoom: !isPreview,
   });
 
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap',
+  }).addTo(map);
+
   container._ymap = map;
-  container._ymapMarkers = new window.ymaps.GeoObjectCollection();
-  map.geoObjects.add(container._ymapMarkers);
+  container._ymapMarkers = L.layerGroup().addTo(map);
+  // The container is sometimes momentarily 0-sized while a page/route mounts;
+  // re-measure once the layout settles so the tiles fill the box.
+  setTimeout(() => map.invalidateSize(), 200);
   return map;
 }
 
+// Build the marker popup as real DOM nodes (textContent escapes listing values)
+// instead of an HTML string, so listing data can never inject markup or scripts
+// into the page when a popup opens.
+function createBalloonEl(item) {
+  const card = document.createElement('div');
+  card.className = 'ymap-balloon-card';
+  card.style.cursor = 'pointer';
+  card.addEventListener('click', () => navigate('property', item.id));
+
+  const src = Array.isArray(item.images) && item.images.length ? item.images[0] : item.image;
+  if (typeof src === 'string' && /^(https?:\/\/|\/)/.test(src)) {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = item.addr || '';
+    card.appendChild(img);
+  }
+
+  const info = document.createElement('div');
+  info.className = 'ymap-balloon-info';
+  const price = document.createElement('div');
+  price.className = 'ymap-balloon-price';
+  price.textContent = item.price || '';
+  const addr = document.createElement('div');
+  addr.className = 'ymap-balloon-addr';
+  addr.textContent = item.addr || '';
+  const meta = document.createElement('div');
+  meta.className = 'ymap-balloon-meta';
+  const roomsSpan = document.createElement('span');
+  roomsSpan.textContent = item.rooms ? item.rooms + ' комн' : '';
+  const areaSpan = document.createElement('span');
+  areaSpan.textContent = item.area ? item.area + ' м²' : '';
+  meta.appendChild(roomsSpan);
+  meta.appendChild(areaSpan);
+  info.appendChild(price);
+  info.appendChild(addr);
+  info.appendChild(meta);
+  card.appendChild(info);
+  return card;
+}
+
 function addYandexMarkers(container, items) {
-  if (!container || !container._ymap || !window.ymaps) return;
-  const markersCollection = container._ymapMarkers;
-  markersCollection.removeAll();
+  if (!container || !container._ymap || !window.L) return;
+  const L = window.L;
+  const map = container._ymap;
+  const group = container._ymapMarkers;
+  group.clearLayers();
 
   const validItems = (items || []).filter((item) => typeof item.lat === 'number' && typeof item.lng === 'number');
-  
-  const MarkerLayout = window.ymaps.templateLayoutFactory.createClass('<div class="ymap-custom-marker"></div>');
 
-  validItems.forEach((item) => {
-    const balloonContent = `
-      <div class="ymap-balloon-card" onclick="navigate('property', '${item.id}')" style="cursor: pointer;">
-        <img src="${Array.isArray(item.images) && item.images.length ? item.images[0] : item.image}" alt="${item.addr}" />
-        <div class="ymap-balloon-info">
-          <div class="ymap-balloon-price">${item.price}</div>
-          <div class="ymap-balloon-addr">${item.addr}</div>
-          <div class="ymap-balloon-meta">
-            <span>${item.rooms ? item.rooms + ' комн' : ''}</span>
-            <span>${item.area ? item.area + ' м²' : ''}</span>
-          </div>
-        </div>
-      </div>
-    `;
-
-    const marker = new window.ymaps.Placemark([item.lat, item.lng], {
-      balloonContent: balloonContent
-    }, {
-      iconLayout: MarkerLayout,
-      iconShape: { type: 'Circle', coordinates: [0, 0], radius: 10 },
-      balloonPanelMaxMapArea: 0,
-      hideIconOnBalloonOpen: false,
-      balloonOffset: [0, -15]
-    });
-
-    marker.events.add('mouseenter', function (e) {
-      e.get('target').balloon.open();
-    });
-
-    markersCollection.add(marker);
+  const icon = L.divIcon({
+    className: 'barakat-map-pin',
+    html: '<span style="display:block;width:16px;height:16px;border-radius:50%;background:var(--gold,#d4a437);border:3px solid #fff;box-shadow:0 0 0 2px rgba(212,164,55,.35),0 2px 6px rgba(0,0,0,.3);"></span>',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+    popupAnchor: [0, -10],
   });
 
-  if (validItems.length > 0) {
-    container._ymap.setBounds(markersCollection.getBounds(), { checkZoomRange: true, zoomMargin: 30 }).then(() => {
-        if(container._ymap.getZoom() > 16) container._ymap.setZoom(16);
+  const latlngs = [];
+  validItems.forEach((item) => {
+    const marker = L.marker([item.lat, item.lng], { icon }).bindPopup(createBalloonEl(item), {
+      minWidth: 220,
+      className: 'ymap-balloon-popup',
     });
+    marker.on('mouseover', () => marker.openPopup());
+    group.addLayer(marker);
+    latlngs.push([item.lat, item.lng]);
+  });
+
+  if (latlngs.length === 1) {
+    map.setView(latlngs[0], Math.max(map.getZoom(), 14));
+  } else if (latlngs.length > 1) {
+    map.fitBounds(latlngs, { padding: [40, 40], maxZoom: 16 });
   }
 }
 
 async function initYandexMaps() {
   await loadYandexMap().catch(() => null);
-  if (!window.ymaps) return;
+  if (!window.L) return;
 
   const preview = document.getElementById('preview-yandex-map');
   if (preview) {
@@ -822,7 +864,7 @@ function renderPropertyDetailMap(property) {
     if (!map) return;
 
     addYandexMarkers(container, [property]);
-    map.setCenter([property.lat, property.lng], 15);
+    map.setView([property.lat, property.lng], 15);
     const coords = document.getElementById('detail-map-coords');
     if (coords) coords.textContent = `${property.lat.toFixed(5)}, ${property.lng.toFixed(5)}`;
   }).catch(() => null);

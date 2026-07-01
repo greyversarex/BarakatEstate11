@@ -20,8 +20,6 @@ services:
       context: ..
       dockerfile: deploy/Dockerfile
       target: api
-      args:
-        VITE_YANDEX_MAPS_API_KEY: ${VITE_YANDEX_MAPS_API_KEY:-}
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -42,8 +40,6 @@ services:
       context: ..
       dockerfile: deploy/Dockerfile
       target: web
-      args:
-        VITE_YANDEX_MAPS_API_KEY: ${VITE_YANDEX_MAPS_API_KEY:-}
     restart: unless-stopped
     ports:
       - "80:80"

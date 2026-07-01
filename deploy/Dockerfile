@@ -4,13 +4,10 @@
 FROM node:24-slim AS builder
 RUN corepack enable
 WORKDIR /app
-# Yandex Maps JS API key is inlined into the barakat static bundle at build time
-# (Vite bakes VITE_* vars). Supplied as a build arg from docker-compose.yml.
-ARG VITE_YANDEX_MAPS_API_KEY=""
 COPY . .
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @workspace/api-server run build \
- && VITE_YANDEX_MAPS_API_KEY="$VITE_YANDEX_MAPS_API_KEY" PORT=3000 BASE_PATH=/ pnpm --filter @workspace/barakat run build \
+ && PORT=3000 BASE_PATH=/ pnpm --filter @workspace/barakat run build \
  && PORT=3001 pnpm --filter @workspace/barakat-admin run build
 
 # ---- API runtime: lightweight Node image with the bundled server ----
