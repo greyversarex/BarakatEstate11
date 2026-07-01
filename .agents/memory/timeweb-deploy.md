@@ -20,19 +20,24 @@ Server corepack pulls the latest pnpm (e.g. 11.9.0) unless pinned. pnpm 11 treat
 ## Trap: barakat-admin prod build runs `tsc -b` (dev mode does not)
 The Dockerfile runs `pnpm --filter @workspace/barakat-admin run build` = `tsc -b && vite build`. tsc type-checks every file in the include glob, including dead/unused files. Legacy Prisma-era orphans (e.g. `src/lib/store.ts`, `src/lib/validations.ts` importing prisma/bcryptjs/zod) compile fine in `vite dev` but break the prod build. Keep admin src free of orphaned files referencing uninstalled modules.
 
-## Trap: externalized runtime deps are missing in the api image
-The api bundle (esbuild, `artifacts/api-server/build.mjs`) externalizes a big list of packages. Most are unused, but any that ARE imported at startup must exist in the runtime image — the api Docker stage copies only `dist`, no node_modules. `@google-cloud/storage` (object storage / image upload) is externalized AND imported at module load, so without it the api crashes on boot with `ERR_MODULE_NOT_FOUND` and admin login dies. Fix: api stage does `npm install @google-cloud/storage@^7.21.0`.
-**Why:** object storage was added during the monorepo migration — this is a NEW boot-time dep that did not exist pre-migration, so "updated code → prod dead" maps to this. If another externalized package ever gets imported at startup, install it in the api stage too.
-Note: object storage uses the Replit sidecar (127.0.0.1:1106) — uploads won't actually function on Timeweb, but the module just needs to be resolvable so the server boots; upload calls fail only at request time.
+## Trap: externalized runtime deps must exist in the api image
+The api bundle (esbuild, `artifacts/api-server/build.mjs`) externalizes a big list of packages. Most are unused, but any that ARE imported at startup must exist in the runtime image — the api Docker stage copies only `dist`, no node_modules. If an externalized package is imported at module load and missing, the api crashes on boot with `ERR_MODULE_NOT_FOUND` and admin login dies.
+**Rule:** if you make an externalized package a startup import, install it in the api stage (or don't externalize it).
+
+## Object storage is now local filesystem (GCS removed)
+History: object storage originally used Replit's GCS sidecar (`@google-cloud/storage`, 127.0.0.1:1106), which does not exist on Timeweb — uploads were fully broken in prod, and the api stage had to `npm install @google-cloud/storage` just so the server could boot. That is GONE.
+Now: uploads are written to the local filesystem under `UPLOAD_DIR` (docker-compose sets `/data/uploads`, backed by named volume `uploads:`). The api image installs nothing at runtime (copies only `dist`). Therefore:
+- Do NOT re-add `@google-cloud/storage` or any runtime npm install to the api stage.
+- The `uploads:` volume must survive redeploys — `docker compose down -v` deletes uploaded images along with the DB.
+- Uploaded images are validated by magic bytes; SVG is rejected (stored-XSS), responses carry `nosniff`. See `barakat-object-storage.md`.
 
 ## DB migrations on prod
 api Docker image contains only compiled dist (no pnpm/drizzle/source) -> `db push` cannot run in the api container. Apply schema changes via raw SQL inside the db container with psql (exec -T db, psql -U "$POSTGRES_USER" -d "$POSTGRES_DB", piped heredoc).
 
 ## Workflow each update
 1. Push Replit -> GitHub (manual, via Replit Git pane). Replit does NOT auto-push.
-2. On server: fetch origin, checkout origin/main excluding deploy, verify `grep packageManager package.json`.
-3. `cd deploy && docker compose up -d --build`.
-4. Apply any new DB migrations via psql.
+2. On server: `cd /root/BarakatEstate11 && git fetch origin && git reset --hard origin/main && bash deploy/update.sh`.
+   `deploy/update.sh` does it all safely: DB backup -> git reset (keeps untracked `deploy/.env`) -> pnpm-pin check -> `docker compose up -d --build` -> idempotent schema migration (`lib/db/migrations/sync-prod-schema.sql`) -> API health check. It `source`+exports `deploy/.env` into the shell before running compose, so compose resolves every `${VAR}` — both runtime env AND build args (e.g. `VITE_YANDEX_MAPS_API_KEY`, baked into the barakat bundle at build time).
 
 ## Schema drift symptom + fix script
 If admin create/save fails with a toast like `Failed query: insert into "listings" (...)`,

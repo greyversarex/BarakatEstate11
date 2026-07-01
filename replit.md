@@ -55,7 +55,7 @@ bash deploy/update.sh
 - **НИКОГДА** не запускать на сервере `docker compose down -v` или `git clean` — удалит боевую БД и `deploy/.env`.
 - Схема БД на проде обновляется только через `lib/db/migrations/sync-prod-schema.sql` (initdb отрабатывает лишь на пустом томе). При добавлении колонки в `lib/db/src/schema/admin.ts` — добавить такую же строку `ADD COLUMN IF NOT EXISTS` в этот файл.
 - pnpm должен быть запинён в `package.json` (`packageManager: pnpm@10.x`), иначе сборка падает.
-- Загрузка картинок через объектное хранилище завязана на инфраструктуру Replit и на Timeweb не работает (на вход/сайт не влияет).
+- Загрузка картинок теперь работает на Timeweb: файлы пишутся на диск (`UPLOAD_DIR=/data/uploads`, том `uploads:` в docker-compose), без Replit/GCS. Том `uploads:` удалять нельзя (`docker compose down -v` сотрёт и картинки, и БД). Тип файла проверяется по байтам, SVG запрещён (защита от XSS).
 
 ## User preferences
 
