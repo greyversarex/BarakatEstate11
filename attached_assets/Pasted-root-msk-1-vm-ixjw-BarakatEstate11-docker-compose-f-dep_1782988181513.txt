@@ -1,0 +1,314 @@
+root@msk-1-vm-ixjw:~/BarakatEstate11# docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec -T db sh -c "psql -U \$POSTGRES_USER -d \$POSTGRES_DB -c '\d admin_users' -c '\dT+ user_role'"
+                                Table "public.admin_users"
+      Column      |            Type             | Collation | Nullable |      Default
+------------------+-----------------------------+-----------+----------+-------------------
+ id               | text                        |           | not null |
+ username         | text                        |           | not null |
+ password_hash    | text                        |           | not null |
+ name             | text                        |           | not null | ''::text
+ email            | text                        |           | not null | ''::text
+ phone            | text                        |           | not null | ''::text
+ whatsapp         | text                        |           | not null | ''::text
+ telegram         | text                        |           | not null | ''::text
+ instagram        | text                        |           | not null | ''::text
+ facebook         | text                        |           | not null | ''::text
+ avatar           | text                        |           | not null | ''::text
+ bio              | text                        |           | not null | ''::text
+ rating           | real                        |           | not null | 0
+ deals_count      | integer                     |           | not null | 0
+ experience_years | integer                     |           | not null | 0
+ specializations  | text                        |           | not null | ''::text
+ role             | user_role                   |           | not null | 'user'::user_role
+ created_at       | timestamp without time zone |           | not null | now()
+ updated_at       | timestamp without time zone |           | not null | now()
+Indexes:
+    "admin_users_pkey" PRIMARY KEY, btree (id)
+    "admin_users_username_unique" UNIQUE CONSTRAINT, btree (username)
+
+                                        List of data types
+ Schema |   Name    | Internal name | Size | Elements |  Owner  | Access privileges | Description
+--------+-----------+---------------+------+----------+---------+-------------------+-------------
+ public | user_role | user_role     | 4    | user    +| barakat |                   |
+        |           |               |      | seller  +|         |                   |
+        |           |               |      | admin    |         |                   |
+(1 row)
+
+root@msk-1-vm-ixjw:~/BarakatEstate11# docker compose -f deploy/docker-compose.yml --env-file deploy/.env logs --tail=40 api
+api-1  | {"level":30,"time":1782988078044,"pid":1,"hostname":"f7d8342345cb","req":{"id":472,"method":"GET","url":"/api/storage/objects/7e655474-a27e-4779-830b-98d2ae28e4b3.jpg"},"res":{"statusCode":200},"responseTime":53,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988078045,"pid":1,"hostname":"f7d8342345cb","req":{"id":475,"method":"GET","url":"/api/storage/objects/cdd7c03f-68aa-4805-84db-4debf3b76485.jpg"},"res":{"statusCode":200},"responseTime":53,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988078050,"pid":1,"hostname":"f7d8342345cb","req":{"id":477,"method":"GET","url":"/api/storage/objects/bc299879-ac88-497b-bbcd-9a8e2ec2eddf.jpg"},"res":{"statusCode":200},"responseTime":58,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988078059,"pid":1,"hostname":"f7d8342345cb","req":{"id":478,"method":"GET","url":"/api/storage/objects/5fdc4313-06d8-4c15-987b-e9cd518a619e.jpg"},"res":{"statusCode":200},"responseTime":66,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988078059,"pid":1,"hostname":"f7d8342345cb","req":{"id":479,"method":"GET","url":"/api/storage/objects/bac1dddf-1677-412d-ae47-0a928d04804e.jpg"},"res":{"statusCode":200},"responseTime":64,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988078060,"pid":1,"hostname":"f7d8342345cb","req":{"id":480,"method":"GET","url":"/api/storage/objects/9c854081-3640-4555-aae5-be7862758e8e.jpg"},"res":{"statusCode":200},"responseTime":64,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988078069,"pid":1,"hostname":"f7d8342345cb","req":{"id":481,"method":"GET","url":"/api/storage/objects/39599e79-8737-428b-9778-ed977dd9d770.jpg"},"res":{"statusCode":200},"responseTime":74,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988078130,"pid":1,"hostname":"f7d8342345cb","req":{"id":482,"method":"GET","url":"/api/admin/reviews"},"res":{"statusCode":304},"responseTime":54,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988078140,"pid":1,"hostname":"f7d8342345cb","req":{"id":484,"method":"GET","url":"/api/admin/viewings"},"res":{"statusCode":304},"responseTime":57,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988078144,"pid":1,"hostname":"f7d8342345cb","req":{"id":483,"method":"GET","url":"/api/admin/applications"},"res":{"statusCode":304},"responseTime":65,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988079416,"pid":1,"hostname":"f7d8342345cb","req":{"id":488,"method":"GET","url":"/api/storage/objects/3a2ce497-2632-42f1-9f35-4c9a5f1b52a3.jpg"},"res":{"statusCode":200},"responseTime":21,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988079417,"pid":1,"hostname":"f7d8342345cb","req":{"id":489,"method":"GET","url":"/api/storage/objects/e076d341-996f-48cc-992f-60e04b43e5d3.jpg"},"res":{"statusCode":200},"responseTime":21,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988079418,"pid":1,"hostname":"f7d8342345cb","req":{"id":493,"method":"GET","url":"/api/storage/objects/b2439668-d7d9-4761-9d1d-67b1a0e26043.jpg"},"res":{"statusCode":200},"responseTime":20,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988079419,"pid":1,"hostname":"f7d8342345cb","req":{"id":490,"method":"GET","url":"/api/storage/objects/61124633-364c-4b12-98fa-7dd61b564201.jpg"},"res":{"statusCode":200},"responseTime":23,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988079425,"pid":1,"hostname":"f7d8342345cb","req":{"id":485,"method":"GET","url":"/api/storage/objects/bb77eeec-7a14-4df6-89f8-fe671ee5c2ff.jpg"},"res":{"statusCode":200},"responseTime":45,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988079443,"pid":1,"hostname":"f7d8342345cb","req":{"id":487,"method":"GET","url":"/api/storage/objects/a16f5ce9-96c9-4791-80af-1f1233433661.jpg"},"res":{"statusCode":200},"responseTime":51,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988079444,"pid":1,"hostname":"f7d8342345cb","req":{"id":486,"method":"GET","url":"/api/storage/objects/b2c417fc-4b1c-489a-be87-7e0cb443a597.jpg"},"res":{"statusCode":200},"responseTime":54,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988079456,"pid":1,"hostname":"f7d8342345cb","req":{"id":492,"method":"GET","url":"/api/storage/objects/5364a613-9e31-404b-abe9-8df34d1a793f.jpg"},"res":{"statusCode":200},"responseTime":58,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988079457,"pid":1,"hostname":"f7d8342345cb","req":{"id":491,"method":"GET","url":"/api/storage/objects/4379e49c-10fd-412a-8116-84b46723a37d.jpg"},"res":{"statusCode":200},"responseTime":59,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087564,"pid":1,"hostname":"f7d8342345cb","req":{"id":495,"method":"GET","url":"/api/storage/objects/4040263b-c4f1-4b50-a5bb-a96c8f167cf4.jpg"},"res":{"statusCode":200},"responseTime":12,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087566,"pid":1,"hostname":"f7d8342345cb","req":{"id":494,"method":"GET","url":"/api/storage/objects/134b619d-2398-4279-81e5-f81ce402b1d6.jpg"},"res":{"statusCode":200},"responseTime":15,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087567,"pid":1,"hostname":"f7d8342345cb","req":{"id":496,"method":"GET","url":"/api/storage/objects/e0649d32-6ea5-4e80-a52a-58b8ac92913d.jpg"},"res":{"statusCode":200},"responseTime":14,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087594,"pid":1,"hostname":"f7d8342345cb","req":{"id":501,"method":"GET","url":"/api/storage/objects/20508dc6-4f83-42b9-9399-f6355669da9c.jpg"},"res":{"statusCode":200},"responseTime":23,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087595,"pid":1,"hostname":"f7d8342345cb","req":{"id":506,"method":"GET","url":"/api/storage/objects/36382ff0-92c7-4d44-ae58-b42a0fb89e9e.jpg"},"res":{"statusCode":200},"responseTime":21,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087596,"pid":1,"hostname":"f7d8342345cb","req":{"id":498,"method":"GET","url":"/api/storage/objects/3c922a4f-c315-4244-8f06-539cfaba0349.jpg"},"res":{"statusCode":200},"responseTime":28,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087597,"pid":1,"hostname":"f7d8342345cb","req":{"id":502,"method":"GET","url":"/api/storage/objects/8aba9a45-4374-4408-b871-eb3a1aabafc5.jpg"},"res":{"statusCode":200},"responseTime":25,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087597,"pid":1,"hostname":"f7d8342345cb","req":{"id":500,"method":"GET","url":"/api/storage/objects/d450bfb1-4410-4674-b9ed-c3f0eaca9c0b.jpg"},"res":{"statusCode":200},"responseTime":27,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087597,"pid":1,"hostname":"f7d8342345cb","req":{"id":499,"method":"GET","url":"/api/storage/objects/2156ab92-5cac-436c-b576-b8538ef45cfc.jpg"},"res":{"statusCode":200},"responseTime":28,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087597,"pid":1,"hostname":"f7d8342345cb","req":{"id":504,"method":"GET","url":"/api/storage/objects/2cff722a-38f1-42fd-bb99-0419b919e373.jpg"},"res":{"statusCode":200},"responseTime":24,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087598,"pid":1,"hostname":"f7d8342345cb","req":{"id":503,"method":"GET","url":"/api/storage/objects/ec52cb3e-1f3b-4075-849a-c40f3ec3a11c.jpg"},"res":{"statusCode":200},"responseTime":24,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087599,"pid":1,"hostname":"f7d8342345cb","req":{"id":510,"method":"GET","url":"/api/storage/objects/3e797ce5-09fd-42ab-a537-ead128612913.jpg"},"res":{"statusCode":200},"responseTime":22,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087599,"pid":1,"hostname":"f7d8342345cb","req":{"id":511,"method":"GET","url":"/api/storage/objects/59a0e95e-1037-48b1-8f10-b60b0c5bb1ce.jpg"},"res":{"statusCode":200},"responseTime":19,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087634,"pid":1,"hostname":"f7d8342345cb","req":{"id":505,"method":"GET","url":"/api/storage/objects/ab343592-79a4-4b49-b270-d155ab65e805.jpg"},"res":{"statusCode":200},"responseTime":60,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087635,"pid":1,"hostname":"f7d8342345cb","req":{"id":508,"method":"GET","url":"/api/storage/objects/8b3165b9-16a3-4ba3-a700-8d133144c9a0.jpg"},"res":{"statusCode":200},"responseTime":60,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087635,"pid":1,"hostname":"f7d8342345cb","req":{"id":507,"method":"GET","url":"/api/storage/objects/bd130880-3349-4934-8464-fdc8f76deeb3.jpg"},"res":{"statusCode":200},"responseTime":60,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087635,"pid":1,"hostname":"f7d8342345cb","req":{"id":497,"method":"GET","url":"/api/storage/objects/9a88a76b-9b90-4427-a155-1699280a8909.jpg"},"res":{"statusCode":200},"responseTime":68,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988087637,"pid":1,"hostname":"f7d8342345cb","req":{"id":509,"method":"GET","url":"/api/storage/objects/7362df7b-6433-4e0d-bd79-4bc3004b0597.jpg"},"res":{"statusCode":200},"responseTime":62,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988107070,"pid":1,"hostname":"f7d8342345cb","req":{"id":512,"method":"GET","url":"/api/admin/applications"},"res":{"statusCode":304},"responseTime":60,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988107073,"pid":1,"hostname":"f7d8342345cb","req":{"id":513,"method":"GET","url":"/api/admin/reviews"},"res":{"statusCode":304},"responseTime":52,"msg":"request completed"}
+api-1  | {"level":30,"time":1782988107074,"pid":1,"hostname":"f7d8342345cb","req":{"id":514,"method":"GET","url":"/api/admin/viewings"},"res":{"statusCode":304},"responseTime":50,"msg":"request completed"}
+root@msk-1-vm-ixjw:~/BarakatEstate11# docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec -T db sh -c "psql -v ON_ERROR_STOP=1 -U \$POSTGRES_USER -d \$POSTGRES_DB" < lib/db/migrations/sync-prod-schema.sql
+DO
+NOTICE:  enum label "draft" already exists, skipping
+ALTER TYPE
+NOTICE:  enum label "published" already exists, skipping
+ALTER TYPE
+NOTICE:  enum label "sale" already exists, skipping
+ALTER TYPE
+NOTICE:  enum label "rent" already exists, skipping
+ALTER TYPE
+NOTICE:  enum label "user" already exists, skipping
+ALTER TYPE
+NOTICE:  enum label "seller" already exists, skipping
+ALTER TYPE
+NOTICE:  enum label "admin" already exists, skipping
+ALTER TYPE
+NOTICE:  enum label "new" already exists, skipping
+ALTER TYPE
+NOTICE:  enum label "read" already exists, skipping
+ALTER TYPE
+NOTICE:  enum label "completed" already exists, skipping
+ALTER TYPE
+NOTICE:  enum label "pending" already exists, skipping
+ALTER TYPE
+NOTICE:  enum label "approved" already exists, skipping
+ALTER TYPE
+NOTICE:  enum label "rejected" already exists, skipping
+ALTER TYPE
+BEGIN
+NOTICE:  relation "admin_users" already exists, skipping
+CREATE TABLE
+NOTICE:  relation "listings" already exists, skipping
+CREATE TABLE
+NOTICE:  relation "applications" already exists, skipping
+CREATE TABLE
+NOTICE:  relation "viewings" already exists, skipping
+CREATE TABLE
+NOTICE:  relation "reviews" already exists, skipping
+CREATE TABLE
+NOTICE:  relation "blog_posts" already exists, skipping
+CREATE TABLE
+NOTICE:  relation "site_settings" already exists, skipping
+CREATE TABLE
+NOTICE:  column "username" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "password_hash" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "name" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "email" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "phone" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "whatsapp" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "telegram" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "instagram" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "facebook" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "avatar" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "bio" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "rating" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "deals_count" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "experience_years" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "specializations" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "role" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "created_at" of relation "admin_users" already exists, skipping
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "admin_users" already exists, skipping
+ALTER TABLE
+DO
+NOTICE:  column "title" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "slug" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "deal_type" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "property_type" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "price" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "currency" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "district" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "address" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "rooms" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "area" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "floor" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "total_floors" of relation "listings" already exists, skipping
+ALTER TABLE
+ALTER TABLE
+NOTICE:  column "year_built" of relation "listings" already exists, skipping
+NOTICE:  column "description" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "features" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "construction_stage" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "renovation" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "document_type" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "landmark" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "latitude" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "longitude" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "map_x" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "map_y" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "main_image" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "gallery" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "employee_id" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_id" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_name" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_phone" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_whatsapp" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_avatar" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "is_featured" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "is_new" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "is_urgent" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "is_hero" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "views" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "status" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "created_at" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "listings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "name" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "phone" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "service" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "district" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "landmark" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "message" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "photos" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "status" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "created_at" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "applications" already exists, skipping
+ALTER TABLE
+NOTICE:  column "listing_id" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "listing_title" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "employee_id" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_id" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "name" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "phone" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "date" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "time" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "message" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "status" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "created_at" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "viewings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "name" of relation "reviews" already exists, skipping
+ALTER TABLE
+NOTICE:  column "text" of relation "reviews" already exists, skipping
+ALTER TABLE
+NOTICE:  column "seller_id" of relation "reviews" already exists, skipping
+ALTER TABLE
+NOTICE:  column "status" of relation "reviews" already exists, skipping
+ALTER TABLE
+ALTER TABLE
+NOTICE:  column "created_at" of relation "reviews" already exists, skipping
+NOTICE:  column "updated_at" of relation "reviews" already exists, skipping
+ALTER TABLE
+NOTICE:  column "slug" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "title" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "category" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "excerpt" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "image" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "content" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "status" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "created_at" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "blog_posts" already exists, skipping
+ALTER TABLE
+NOTICE:  column "value" of relation "site_settings" already exists, skipping
+ALTER TABLE
+NOTICE:  column "updated_at" of relation "site_settings" already exists, skipping
+ALTER TABLE
+COMMIT
+root@msk-1-vm-ixjw:~/BarakatEstate11#
