@@ -140,8 +140,12 @@ function mapAdminListing(entry) {
   const sellerAvatar = mediaUrl(seller?.avatar?.data || seller?.avatar) || mediaUrl(item.sellerAvatar) || mediaUrl(employee?.avatar?.data || employee?.avatar);
   const fallbackName = seller?.name || item.sellerName || employee?.fullName || 'Продавец';
   const sellerPhone = seller?.phone || item.sellerPhone || employee?.phone || '';
-  const latitude = getPropertyCoordinate(item, location, 'lat');
-  const longitude = getPropertyCoordinate(item, location, 'lng');
+  let latitude = getPropertyCoordinate(item, location, 'lat');
+  let longitude = getPropertyCoordinate(item, location, 'lng');
+  if (!isValidLatLng(latitude, longitude)) {
+    latitude = null;
+    longitude = null;
+  }
 
   return normalizeProperty({
     id: item.slug || entry.documentId || entry.id,
@@ -264,6 +268,13 @@ function getPropertyCoordinate(item, location, axis) {
     if (typeof normalized === 'number') return normalized;
   }
   return null;
+}
+
+function isValidLatLng(lat, lng) {
+  return typeof lat === 'number' && typeof lng === 'number'
+    && Number.isFinite(lat) && Number.isFinite(lng)
+    && Math.abs(lat) <= 90 && Math.abs(lng) <= 180
+    && !(lat === 0 && lng === 0);
 }
 
 function splitFeatures(value) {
@@ -839,7 +850,7 @@ function addYandexMarkers(container, items) {
   const group = container._ymapMarkers;
   group.clearLayers();
 
-  const validItems = (items || []).filter((item) => typeof item.lat === 'number' && typeof item.lng === 'number');
+  const validItems = (items || []).filter((item) => isValidLatLng(item.lat, item.lng));
 
   const icon = L.divIcon({
     className: 'barakat-map-pin',
@@ -885,7 +896,7 @@ async function initYandexMaps() {
 }
 
 function renderPropertyDetailMap(property) {
-  if (!property || typeof property.lat !== 'number' || typeof property.lng !== 'number') return;
+  if (!property || !isValidLatLng(property.lat, property.lng)) return;
   const container = document.getElementById('detail-yandex-map');
   if (!container) return;
 
@@ -1233,7 +1244,14 @@ function navigateWithFilters() {
   if (district && district !== 'Все районы') params.set('district', district);
   if (renovation && renovation !== 'Выберите типы ремонта') params.set('renovation', renovation);
   if (landmark) params.set('landmark', landmark);
+  if (minArea) params.set('minArea', minArea);
   if (maxArea) params.set('maxArea', maxArea);
+
+  const priceInputs = page.querySelectorAll('.search-row .filter-dropdown-menu .s-input');
+  const minPrice = normalizeNumber(priceInputs[0]?.value);
+  const maxPrice = normalizeNumber(priceInputs[1]?.value);
+  if (minPrice) params.set('minPrice', String(minPrice));
+  if (maxPrice) params.set('maxPrice', String(maxPrice));
 
   const roomLabel = page.querySelector('#home-room-label');
   const rooms = roomLabel ? roomLabel.dataset.val : '';
@@ -1283,6 +1301,21 @@ function setupListingFilters() {
   const page = document.querySelector('.listings-page');
   if (!page || page.dataset.filtersReady === 'true') return;
   page.dataset.filtersReady = 'true';
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const prefillRange = (title, minKey, maxKey) => {
+    const group = Array.from(page.querySelectorAll('.filter-group')).find(
+      (item) => item.querySelector('h4')?.textContent?.trim() === title
+    );
+    const inputs = group?.querySelectorAll('input[type="number"]');
+    if (!inputs) return;
+    const minValue = normalizeNumber(urlParams.get(minKey));
+    const maxValue = normalizeNumber(urlParams.get(maxKey));
+    if (minValue && inputs[0]) inputs[0].value = String(minValue);
+    if (maxValue && inputs[1]) inputs[1].value = String(maxValue);
+  };
+  prefillRange('Цена (TJS)', 'minPrice', 'maxPrice');
+  prefillRange('Площадь (м²)', 'minArea', 'maxArea');
 
   page.querySelectorAll('input, select').forEach((control) => {
     control.addEventListener('input', renderFilteredListings);
@@ -1639,20 +1672,27 @@ function renderPropertyDetail() {
     ? property.images
     : property.image ? [property.image] : [];
 
+  window.__galleryImages = images;
+
   if (galleryMain) {
     galleryMain.innerHTML = images.length
-      ? `<img src="${images[0]}" alt="${property.title || property.addr}" />`
+      ? `<img src="${escapeAttr(images[0])}" alt="${escapeAttr(property.title || property.addr)}" onclick="openGalleryViewer(0)" />`
       : '<div class="gallery-empty">Изображения пока не указаны</div>';
   }
 
   if (galleryThumbs) {
-    galleryThumbs.innerHTML = images.length > 1
-      ? images.slice(1).map((src, index) => `
-        <div class="gallery-thumb">
-          <img src="${src}" alt="${property.title || property.addr} ${index + 2}" loading="lazy" />
-        </div>
-      `).join('')
-      : '';
+    const rest = images.slice(1);
+    const visible = rest.slice(0, 4);
+    const extra = rest.length - visible.length;
+    galleryThumbs.dataset.count = String(visible.length);
+    galleryThumbs.innerHTML = visible.map((src, index) => {
+      const showMore = extra > 0 && index === visible.length - 1;
+      return `
+        <div class="gallery-thumb${showMore ? ' gallery-thumb-more' : ''}" onclick="openGalleryViewer(${index + 1})">
+          <img src="${escapeAttr(src)}" alt="${escapeAttr(property.title || property.addr)} ${index + 2}" loading="lazy" />
+          ${showMore ? `<div class="gallery-more-overlay">+${extra} фото</div>` : ''}
+        </div>`;
+    }).join('');
   }
 
   window.__bookingProperty = property;
@@ -1941,6 +1981,72 @@ function toggleFavoriteId(id) {
   else ids.push(value);
   saveFavorites(ids);
   return ids.includes(value);
+}
+
+// ── GALLERY VIEWER (lightbox) ──
+let galleryViewerIndex = 0;
+
+function ensureGalleryViewer() {
+  let viewer = document.getElementById('gallery-viewer');
+  if (viewer) return viewer;
+  viewer = document.createElement('div');
+  viewer.id = 'gallery-viewer';
+  viewer.innerHTML = `
+    <button class="gallery-viewer-close" aria-label="Закрыть">&times;</button>
+    <button class="gallery-viewer-arrow prev" aria-label="Предыдущее фото">&#10094;</button>
+    <img class="gallery-viewer-img" src="" alt="Фото объекта" />
+    <button class="gallery-viewer-arrow next" aria-label="Следующее фото">&#10095;</button>
+    <div class="gallery-viewer-counter"></div>`;
+  viewer.addEventListener('click', (event) => {
+    if (event.target === viewer) closeGalleryViewer();
+  });
+  viewer.querySelector('.gallery-viewer-close').addEventListener('click', closeGalleryViewer);
+  viewer.querySelector('.gallery-viewer-arrow.prev').addEventListener('click', () => stepGalleryViewer(-1));
+  viewer.querySelector('.gallery-viewer-arrow.next').addEventListener('click', () => stepGalleryViewer(1));
+  document.body.appendChild(viewer);
+  return viewer;
+}
+
+function updateGalleryViewer() {
+  const images = window.__galleryImages || [];
+  const viewer = ensureGalleryViewer();
+  viewer.querySelector('.gallery-viewer-img').src = images[galleryViewerIndex] || '';
+  viewer.querySelector('.gallery-viewer-counter').textContent = `${galleryViewerIndex + 1} / ${images.length}`;
+  const showArrows = images.length > 1;
+  viewer.querySelectorAll('.gallery-viewer-arrow').forEach((arrow) => {
+    arrow.style.display = showArrows ? '' : 'none';
+  });
+}
+
+function openGalleryViewer(index) {
+  const images = window.__galleryImages || [];
+  if (!images.length) return;
+  galleryViewerIndex = Math.min(Math.max(index || 0, 0), images.length - 1);
+  const viewer = ensureGalleryViewer();
+  updateGalleryViewer();
+  viewer.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.addEventListener('keydown', galleryViewerKeydown);
+}
+
+function closeGalleryViewer() {
+  const viewer = document.getElementById('gallery-viewer');
+  if (viewer) viewer.classList.remove('open');
+  document.body.style.overflow = '';
+  document.removeEventListener('keydown', galleryViewerKeydown);
+}
+
+function stepGalleryViewer(delta) {
+  const images = window.__galleryImages || [];
+  if (!images.length) return;
+  galleryViewerIndex = (galleryViewerIndex + delta + images.length) % images.length;
+  updateGalleryViewer();
+}
+
+function galleryViewerKeydown(event) {
+  if (event.key === 'Escape') closeGalleryViewer();
+  if (event.key === 'ArrowLeft') stepGalleryViewer(-1);
+  if (event.key === 'ArrowRight') stepGalleryViewer(1);
 }
 
 function toggleFav(btn) {
