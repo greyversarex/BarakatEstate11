@@ -1,6 +1,6 @@
 import { useSearch } from "wouter";
 import { useEffect, useState, useRef } from "react";
-import { CheckCircle, Phone, Star } from "lucide-react";
+import { Phone, Star } from "lucide-react";
 
 void Star;
 
@@ -222,13 +222,11 @@ export default function SellerProfilePage() {
           <div className="agent-info">
             <h1>{seller.name}</h1>
             <p>{seller.bio || profileFallback}</p>
-            <div className="agent-badges">
-              <span className="agent-badge">{seller.dealsCount || 0} сделок</span>
-              <span className="agent-badge">
-                <CheckCircle size={14} /> Проверен
-              </span>
-              {seller.specializations ? <span className="agent-badge">{seller.specializations}</span> : null}
-            </div>
+            {seller.specializations ? (
+              <div className="agent-badges">
+                <span className="agent-badge">{seller.specializations}</span>
+              </div>
+            ) : null}
           </div>
 
         </div>

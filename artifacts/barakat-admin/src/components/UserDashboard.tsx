@@ -434,12 +434,13 @@ export default function UserDashboard() {
       .catch(() => setCurrentUser(null))
       .finally(() => setAuthReady(true));
       
-    authFetch(`${ADMIN_API}/profile`).then(res => res.ok && res.json()).then(data => {
-      if (data?.data) {
-        setGlobalSettings(data.data);
-        setForm(prev => ({ ...prev, settings: data.data }));
+    authFetch(`${ADMIN_API}/profile`).then(res => res.ok ? res.json() : null).then(data => {
+      const settings = data && typeof data === "object" ? (data.data ?? data) : null;
+      if (settings && typeof settings === "object" && !settings.error) {
+        setGlobalSettings(settings);
+        setForm(prev => ({ ...prev, settings: { ...prev.settings, ...settings } }));
       }
-    });
+    }).catch(() => {});
   }, []);
 
   const filteredItems = useMemo(() => {
@@ -1329,9 +1330,12 @@ function ListManager({ name, title, value = "", colSpan = "full", placeholder = 
   const [savingId, setSavingId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (value) {
-      setItems(value.split(",").map((t: string) => ({ id: Math.random().toString(36).substring(7), value: t.trim() })).filter(i => i.value));
-    }
+    setItems(
+      (value || "")
+        .split(",")
+        .map((t: string) => ({ id: Math.random().toString(36).substring(7), value: t.trim() }))
+        .filter(i => i.value)
+    );
   }, [value]);
 
   const startEdit = (item: ListItem) => {

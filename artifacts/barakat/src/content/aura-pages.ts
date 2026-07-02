@@ -994,9 +994,6 @@ export const auraPages = {
           <h1>Алиджон Ахмедов</h1>
           <p>Риэлтор · <span class="brand-gold">Barakat Estate</span> · Работает с 2019 года</p>
           <div class="agent-badges">
-            <!-- Star removed -->
-            <span class="agent-badge">47 сделок</span>
-            <span class="agent-badge">[[ICON_CHECK]] Проверен</span>
             <span class="agent-badge">Центр · И. Сомони</span>
           </div>
         </div>
