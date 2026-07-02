@@ -1773,7 +1773,7 @@ function renderPropertyDetail() {
   if (galleryThumbs) {
     galleryThumbs.innerHTML = images.length > 1
       ? images.map((src, index) => `
-        <div class="gallery-thumb${index === 0 ? ' active' : ''}" onclick="selectGalleryImage(${index})">
+        <div class="gallery-thumb${index === 0 ? ' active' : ''}" onclick="openGalleryViewer(${index})">
           <img src="${escapeAttr(src)}" alt="${escapeAttr(property.title || property.addr)} ${index + 1}" loading="lazy" />
         </div>`).join('')
       : '';
@@ -2099,17 +2099,6 @@ function updateGalleryViewer() {
   const showArrows = images.length > 1;
   viewer.querySelectorAll('.gallery-viewer-arrow').forEach((arrow) => {
     arrow.style.display = showArrows ? '' : 'none';
-  });
-}
-
-function selectGalleryImage(index) {
-  const images = window.__galleryImages || [];
-  if (!images[index]) return;
-  window.__galleryCurrent = index;
-  const mainImg = document.getElementById('gallery-main-img');
-  if (mainImg) mainImg.src = images[index];
-  document.querySelectorAll('.gallery-thumb').forEach((thumb, i) => {
-    thumb.classList.toggle('active', i === index);
   });
 }
 

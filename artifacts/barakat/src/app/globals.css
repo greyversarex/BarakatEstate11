@@ -3919,7 +3919,7 @@
     display:flex;align-items:center;gap:6px;
   }
   .detail-section-title { font-size:18px;font-weight:600;margin-bottom:16px;color:var(--ink); }
-  .detail-desc { font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:32px; }
+  .detail-desc { font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:32px;white-space:pre-line;overflow-wrap:break-word; }
   .amenities-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px; }
   .amenity {
     display:flex;align-items:center;gap:10px;
