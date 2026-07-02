@@ -3,5 +3,6 @@
 - [Barakat object storage](barakat-object-storage.md) — uploads are local filesystem (UPLOAD_DIR + docker volume), NOT Replit GCS; never re-add GCS or SVG uploads (stored-XSS).
 - [Barakat map = Leaflet/OSM](barakat-map-leaflet.md) — public map is Leaflet+OpenStreetMap (no key) despite legacy `yandex`/`_ymap` naming; never re-add Yandex.
 - [Empty dev DB → 500 everywhere](dev-db-empty-500.md) — fresh Replit dev Postgres has no tables; `db push` + seed from `deploy/initdb/02-seed.sql` fixes it. Prod (Timeweb) unaffected.
+- [Duplicate hydrateAuraPage](barakat-aura-hydrate-duplicate.md) — only `window.hydrateAuraPage` (later in file) runs; the earlier same-named function is dead code. `.reveal` hides below-fold sections until scroll.
 - [aura-source.js card escaping](barakat-aura-card-escaping.md) — legacy innerHTML card renderers; escape every p.* field (escapeAttr/escapeJsAttr/safeSlideId) or it's stored-XSS.
 - [Barakat propertyType labels](barakat-propertytype-labels.md) — admin stores Russian labels directly; dev seed stores codes (newbuild/apartment); mapPropertyType() bridges both, add code aliases as needed.

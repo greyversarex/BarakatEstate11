@@ -272,7 +272,7 @@ export const auraPages = {
   </section>
 
   <!-- VIP LISTINGS -->
-  <section class="vip-section reveal">
+  <section class="vip-section reveal" id="vip">
     <div class="vip-glow vip-glow-1"></div>
     <div class="vip-glow vip-glow-2"></div>
     <div class="container">

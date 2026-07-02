@@ -628,8 +628,8 @@ function vipCard(p, featured) {
       <h3 class="vip-card-title">${escapeAttr(p.title || p.addr)}</h3>
       <div class="vip-addr">${lucideIcon('mapPin')} ${escapeAttr(p.district || p.addr)}</div>
       <div class="vip-meta">${meta}</div>
-      ${agentBlock}
-      ${detailsBtn}
+      ${featured ? agentBlock : ''}
+      ${featured ? detailsBtn : ''}
     </div>
   </article>`;
 }
@@ -1001,6 +1001,12 @@ async function hydrateAuraPage(page) {
   setupServiceRequestForm();
   await initYandexMaps();
   initCardSliders();
+
+  if (window.location.hash) {
+    const anchor = document.getElementById(window.location.hash.slice(1));
+    if (anchor) anchor.scrollIntoView();
+  }
+  if (typeof updateScrollEffects === 'function') updateScrollEffects();
 }
 
 function setupServiceRequestForm() {
@@ -1317,6 +1323,66 @@ function setupListingFilters() {
   prefillRange('Цена (TJS)', 'minPrice', 'maxPrice');
   prefillRange('Площадь (м²)', 'minArea', 'maxArea');
 
+  const consumedParams = [];
+  const findGroup = (title) => Array.from(page.querySelectorAll('.filter-group')).find(
+    (item) => item.querySelector('h4')?.textContent?.trim() === title
+  );
+  const checkByLabel = (title, value) => {
+    const group = findGroup(title);
+    if (!group) return false;
+    const target = Array.from(group.querySelectorAll('.filter-check')).find(
+      (label) => label.textContent.trim() === value
+    );
+    const input = target?.querySelector('input');
+    if (!input) return false;
+    input.checked = true;
+    return true;
+  };
+
+  const typeParam = urlParams.get('type');
+  if (typeParam && checkByLabel('Тип недвижимости', typeParam)) consumedParams.push('type');
+
+  const stageParam = urlParams.get('stage');
+  if (stageParam && checkByLabel('Стадия строительства', stageParam)) consumedParams.push('stage');
+
+  const districtParam = urlParams.get('district');
+  if (districtParam && checkByLabel('Район', districtParam)) consumedParams.push('district');
+
+  const dealParam = urlParams.get('deal');
+  if (dealParam) {
+    const dealGroup = findGroup('Тип сделки');
+    const labels = dealGroup ? Array.from(dealGroup.querySelectorAll('.filter-check')) : [];
+    const target = labels.find((label) => label.textContent.trim() === dealParam);
+    if (target) {
+      labels.forEach((label) => {
+        const input = label.querySelector('input');
+        if (input) input.checked = label === target;
+      });
+      consumedParams.push('deal');
+    }
+  }
+
+  const roomsParam = urlParams.get('rooms');
+  if (roomsParam) {
+    const roomsSelect = document.querySelectorAll('.listings-page .s-select')[1];
+    if (roomsSelect) {
+      const options = Array.from(roomsSelect.options).map((o) => o.value || o.textContent.trim());
+      const normalized = options.includes(roomsParam)
+        ? roomsParam
+        : (Number(roomsParam.replace('+', '')) >= 4 && options.includes('4+')) ? '4+' : '';
+      if (normalized) {
+        roomsSelect.value = normalized;
+        consumedParams.push('rooms');
+      }
+    }
+  }
+
+  if (consumedParams.length) {
+    consumedParams.forEach((key) => urlParams.delete(key));
+    const qs = urlParams.toString();
+    window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
+  }
+
   page.querySelectorAll('input, select').forEach((control) => {
     control.addEventListener('input', renderFilteredListings);
     control.addEventListener('change', renderFilteredListings);
@@ -1465,11 +1531,32 @@ function setupMapFilters() {
   });
 }
 
+const PROPERTY_TYPE_SYNONYMS = {
+  'новостройки': ['новостройка', 'новостройки'],
+  'новостройка': ['новостройка', 'новостройки'],
+  'дома': ['дом', 'дома'],
+  'дом': ['дом', 'дома'],
+  'земельные участки': ['земельный участок', 'земельные участки', 'участок'],
+  'земельный участок': ['земельный участок', 'земельные участки', 'участок'],
+};
+
+function propertyMatchesTypeFilter(property, filterValue) {
+  const f = String(filterValue == null ? '' : filterValue).trim().toLowerCase();
+  if (!f || f === 'все типы' || f === 'тип недвижимости') return true;
+  const propType = String(property.propertyType || 'Квартира').trim().toLowerCase();
+  if (f === 'котлован') {
+    const stage = String(property.constructionStage || '').trim().toLowerCase();
+    return propType === 'котлован' || stage === 'котлован';
+  }
+  const accepted = PROPERTY_TYPE_SYNONYMS[f] || [f];
+  return accepted.includes(propType);
+}
+
 function propertyMatchesFilters(property, filters) {
   const text = `${property.addr} ${property.district || ''} ${property.propertyType || ''} ${property.description || ''}`.toLowerCase();
   if (filters.search && !text.includes(filters.search)) return false;
 
-  if (filters.propertyType && filters.propertyType !== 'Все типы' && property.propertyType !== filters.propertyType) return false;
+  if (filters.propertyType && !propertyMatchesTypeFilter(property, filters.propertyType)) return false;
   if (filters.rooms && filters.rooms !== 'Комнат') {
     const selectedRooms = Number(filters.rooms.replace('+', ''));
     if (filters.rooms.includes('+') ? Number(property.rooms) < selectedRooms : Number(property.rooms) !== selectedRooms) return false;
@@ -1483,7 +1570,7 @@ function propertyMatchesFilters(property, filters) {
     const dealLabel = property.type === 'rent' ? 'Аренда' : 'Продажа';
     if (!filters.deals.includes(dealLabel)) return false;
   }
-  if (filters.types.length && !filters.types.includes(property.propertyType || 'Квартира')) return false;
+  if (filters.types.length && !filters.types.some((t) => propertyMatchesTypeFilter(property, t))) return false;
   if (filters.districts.length && !filters.districts.some((district) => property.addr.includes(district) || property.district === district)) return false;
   if (filters.features.length) {
     const featureText = `${property.features || ''} ${property.description || ''}`.toLowerCase();
@@ -2078,17 +2165,23 @@ function showNotif(msg) {
 }
 
 // ── SCROLL EFFECTS ──
-window.addEventListener('scroll', () => {
+function updateScrollEffects() {
   const nav = document.getElementById('nav');
-  if (window.scrollY > 20) nav.classList.add('scrolled');
-  else nav.classList.remove('scrolled');
+  if (nav) {
+    if (window.scrollY > 20) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  }
 
   // reveal
   document.querySelectorAll('.reveal').forEach(el => {
     const rect = el.getBoundingClientRect();
     if (rect.top < window.innerHeight - 80) el.classList.add('visible');
   });
-});
+}
+
+window.addEventListener('scroll', updateScrollEffects);
+window.addEventListener('load', updateScrollEffects);
+setTimeout(updateScrollEffects, 600);
 
 // ── LOADER ──
 function hideLoader() {
@@ -2162,6 +2255,12 @@ window.hydrateAuraPage = async function(page) {
     if (typeof renderPropertyDetail === 'function') renderPropertyDetail();
     if (typeof initCardSliders === 'function') initCardSliders();
   }
+
+  if (window.location.hash) {
+    const anchor = document.getElementById(window.location.hash.slice(1));
+    if (anchor) anchor.scrollIntoView();
+  }
+  if (typeof updateScrollEffects === 'function') updateScrollEffects();
 };
 
 async function submitReview(event) {

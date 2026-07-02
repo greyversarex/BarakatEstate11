@@ -1659,6 +1659,10 @@
     gap: 24px;
     align-items: stretch;
   }
+  .vip-featured-slot {
+    display: flex;
+    min-width: 0;
+  }
   .vip-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1681,7 +1685,7 @@
     border-color: rgba(221,180,93,.6);
     box-shadow: 0 24px 50px rgba(143,103,40,.18), 0 0 0 1px rgba(221,180,93,.25);
   }
-  .vip-card-featured { grid-row: span 2; }
+  .vip-card-featured { grid-row: span 2; flex: 1; min-width: 0; }
 
   .vip-img { position: relative; width: 100%; aspect-ratio: 16/11; overflow: hidden; background: var(--gold-pale); }
   .vip-card-featured .vip-img { aspect-ratio: auto; flex: 1; min-height: 280px; }
@@ -1768,6 +1772,15 @@
   }
   .vip-card:not(.vip-card-featured) .vip-body { flex: 1; }
   .vip-card .vip-details-btn { margin-top: 12px; }
+
+  @media (max-width: 1024px) {
+    .vip-showcase { grid-template-columns: 1fr; }
+    .vip-card-featured { grid-row: auto; }
+    .vip-card-featured .vip-img { aspect-ratio: 16/10; flex: none; min-height: 0; }
+  }
+  @media (max-width: 640px) {
+    .vip-grid { grid-template-columns: 1fr; grid-template-rows: none; }
+  }
   .vip-agent-ava {
     width: 42px; height: 42px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
