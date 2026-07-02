@@ -42,75 +42,29 @@ export const auraPages = {
       <div class="hero-right">
         <div class="hero-cards">
           <div class="hero-cards-track">
-            <!-- Main card -->
-            <div class="hero-card hc-main" onclick="navigate('property')">
-              <div class="hc-img">[[IMG_CITY]]</div>
-              <div class="hc-tag">Продажа</div>
-              <div class="hc-badge"></div>
+            <!-- Skeleton placeholders: replaced by real listings after data loads -->
+            <div class="hero-card hc-main hero-card-skeleton">
+              <div class="hc-img skeleton-shimmer"></div>
               <div class="hc-body">
-                <div class="hc-price">900 000 с</div>
-                <div class="hc-addr">[[ICON_MAP_PIN]] Исмоили Сомони, 14</div>
-                <div class="hc-meta">
-                  <span>[[ICON_BED]] 3 комн</span>
-                  <span>[[ICON_RULER]] 87 м²</span>
-                  <span>[[ICON_CONSTRUCTION]] 2023</span>
-                </div>
+                <div class="skeleton-line" style="width:55%;height:22px"></div>
+                <div class="skeleton-line" style="width:75%"></div>
+                <div class="skeleton-line" style="width:60%"></div>
               </div>
             </div>
-            <!-- Side card -->
-            <div class="hero-card hc-side" onclick="navigate('property')">
-              <div class="hc-img">[[IMG_RENT]]</div>
-              <div class="hc-tag">Аренда</div>
+            <div class="hero-card hc-side hero-card-skeleton">
+              <div class="hc-img skeleton-shimmer"></div>
               <div class="hc-body">
-                <div class="hc-price">6 500 смн /мес</div>
-                <div class="hc-addr">[[ICON_MAP_PIN]] Центр</div>
-                <div class="hc-meta">
-                  <span>[[ICON_BED]] 2 комн</span>
-                  <span>[[ICON_RULER]] 54 м²</span>
-                  <span>[[ICON_PARKING]] Парковка</span>
-                </div>
+                <div class="skeleton-line" style="width:55%;height:22px"></div>
+                <div class="skeleton-line" style="width:75%"></div>
+                <div class="skeleton-line" style="width:60%"></div>
               </div>
             </div>
-            <!-- Third card -->
-            <div class="hero-card hc-third" onclick="navigate('property')">
-              <div class="hc-img"><img src='https://images.unsplash.com/photo-1540574163026-643ea20ade25?auto=format&fit=crop&w=700&q=80' alt='Интерьер квартиры' loading='lazy' /></div>
-              <div class="hc-tag">Новинка</div>
+            <div class="hero-card hc-third hero-card-skeleton">
+              <div class="hc-img skeleton-shimmer"></div>
               <div class="hc-body">
-                <div class="hc-price">750 000 смн</div>
-                <div class="hc-addr">[[ICON_MAP_PIN]] Рудаки</div>
-                <div class="hc-meta">
-                  <span>[[ICON_BED]] 2 комн</span>
-                  <span>[[ICON_RULER]] 72 м²</span>
-                  <span>[[ICON_PARKING]] Парковка</span>
-                </div>
-              </div>
-            </div>
-            <!-- Fourth card -->
-            <div class="hero-card" onclick="navigate('property')">
-              <div class="hc-img"><img src='https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=700&q=80' alt='Уютная гостиная' loading='lazy' /></div>
-              <div class="hc-tag">Тренд</div>
-              <div class="hc-body">
-                <div class="hc-price">920 000 смн</div>
-                <div class="hc-addr">[[ICON_MAP_PIN]] Айнӣ</div>
-                <div class="hc-meta">
-                  <span>[[ICON_BED]] 3 комн</span>
-                  <span>[[ICON_RULER]] 95 м²</span>
-                  <span>[[ICON_PARKING]] Парковка</span>
-                </div>
-              </div>
-            </div>
-            <!-- Fifth card -->
-            <div class="hero-card" onclick="navigate('property')">
-              <div class="hc-img"><img src='https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=700&q=80' alt='Современный интерьер' loading='lazy' /></div>
-              <div class="hc-tag">Хит</div>
-              <div class="hc-body">
-                <div class="hc-price">1 100 000 смн</div>
-                <div class="hc-addr">[[ICON_MAP_PIN]] Шохмансур</div>
-                <div class="hc-meta">
-                  <span>[[ICON_BED]] 4 комн</span>
-                  <span>[[ICON_RULER]] 128 м²</span>
-                  <span>[[ICON_PARKING]] Парковка</span>
-                </div>
+                <div class="skeleton-line" style="width:55%;height:22px"></div>
+                <div class="skeleton-line" style="width:75%"></div>
+                <div class="skeleton-line" style="width:60%"></div>
               </div>
             </div>
           </div>
@@ -854,7 +808,7 @@ export const auraPages = {
       <span>/</span>
       <span onclick="navigate('listings')" style="cursor:pointer;transition:color .2s" onmouseover="this.style.color='var(--gold-dark)'" onmouseout="this.style.color='var(--muted)'">Объявления</span>
       <span>/</span>
-      <span style="color:var(--ink)">3-комн. квартира в Центре</span>
+      <span style="color:var(--ink)">Объявление</span>
     </div>
 
     <!-- GALLERY -->
@@ -869,76 +823,34 @@ export const auraPages = {
     <div class="detail-body">
       <div class="detail-left">
         <div class="detail-price-row">
-          <div class="detail-price">900 000 смн</div>
-          <div class="detail-price-per">≈ 10 300 смн/м²</div>
+          <div class="detail-price"></div>
+          <div class="detail-price-per"></div>
         </div>
-        <div class="detail-title">3-комнатная квартира в центре Душанбе</div>
-        <div class="detail-addr">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-          ул. Садриддина Айни, 14, кв. 37, Центр, Душанбе
-        </div>
+        <div class="detail-title"></div>
+        <div class="detail-addr"></div>
 
         <div class="detail-chips">
           <!-- injected by js -->
         </div>
 
         <div class="detail-section-title">Описание</div>
-        <p class="detail-desc">
-          Просторная и светлая 3-комнатная квартира в новом ЖК в центре Душанбе. Высота потолков — 3 м, панорамные окна с видом на горы. Отличный ремонт под ключ, встроенная кухня. Тихий двор, видеонаблюдение. В шаговой доступности — рынок Баракат, школы, детские сады.
-          <br/><br/>
-          Квартира полностью готова к заселению. Продаётся без обременений, все документы в порядке. Возможен торг.
-        </p>
+        <p class="detail-desc"></p>
 
         <div class="detail-section-title">Удобства</div>
         <div class="amenities-grid">
-          <div class="amenity">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Кондиционер
-          </div>
-          <div class="amenity">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Интернет
-          </div>
-          <div class="amenity">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Лифт
-          </div>
-          <div class="amenity">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Паркинг
-          </div>
-          <div class="amenity">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Охрана 24/7
-          </div>
-          <div class="amenity">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Балкон
-          </div>
-          <div class="amenity">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Мебель
-          </div>
-          <div class="amenity">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Видеодомофон
-          </div>
-          <div class="amenity">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Тёплый пол
-          </div>
+          <!-- injected by js -->
         </div>
 
         <!-- Mini-map on detail page -->
         <div class="detail-section-title">На карте</div>
         <div style="height:200px;border-radius:14px;overflow:hidden;position:relative;cursor:pointer" onclick="navigate('map')">
           <div id="detail-yandex-map" class="yandex-map" style="width: 100%; height: 100%;"></div>
-          <div id="detail-map-coords" class="detail-map-coords">38.5460, 68.7635</div>
+          <div id="detail-map-coords" class="detail-map-coords"></div>
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
             <div class="map-dot lg" style="position:relative;animation:pulse 2s ease-in-out infinite"></div>
           </div>
           <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.95);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;white-space:nowrap">
-            [[ICON_MAP_PIN]] ул. Айни, 14 — Смотреть на карте
+            [[ICON_MAP_PIN]] Смотреть на карте
           </div>
         </div>
       </div>
@@ -946,15 +858,15 @@ export const auraPages = {
       <!-- RIGHT: CONTACT CARD -->
       <div>
         <div class="contact-card">
-          <div class="price-display">900 000 смн</div>
-          <div class="price-note">Продажа · 87 м² · 3-комн</div>
+          <div class="price-display"></div>
+          <div class="price-note"></div>
 
           <!-- Agent -->
-          <div class="contact-agent" onclick="navigate('agent')">
-            <div class="ca-ava">АА</div>
+          <div class="contact-agent">
+            <div class="ca-ava"></div>
             <div class="ca-info">
-              <strong>Алиджон Ахмедов</strong>
-              <small>47 сделок</small>
+              <strong></strong>
+              <small></small>
             </div>
             <svg style="margin-left:auto;opacity:.3" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </div>
@@ -962,7 +874,7 @@ export const auraPages = {
           <div class="contact-actions" style="display: flex; flex-direction: column; gap: 12px; margin-top: 24px;">
             <div style="background: var(--cream); border-radius: 12px; padding: 16px; text-align: center; border: 1px solid var(--border);">
               <div style="font-size: 13px; color: var(--muted); margin-bottom: 4px;">Телефон продавца</div>
-              <a href="tel:+992000000000" id="contact-phone-display" style="font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: 0.5px; text-decoration: none; display: block;">+992 000 00 00 00</a>
+              <a href="#" id="contact-phone-display" style="font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: 0.5px; text-decoration: none; display: block;"></a>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
               <a href="#" id="contact-whatsapp" class="contact-btn" style="background: #25D366; color: white; border: none; font-weight: 600; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; padding: 12px;" onclick="showNotif('Открываем WhatsApp...')">

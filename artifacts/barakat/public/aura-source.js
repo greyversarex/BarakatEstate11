@@ -1104,7 +1104,12 @@ function hydrateHeroCarousel() {
   const allProps = getAllProperties();
   const heroSelected = allProps.filter((p) => p.isHero);
   const listings = (heroSelected.length ? heroSelected : allProps).slice(0, 6);
-  if (!listings.length) return; // keep hardcoded cards if DB is empty
+  if (!listings.length) {
+    // no real listings: hide the carousel instead of showing placeholders
+    const container = document.querySelector('.hero-cards');
+    if (container) container.style.display = 'none';
+    return;
+  }
 
   const tagLabel = (p) => p.type === 'rent' ? 'Аренда' : 'Продажа';
   const fallbackImg = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80';
@@ -1135,6 +1140,10 @@ function setupHomeCarousel() {
   const track = document.querySelector('.hero-cards-track');
   const container = document.querySelector('.hero-cards');
   if (!track || !container) return;
+  if (container.style.display === 'none') {
+    if (window.heroCarouselTimer) window.clearInterval(window.heroCarouselTimer);
+    return;
+  }
 
   track.querySelectorAll('.carousel-clone').forEach((clone) => clone.remove());
 
@@ -1720,9 +1729,13 @@ function renderPropertyDetail() {
   const contactTelegram = document.getElementById('contact-telegram');
 
   if (contactPhoneDisplay) {
-    const phone = property.phone || '+992 000 00 00 00';
-    contactPhoneDisplay.textContent = phone;
-    contactPhoneDisplay.href = `tel:${phone.replace(/[^0-9+]/g, '')}`;
+    if (property.phone) {
+      contactPhoneDisplay.textContent = property.phone;
+      contactPhoneDisplay.href = `tel:${property.phone.replace(/[^0-9+]/g, '')}`;
+    } else {
+      contactPhoneDisplay.textContent = 'Номер не указан';
+      contactPhoneDisplay.removeAttribute('href');
+    }
   }
   if (contactWhatsapp) {
     const phoneNum = (property.phone || '').replace(/[^0-9]/g, '');
