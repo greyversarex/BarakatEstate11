@@ -90,8 +90,9 @@ for i in $(seq 1 30); do
   fi
   sleep 2
 done
-$COMPOSE exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
-  < lib/db/migrations/sync-prod-schema.sql
+$COMPOSE exec -T db psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+  < lib/db/migrations/sync-prod-schema.sql \
+  || fail "Миграция схемы не применилась — смотри ошибку psql выше. Прод может работать некорректно."
 log "Схема синхронизирована"
 
 # --- 6. Проверка API ---

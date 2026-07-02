@@ -48,7 +48,7 @@ router.post("/upload", async (req: Request, res: Response) => {
   } catch (err) {
     if (err instanceof UnsupportedImageError) {
       res.status(400).json({
-        error: "Unsupported image format. Use JPEG, PNG, WebP, GIF or AVIF.",
+        error: "Неподдерживаемый формат изображения (например, HEIC с iPhone). Используйте JPEG, PNG, WebP, GIF или AVIF.",
       });
       return;
     }

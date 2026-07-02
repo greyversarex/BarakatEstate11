@@ -6,9 +6,10 @@
 --   docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" < lib/db/migrations/sync-prod-schema.sql
 -- or pipe this file's contents via a heredoc.
 
-BEGIN;
-
 -- ---------- ENUMS ----------
+-- Вне транзакции: ALTER TYPE ... ADD VALUE нельзя выполнять внутри BEGIN/COMMIT.
+-- Сначала создаём отсутствующие типы, затем ДОБАВЛЯЕМ недостающие значения в
+-- уже существующие типы (старый прод мог быть создан без 'seller' и т.п.).
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'publish_status') THEN
     CREATE TYPE publish_status AS ENUM ('draft', 'published');
@@ -26,6 +27,22 @@ DO $$ BEGIN
     CREATE TYPE review_status AS ENUM ('pending', 'approved', 'rejected');
   END IF;
 END $$;
+
+ALTER TYPE publish_status ADD VALUE IF NOT EXISTS 'draft';
+ALTER TYPE publish_status ADD VALUE IF NOT EXISTS 'published';
+ALTER TYPE deal_type ADD VALUE IF NOT EXISTS 'sale';
+ALTER TYPE deal_type ADD VALUE IF NOT EXISTS 'rent';
+ALTER TYPE user_role ADD VALUE IF NOT EXISTS 'user';
+ALTER TYPE user_role ADD VALUE IF NOT EXISTS 'seller';
+ALTER TYPE user_role ADD VALUE IF NOT EXISTS 'admin';
+ALTER TYPE application_status ADD VALUE IF NOT EXISTS 'new';
+ALTER TYPE application_status ADD VALUE IF NOT EXISTS 'read';
+ALTER TYPE application_status ADD VALUE IF NOT EXISTS 'completed';
+ALTER TYPE review_status ADD VALUE IF NOT EXISTS 'pending';
+ALTER TYPE review_status ADD VALUE IF NOT EXISTS 'approved';
+ALTER TYPE review_status ADD VALUE IF NOT EXISTS 'rejected';
+
+BEGIN;
 
 -- ---------- TABLES (create if missing) ----------
 CREATE TABLE IF NOT EXISTS admin_users (id text PRIMARY KEY);

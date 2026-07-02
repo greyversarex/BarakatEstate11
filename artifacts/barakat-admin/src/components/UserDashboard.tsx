@@ -267,13 +267,29 @@ function toStatus(value: FormDataEntryValue | null): PublishStatus {
   return value === "published" ? "published" : "draft";
 }
 
-function readFileAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(new Error("Не удалось прочитать файл"));
-    reader.readAsDataURL(file);
-  });
+async function readFileAsDataUrl(file: File): Promise<string> {
+  try {
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(new Error("FileReader error"));
+      reader.readAsDataURL(file);
+    });
+  } catch {
+    try {
+      const buffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      const chunk = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+      }
+      const mime = file.type || "application/octet-stream";
+      return `data:${mime};base64,${btoa(binary)}`;
+    } catch {
+      throw new Error("Не удалось прочитать файл. Попробуйте выбрать фото ещё раз.");
+    }
+  }
 }
 
 async function compressImage(file: File, maxSize = 1600, quality = 0.82): Promise<string> {
@@ -812,19 +828,19 @@ export default function UserDashboard() {
               <form key={`${activeTab}-${editingId || "new"}-${formKeyCounter}`} onSubmit={submitForm}>
                 {renderForm(activeTab, form, loading, currentUser, async (fieldName, newVal) => {
                   const updatedSettings = { ...form.settings, [fieldName]: newVal };
-                  setForm(prev => ({ ...prev, settings: updatedSettings }));
-                  
+
                   const response = await authFetch(`${ADMIN_API}/profile`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(updatedSettings),
                   });
-                  
+
                   if (!response.ok) {
-                    setToast("Ошибка при сохранении");
-                  } else {
-                    setToast("Сохранено!");
+                    setToast("Ошибка при сохранении — изменение не применено");
+                    throw new Error(`Не удалось сохранить настройки (${response.status})`);
                   }
+                  setForm(prev => ({ ...prev, settings: updatedSettings }));
+                  setToast("Сохранено!");
                 })}
               </form>
             </div>
