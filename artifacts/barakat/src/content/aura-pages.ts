@@ -859,12 +859,10 @@ export const auraPages = {
 
     <!-- GALLERY -->
     <div class="detail-gallery-wrapper">
-      <button class="gallery-arrow prev" onclick="document.querySelector('.detail-gallery').scrollBy({left: -300, behavior: 'smooth'})">‹</button>
       <div class="detail-gallery">
         <div class="gallery-main"></div>
         <div class="gallery-thumbs"></div>
       </div>
-      <button class="gallery-arrow next" onclick="document.querySelector('.detail-gallery').scrollBy({left: 300, behavior: 'smooth'})">›</button>
     </div>
 
     <!-- DETAIL BODY -->

@@ -1674,25 +1674,22 @@ function renderPropertyDetail() {
 
   window.__galleryImages = images;
 
+  window.__galleryCurrent = 0;
+
   if (galleryMain) {
     galleryMain.innerHTML = images.length
-      ? `<img src="${escapeAttr(images[0])}" alt="${escapeAttr(property.title || property.addr)}" onclick="openGalleryViewer(0)" />`
+      ? `<img id="gallery-main-img" src="${escapeAttr(images[0])}" alt="${escapeAttr(property.title || property.addr)}" onclick="openGalleryViewer(window.__galleryCurrent || 0)" />
+         ${images.length > 1 ? `<div class="gallery-count-badge">${images.length} фото</div>` : ''}`
       : '<div class="gallery-empty">Изображения пока не указаны</div>';
   }
 
   if (galleryThumbs) {
-    const rest = images.slice(1);
-    const visible = rest.slice(0, 4);
-    const extra = rest.length - visible.length;
-    galleryThumbs.dataset.count = String(visible.length);
-    galleryThumbs.innerHTML = visible.map((src, index) => {
-      const showMore = extra > 0 && index === visible.length - 1;
-      return `
-        <div class="gallery-thumb${showMore ? ' gallery-thumb-more' : ''}" onclick="openGalleryViewer(${index + 1})">
-          <img src="${escapeAttr(src)}" alt="${escapeAttr(property.title || property.addr)} ${index + 2}" loading="lazy" />
-          ${showMore ? `<div class="gallery-more-overlay">+${extra} фото</div>` : ''}
-        </div>`;
-    }).join('');
+    galleryThumbs.innerHTML = images.length > 1
+      ? images.map((src, index) => `
+        <div class="gallery-thumb${index === 0 ? ' active' : ''}" onclick="selectGalleryImage(${index})">
+          <img src="${escapeAttr(src)}" alt="${escapeAttr(property.title || property.addr)} ${index + 1}" loading="lazy" />
+        </div>`).join('')
+      : '';
   }
 
   window.__bookingProperty = property;
@@ -2015,6 +2012,17 @@ function updateGalleryViewer() {
   const showArrows = images.length > 1;
   viewer.querySelectorAll('.gallery-viewer-arrow').forEach((arrow) => {
     arrow.style.display = showArrows ? '' : 'none';
+  });
+}
+
+function selectGalleryImage(index) {
+  const images = window.__galleryImages || [];
+  if (!images[index]) return;
+  window.__galleryCurrent = index;
+  const mainImg = document.getElementById('gallery-main-img');
+  if (mainImg) mainImg.src = images[index];
+  document.querySelectorAll('.gallery-thumb').forEach((thumb, i) => {
+    thumb.classList.toggle('active', i === index);
   });
 }
 
