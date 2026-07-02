@@ -8,6 +8,17 @@ import * as bcrypt from "bcryptjs";
 
 const router = Router();
 
+function isDuplicateUsername(err: unknown): boolean {
+  let current: unknown = err;
+  for (let i = 0; i < 5 && current instanceof Error; i++) {
+    const withCode = current as Error & { code?: string; constraint?: string };
+    if (withCode.code === "23505") return true;
+    if (current.message.includes("admin_users_username_unique") || current.message.includes("duplicate key")) return true;
+    current = current.cause;
+  }
+  return false;
+}
+
 router.get("/users", async (req: Request, res: Response) => {
   const user = await getAuthUser(req);
   if (!user || user.role !== "admin") { res.status(403).json({ error: "Forbidden" }); return; }
@@ -42,6 +53,10 @@ router.post("/users", async (req: Request, res: Response) => {
     const { passwordHash: _, ...safeUser } = row;
     res.status(201).json(safeUser);
   } catch (err) {
+    if (isDuplicateUsername(err)) {
+      res.status(409).json({ error: "Логин уже занят — пользователь с таким username уже существует. Выберите другой логин." });
+      return;
+    }
     req.log.error({ err }, "Admin request failed");
     res.status(400).json({ error: getErrorMessage(err) });
   }
@@ -59,6 +74,10 @@ router.put("/users/:id", async (req: Request, res: Response) => {
     const { passwordHash: _, ...safeUser } = row;
     res.json(safeUser);
   } catch (err) {
+    if (isDuplicateUsername(err)) {
+      res.status(409).json({ error: "Логин уже занят — пользователь с таким username уже существует. Выберите другой логин." });
+      return;
+    }
     req.log.error({ err }, "Admin request failed");
     res.status(400).json({ error: getErrorMessage(err) });
   }
